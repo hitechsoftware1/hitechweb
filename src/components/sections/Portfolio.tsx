@@ -1,16 +1,19 @@
+
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  type CarouselApi,
 } from "@/components/ui/carousel";
+import { cn } from '@/lib/utils';
 
 const projects = [
   {
@@ -34,12 +37,23 @@ const projects = [
 ];
 
 export function Portfolio() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <section id="portfolio" className="py-24 lg:py-32 relative bg-background">
       <div className="container mx-auto px-6">
-        <div className="mb-12 lg:mb-24">
+        <div className="mb-12 lg:mb-24 text-center md:text-left">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
-          <p className="text-sm lg:text-xl text-white/40 max-w-2xl font-light">
+          <p className="text-sm lg:text-xl text-white/40 max-w-2xl font-light mx-auto md:mx-0">
             Exceptional solutions delivered for industry-leading organizations.
           </p>
         </div>
@@ -51,31 +65,58 @@ export function Portfolio() {
           ))}
         </div>
 
-        {/* Mobile Carousel View */}
-        <div className="md:hidden -mx-6">
-          <Carousel opts={{ align: "start", dragFree: true }} className="w-full px-6">
+        {/* Mobile Coverflow Carousel View */}
+        <div className="md:hidden">
+          <Carousel 
+            setApi={setApi}
+            opts={{ 
+              align: "center", 
+              loop: true,
+            }} 
+            className="w-full"
+          >
             <CarouselContent className="-ml-4">
               {projects.map((project, idx) => (
-                <CarouselItem key={idx} className="pl-4 basis-[80%]">
-                  <ProjectCard project={project} />
+                <CarouselItem key={idx} className="pl-4 basis-[75%] sm:basis-[60%]">
+                  <motion.div
+                    animate={{
+                      scale: current === idx ? 1.05 : 0.85,
+                      opacity: current === idx ? 1 : 0.4,
+                    }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className={cn(
+                      "transition-all duration-500",
+                      current === idx && "drop-shadow-[0_0_15px_rgba(0,113,227,0.4)]"
+                    )}
+                  >
+                    <ProjectCard project={project} isMobile />
+                  </motion.div>
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
+          
+          {/* Progress Indicators */}
+          <div className="flex justify-center gap-2 mt-8">
+            {projects.map((_, idx) => (
+              <div 
+                key={idx} 
+                className={cn(
+                  "h-1 rounded-full transition-all duration-500",
+                  current === idx ? "w-8 bg-primary" : "w-2 bg-white/10"
+                )} 
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function ProjectCard({ project }: { project: any }) {
+function ProjectCard({ project, isMobile }: { project: any, isMobile?: boolean }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8 }}
-      className="apple-card group overflow-hidden h-full flex flex-col"
-    >
+    <div className="apple-card group overflow-hidden h-full flex flex-col">
       <div className="aspect-[16/10] relative overflow-hidden">
         <Image 
           src={project.image || ""} 
@@ -86,18 +127,27 @@ function ProjectCard({ project }: { project: any }) {
         <div className="absolute inset-0 bg-background/20 group-hover:bg-background/0 transition-all" />
       </div>
 
-      <div className="p-4 lg:p-10 flex-grow flex flex-col justify-between">
+      <div className={cn(
+        "flex-grow flex flex-col justify-between",
+        isMobile ? "p-5" : "p-4 lg:p-10"
+      )}>
         <div>
-          <div className="flex justify-between items-center mb-3 lg:mb-6">
+          <div className="flex justify-between items-center mb-2 lg:mb-6">
             <Badge variant="outline" className="text-[7px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
             <span className="text-[7px] lg:text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
           </div>
-          <h3 className="text-base lg:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
+          <h3 className={cn(
+            "font-headline font-bold text-white mb-1",
+            isMobile ? "text-lg" : "text-base lg:text-2xl"
+          )}>{project.title}</h3>
         </div>
-        <div className="flex items-center gap-2 text-white/40 text-[9px] lg:text-sm font-light mt-4 lg:mt-6">
+        <div className={cn(
+          "flex items-center gap-2 text-white/40 font-light mt-4",
+          isMobile ? "text-[10px]" : "text-[9px] lg:text-sm"
+        )}>
           View Case Study <ArrowUpRight className="w-3 h-3 lg:w-4 lg:h-4" />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

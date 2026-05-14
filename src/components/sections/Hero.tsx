@@ -14,7 +14,7 @@ export function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-bg');
 
   return (
-    <section className="relative min-h-[70vh] flex items-center pt-24 lg:pt-32 pb-4 lg:pb-8 overflow-hidden bg-background">
+    <section className="relative flex items-center pt-16 lg:pt-24 pb-2 lg:pb-4 overflow-hidden bg-background">
       {/* Background Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-primary/5 blur-[120px] rounded-full opacity-50" />

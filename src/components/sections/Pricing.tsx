@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -71,7 +70,7 @@ export function Pricing() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-10 lg:mb-24">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
-          <p className="text-sm lg:text-xl text-white/40 max-w-2xl mx-auto font-light">
+          <p className="text-sm lg:text-xl text-foreground/40 max-w-2xl mx-auto font-light">
             Transparent pricing models for teams that value speed and precision.
           </p>
         </div>
@@ -114,7 +113,7 @@ export function Pricing() {
                     }}
                     className={cn(
                       "transition-all h-full duration-700",
-                      current === idx && "drop-shadow-[0_20px_40px_rgba(0,113,227,0.3)]"
+                      current === idx && "drop-shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
                     )}
                   >
                     <PricingCard tier={tier} isMobile />
@@ -130,7 +129,7 @@ export function Pricing() {
                 key={idx} 
                 className={cn(
                   "h-1 rounded-full transition-all duration-500",
-                  current === idx ? "w-8 bg-primary" : "w-2 bg-white/10"
+                  current === idx ? "w-8 bg-primary" : "w-2 bg-foreground/10"
                 )} 
               />
             ))}
@@ -151,14 +150,14 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
       )}
     >
       <div className="mb-4 lg:mb-8 flex justify-between items-start">
-        <h3 className={cn("font-headline font-bold", isMobile ? "text-xl" : "text-base lg:text-2xl")}>{tier.name}</h3>
-        {tier.popular && <Badge className="bg-primary text-white rounded-full px-2 py-0.5 lg:px-3 lg:py-1 text-[8px] lg:text-xs">Popular</Badge>}
+        <h3 className={cn("font-headline font-bold text-foreground", isMobile ? "text-xl" : "text-base lg:text-2xl")}>{tier.name}</h3>
+        {tier.popular && <Badge className="bg-primary text-white rounded-full px-2 py-0.5 lg:px-3 lg:py-1 text-[8px] lg:text-xs border-none">Popular</Badge>}
       </div>
 
       <div className="mb-4 lg:mb-10">
-        <span className={cn("font-bold font-headline", isMobile ? "text-3xl" : "text-2xl lg:text-5xl")}>{tier.price}</span>
-        {tier.price !== "Custom" && <span className="text-white/40 text-[10px] lg:text-sm ml-1">/ mo</span>}
-        <p className="text-white/40 mt-3 lg:mt-6 text-[10px] lg:text-sm leading-relaxed font-light">
+        <span className={cn("font-bold font-headline text-foreground", isMobile ? "text-3xl" : "text-2xl lg:text-5xl")}>{tier.price}</span>
+        {tier.price !== "Custom" && <span className="text-foreground/40 text-[10px] lg:text-sm ml-1">/ mo</span>}
+        <p className="text-foreground/40 mt-3 lg:mt-6 text-[10px] lg:text-sm leading-relaxed font-light">
           {tier.description}
         </p>
       </div>
@@ -167,7 +166,7 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
         {tier.features.map((feature, fIdx) => (
           <div key={fIdx} className="flex items-center gap-2 lg:gap-3">
             <Check className="w-3 h-3 lg:w-4 lg:h-4 text-primary" />
-            <span className="text-[10px] lg:text-sm text-white/70">{feature}</span>
+            <span className="text-[10px] lg:text-sm text-foreground/70">{feature}</span>
           </div>
         ))}
       </div>
@@ -177,7 +176,7 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
         className={cn(
           "w-full rounded-full font-bold",
           isMobile ? "h-11 text-xs" : "h-9 lg:h-12 text-[9px] lg:text-sm",
-          tier.popular ? 'bg-white text-background hover:bg-white/90' : 'border-white/10 hover:bg-white/5'
+          tier.popular ? 'bg-primary text-primary-foreground hover:opacity-90' : 'border-foreground/10 hover:bg-foreground/5 text-foreground'
         )}
       >
         {tier.price === "Custom" ? "Consult Sales" : "Begin Project"}

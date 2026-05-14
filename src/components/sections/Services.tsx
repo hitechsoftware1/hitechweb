@@ -91,15 +91,15 @@ export function Services() {
               className="apple-card p-4 md:p-10 group flex flex-col justify-between h-full"
             >
               <div>
-                <div className="w-8 h-8 md:w-14 md:h-14 rounded-lg md:rounded-2xl bg-white/5 flex items-center justify-center mb-4 md:mb-8 transition-all duration-500 group-hover:bg-white group-hover:text-background">
+                <div className="w-8 h-8 md:w-14 md:h-14 rounded-lg md:rounded-2xl bg-foreground/5 flex items-center justify-center mb-4 md:mb-8 transition-all duration-500 group-hover:bg-primary group-hover:text-primary-foreground text-foreground">
                   <service.icon className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div className="mb-1 md:mb-4">
                   <span className="text-[7px] md:text-[10px] font-bold text-primary uppercase tracking-widest">{service.tag}</span>
                 </div>
-                <h3 className="text-sm md:text-2xl font-headline font-bold text-white mb-2 md:mb-4 leading-tight">{service.title}</h3>
+                <h3 className="text-sm md:text-2xl font-headline font-bold text-foreground mb-2 md:mb-4 leading-tight">{service.title}</h3>
               </div>
-              <p className="text-[9px] md:text-sm text-white/40 leading-relaxed font-light line-clamp-3 md:line-clamp-none">
+              <p className="text-[9px] md:text-sm text-foreground/40 leading-relaxed font-light line-clamp-3 md:line-clamp-none">
                 {service.description}
               </p>
             </motion.div>

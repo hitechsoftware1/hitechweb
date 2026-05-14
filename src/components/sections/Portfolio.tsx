@@ -53,7 +53,7 @@ export function Portfolio() {
       <div className="container mx-auto px-6">
         <div className="mb-8 lg:mb-24 text-center md:text-left">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
-          <p className="text-sm lg:text-xl text-white/40 max-w-2xl font-light mx-auto md:mx-0">
+          <p className="text-sm lg:text-xl text-foreground/40 max-w-2xl font-light mx-auto md:mx-0">
             Exceptional solutions delivered for industry-leading organizations.
           </p>
         </div>
@@ -96,7 +96,7 @@ export function Portfolio() {
                     }}
                     className={cn(
                       "transition-all duration-700",
-                      current === idx && "drop-shadow-[0_20px_50px_rgba(0,113,227,0.4)]"
+                      current === idx && "drop-shadow-[0_20px_50px_rgba(var(--primary),0.2)]"
                     )}
                   >
                     <ProjectCard project={project} isMobile />
@@ -113,7 +113,7 @@ export function Portfolio() {
                 key={idx} 
                 className={cn(
                   "h-1 rounded-full transition-all duration-500",
-                  current === idx ? "w-8 bg-primary" : "w-2 bg-white/10"
+                  current === idx ? "w-8 bg-primary" : "w-2 bg-foreground/10"
                 )} 
               />
             ))}
@@ -144,15 +144,15 @@ function ProjectCard({ project, isMobile }: { project: any, isMobile?: boolean }
         <div>
           <div className="flex justify-between items-center mb-2 lg:mb-6">
             <Badge variant="outline" className="text-[7px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
-            <span className="text-[7px] lg:text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
+            <span className="text-[7px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{project.metrics}</span>
           </div>
           <h3 className={cn(
-            "font-headline font-bold text-white mb-1",
+            "font-headline font-bold text-foreground mb-1",
             isMobile ? "text-lg" : "text-base lg:text-2xl"
           )}>{project.title}</h3>
         </div>
         <div className={cn(
-          "flex items-center gap-2 text-white/40 font-light mt-4",
+          "flex items-center gap-2 text-foreground/40 font-light mt-4",
           isMobile ? "text-[10px]" : "text-[9px] lg:text-sm"
         )}>
           View Case Study <ArrowUpRight className="w-3 h-3 lg:w-4 lg:h-4" />

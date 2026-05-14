@@ -35,7 +35,7 @@ export function Excellence() {
           <h2 className="text-3xl lg:text-6xl font-headline font-bold text-gradient-apple mb-4 lg:mb-6 tracking-tight text-gradient-apple">
             The HITECH Standard.
           </h2>
-          <p className="text-white/40 text-sm lg:text-lg font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="text-foreground/40 text-sm lg:text-lg font-light max-w-2xl mx-auto leading-relaxed">
             Every system we build comes standard with premium features designed to elevate your enterprise.
           </p>
         </div>
@@ -50,9 +50,9 @@ export function Excellence() {
               className="apple-glass p-4 lg:p-6 rounded-3xl flex items-center gap-3 group hover:border-primary/50 transition-all duration-500"
             >
               <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary transition-colors">
-                <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-primary group-hover:text-white transition-colors" />
+                <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-primary group-hover:text-primary-foreground transition-colors" />
               </div>
-              <span className="text-[10px] lg:text-xs font-medium text-white/70 leading-tight">
+              <span className="text-[10px] lg:text-xs font-medium text-foreground/70 leading-tight">
                 {feature}
               </span>
             </motion.div>

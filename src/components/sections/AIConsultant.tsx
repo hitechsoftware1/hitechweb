@@ -34,7 +34,24 @@ export function AIConsultant() {
   ];
 
   return (
-    <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden neural-grid">
+    <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden min-h-[600px] lg:min-h-[900px] flex items-center">
+      
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-cover opacity-30 lg:opacity-50"
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-network-loops-4433-preview.mp4" type="video/mp4" />
+        </video>
+        {/* Overlays for readability and texture */}
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 neural-grid opacity-30" />
+      </div>
+
       {/* Liquid Background Blobs */}
       <div className="absolute inset-0 pointer-events-none">
         {liquidBlobs.map((blob, i) => (

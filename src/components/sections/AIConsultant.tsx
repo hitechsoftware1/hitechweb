@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2, Cpu, Check, ArrowRight, User, Rocket, ShieldCheck } from 'lucide-react';
+import { Sparkles, Loader2, Cpu, Check, ArrowRight, User, Rocket, ShieldCheck, Zap } from 'lucide-react';
 import { intelligentSolutionConsultant, type IntelligentSolutionConsultantOutput } from '@/ai/flows/intelligent-solution-consultant';
 import { cn } from '@/lib/utils';
 
@@ -42,14 +42,14 @@ export function AIConsultant() {
             key={i}
             className={cn("absolute rounded-full blur-[100px]", blob.color, blob.size)}
             animate={{
-              x: [Math.random() * 100, Math.random() * 500, Math.random() * 100],
-              y: [Math.random() * 100, Math.random() * 500, Math.random() * 100],
+              x: [0, 100, 0],
+              y: [0, 50, 0],
               scale: [1, 1.2, 1],
             }}
             transition={{
               duration: 15 + i * 5,
               repeat: Infinity,
-              ease: "linear",
+              ease: "easeInOut",
               delay: blob.delay,
             }}
             style={{
@@ -61,55 +61,85 @@ export function AIConsultant() {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 items-center">
           
-          {/* Left Column: Founder & Mission (Liquid Ads) */}
-          <div className="lg:col-span-5 space-y-8 order-2 lg:order-1">
+          {/* Left Column: Floating Liquid Ads / Info Cards */}
+          <div className="lg:col-span-5 space-y-6 relative h-[600px] lg:h-auto flex flex-col justify-center order-2 lg:order-1">
+            
+            {/* Founder Card */}
             <motion.div 
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="apple-card p-8 lg:p-10 border-primary/20 glow-blue animate-float"
+              animate={{ y: [0, -15, 0] }}
+              transition={{ 
+                opacity: { duration: 0.8 },
+                y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
+              }}
+              className="apple-card p-8 border-primary/20 glow-blue relative z-30 ml-0 lg:-ml-8"
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-primary/50">
-                   <User className="text-background w-6 h-6" />
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-primary/50 p-1">
+                   <div className="w-full h-full rounded-full bg-slate-200 flex items-center justify-center text-background">
+                     <User size={32} />
+                   </div>
                 </div>
                 <div>
-                  <h4 className="font-headline font-bold text-white text-lg">JoelHitech</h4>
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Founder & Visionary</p>
+                  <h4 className="font-headline font-bold text-white text-xl">JoelHitech</h4>
+                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Founder & CEO</p>
                 </div>
               </div>
-              <p className="text-white/60 font-light leading-relaxed italic">
-                "HITECH SOFTWARE was founded on a simple principle: Surgical precision in code, and boundless imagination in design. We don't just build software; we engineer the future of digital ecosystems."
+              <p className="text-white/70 font-light leading-relaxed italic text-sm">
+                "We don't just write code; we architect the digital soul of tomorrow's enterprises. HITECH is the surgical instrument for global innovation."
               </p>
             </motion.div>
 
+            {/* Strategic Floating Card 1 */}
             <motion.div 
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-2 gap-4"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
+              transition={{ 
+                delay: 0.2,
+                y: { repeat: Infinity, duration: 8, ease: "easeInOut" },
+                x: { repeat: Infinity, duration: 10, ease: "easeInOut" }
+              }}
+              className="apple-glass p-6 rounded-[2.5rem] absolute top-0 right-0 lg:-right-12 w-48 hidden lg:block"
             >
-              <div className="apple-glass p-6 rounded-[2rem] flex flex-col gap-3">
-                <Rocket className="w-6 h-6 text-primary" />
-                <p className="text-xs font-bold uppercase tracking-widest text-white/40">Scale Fast</p>
-                <p className="text-sm font-light text-white/70">Rapid R&D cycles.</p>
-              </div>
-              <div className="apple-glass p-6 rounded-[2rem] flex flex-col gap-3">
-                <ShieldCheck className="w-6 h-6 text-primary" />
-                <p className="text-xs font-bold uppercase tracking-widest text-white/40">Secure Core</p>
-                <p className="text-sm font-light text-white/70">Military-grade infra.</p>
+              <Rocket className="w-8 h-8 text-primary mb-4" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-2">Momentum</p>
+              <p className="text-xs font-medium text-white/80">Rapid Deployment Systems</p>
+            </motion.div>
+
+            {/* Strategic Floating Card 2 */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ y: [0, -25, 0] }}
+              transition={{ 
+                delay: 0.4,
+                y: { repeat: Infinity, duration: 7, ease: "easeInOut" }
+              }}
+              className="apple-glass p-6 rounded-[2.5rem] absolute bottom-0 left-1/4 w-56 hidden lg:block"
+            >
+              <Zap className="w-8 h-8 text-yellow-400 mb-4" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-2">Performance</p>
+              <p className="text-xs font-medium text-white/80">99.9% Latency Optimization</p>
+            </motion.div>
+
+            {/* Core Card */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+              className="apple-glass p-6 rounded-[2rem] flex items-center gap-4 border-white/5 bg-white/[0.02] backdrop-blur-md"
+            >
+              <ShieldCheck className="w-10 h-10 text-primary shrink-0" />
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/30 mb-1">Security Standard</p>
+                <p className="text-sm font-light text-white/60">Zero-Trust Infrastructure by HITECH.</p>
               </div>
             </motion.div>
 
-            <div className="hidden lg:block relative h-32 w-full overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.02]">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
-              <div className="absolute inset-0 flex items-center px-8">
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.5em] animate-pulse">
-                  HITECH SOFTWARE CO. // SURGICAL PRECISION
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Right Column: AI Consultant Interface */}
@@ -135,7 +165,7 @@ export function AIConsultant() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="apple-card p-6 lg:p-12 overflow-hidden bg-[#1C1C1E]/60 backdrop-blur-3xl border-primary/10"
+              className="apple-card p-6 lg:p-12 overflow-hidden bg-[#1C1C1E]/60 backdrop-blur-3xl border-primary/10 shadow-[0_20px_100px_rgba(0,113,227,0.1)]"
             >
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -145,8 +175,8 @@ export function AIConsultant() {
               </div>
 
               <Textarea 
-                placeholder="Briefly describe your business requirements..."
-                className="bg-transparent border-none text-lg lg:text-2xl font-light focus-visible:ring-0 placeholder:text-white/10 min-h-[160px] resize-none p-0 mb-10 text-white"
+                placeholder="Describe your business goals..."
+                className="bg-transparent border-none text-lg lg:text-2xl font-light focus-visible:ring-0 placeholder:text-white/10 min-h-[140px] resize-none p-0 mb-8 text-white"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
@@ -183,10 +213,10 @@ export function AIConsultant() {
                   exit={{ opacity: 0, y: 40 }}
                   className="mt-12 grid sm:grid-cols-2 gap-8"
                 >
-                  <div className="apple-card p-8 lg:p-10 bg-primary/5 border-primary/20">
+                  <div className="apple-card p-8 bg-primary/5 border-primary/20">
                     <h3 className="text-xs font-bold text-primary uppercase tracking-widest mb-6">Proposed Stack</h3>
                     <div className="space-y-4">
-                      {result.recommendedServices.map((service, i) => (
+                      {result.recommendedServices.slice(0, 4).map((service, i) => (
                         <motion.div 
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -201,7 +231,7 @@ export function AIConsultant() {
                     </div>
                   </div>
 
-                  <div className="apple-card p-8 lg:p-10 bg-white/[0.02] border-white/5">
+                  <div className="apple-card p-8 bg-white/[0.02] border-white/5">
                     <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6">Strategic Value</h3>
                     <p className="text-sm lg:text-lg text-white/70 font-light leading-relaxed">
                       {result.justification}

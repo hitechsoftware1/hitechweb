@@ -5,65 +5,106 @@
 
 @layer base {
   :root {
-    --background: 180 14% 7%;
-    --foreground: 187 88% 98%;
-    --card: 180 14% 10%;
-    --card-foreground: 187 88% 98%;
-    --popover: 180 14% 7%;
-    --popover-foreground: 187 88% 98%;
-    --primary: 187 88% 49%;
-    --primary-foreground: 180 14% 7%;
-    --secondary: 161 68% 65%;
-    --secondary-foreground: 180 14% 7%;
-    --muted: 180 14% 15%;
-    --muted-foreground: 187 20% 70%;
-    --accent: 187 88% 49%;
-    --accent-foreground: 180 14% 7%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 187 88% 98%;
-    --border: 180 14% 20%;
-    --input: 180 14% 20%;
-    --ring: 187 88% 49%;
-    --radius: 1rem;
-    --chart-1: 187 88% 49%;
-    --chart-2: 161 68% 65%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --background: 230 45% 4%;
+    --foreground: 210 40% 98%;
+    --card: 230 45% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 230 45% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 180 100% 50%;
+    --primary-foreground: 230 45% 4%;
+    --secondary: 270 100% 60%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 230 20% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 230 45% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 230 20% 20%;
+    --input: 230 20% 20%;
+    --ring: 180 100% 50%;
+    --radius: 1.25rem;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-none transition-colors;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
     background-image: 
-      radial-gradient(circle at 0% 0%, hsla(187, 88%, 49%, 0.03) 0, transparent 50%),
-      radial-gradient(circle at 100% 100%, hsla(161, 68%, 65%, 0.03) 0, transparent 50%);
+      radial-gradient(circle at 50% -20%, hsla(180, 100%, 50%, 0.15), transparent 70%),
+      radial-gradient(circle at 0% 100%, hsla(270, 100%, 60%, 0.1), transparent 50%);
     background-attachment: fixed;
   }
 }
 
 .glass-morphism {
-  @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+  @apply bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] shadow-2xl;
+}
+
+.glass-card {
+  @apply relative overflow-hidden bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-[2rem] transition-all duration-500 hover:bg-white/[0.05] hover:border-primary/30;
 }
 
 .text-gradient-primary {
-  @apply bg-gradient-to-r from-[#0FD6ED] to-[#68E1BC] bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-[#00F5FF] via-[#6C63FF] to-[#FF00FF] bg-clip-text text-transparent animate-gradient-x bg-[length:200%_200%];
 }
 
 .glow-primary {
-  box-shadow: 0 0 20px hsla(187, 88%, 49%, 0.3);
+  box-shadow: 0 0 30px hsla(180, 100%, 50%, 0.3);
 }
 
-.glow-text {
-  text-shadow: 0 0 10px hsla(187, 88%, 49%, 0.5);
+.glow-secondary {
+  box-shadow: 0 0 30px hsla(270, 100%, 60%, 0.3);
+}
+
+.border-gradient {
+  position: relative;
+}
+
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(45deg, transparent, hsla(180, 100%, 50%, 0.5), transparent);
+  border-radius: inherit;
+  z-index: -1;
+  animation: border-rotate 4s linear infinite;
+}
+
+@keyframes border-rotate {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -71,5 +112,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/20 rounded-full hover:bg-primary/50 transition-colors;
+  @apply bg-white/10 rounded-full hover:bg-primary/50;
+}
+
+/* Custom UI Elements */
+.neural-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 40px 40px;
 }

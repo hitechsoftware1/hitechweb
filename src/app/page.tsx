@@ -11,10 +11,12 @@ import { Contact } from '@/components/sections/Contact';
 import { Footer } from '@/components/layout/Footer';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MouseFollower } from '@/components/ui/mouse-follower';
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen relative">
+      <MouseFollower />
       <Navbar />
       
       <Hero />
@@ -24,7 +26,7 @@ export default function Home() {
         <Services />
       </div>
 
-      <div id="ai-consultant" className="bg-gradient-to-b from-background via-primary/5 to-background">
+      <div id="ai-consultant" className="relative">
         <AIConsultant />
       </div>
 
@@ -36,14 +38,14 @@ export default function Home() {
         <Pricing />
       </div>
 
-      <div id="contact" className="bg-gradient-to-t from-background via-secondary/5 to-background">
+      <div id="contact" className="relative">
         <Contact />
       </div>
 
       <Footer />
 
       {/* Floating Chat Button */}
-      <Button className="fixed bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl glow-primary z-50 p-0 flex items-center justify-center">
+      <Button className="fixed bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl glow-primary z-50 p-0 flex items-center justify-center hover:scale-110 transition-transform bg-primary text-primary-foreground">
         <MessageCircle className="w-8 h-8" />
       </Button>
     </main>

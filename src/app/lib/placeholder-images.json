@@ -23,6 +23,12 @@
       "description": "Industrial Hub",
       "imageUrl": "https://picsum.photos/seed/minimal-ind/800/600",
       "imageHint": "minimal industry"
+    },
+    {
+      "id": "logo",
+      "description": "HITECH Custom Logo",
+      "imageUrl": "https://picsum.photos/seed/hitech-logo/200/200",
+      "imageHint": "tech logo"
     }
   ]
 }

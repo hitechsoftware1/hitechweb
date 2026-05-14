@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -20,7 +19,7 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-background relative overflow-hidden">
+    <section id="contact" className="py-12 lg:py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>

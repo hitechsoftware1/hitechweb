@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -50,9 +49,9 @@ export function Pricing() {
   }, [api]);
 
   return (
-    <section id="pricing" className="py-24 lg:py-32 bg-background relative overflow-hidden">
+    <section id="pricing" className="py-12 lg:py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16 lg:mb-24">
+        <div className="text-center mb-10 lg:mb-24">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
           <p className="text-sm lg:text-xl text-white/40 max-w-2xl mx-auto font-light">
             Transparent pricing models for teams that value speed and precision.

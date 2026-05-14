@@ -26,10 +26,10 @@ export function AIConsultant() {
   };
 
   return (
-    <section id="ai-consultant" className="py-24 lg:py-32 relative neural-grid">
+    <section id="ai-consultant" className="py-12 lg:py-32 relative neural-grid">
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12 lg:mb-16">
+          <div className="text-center mb-8 lg:mb-16">
             <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">
               AI Strategy Studio.
             </h2>

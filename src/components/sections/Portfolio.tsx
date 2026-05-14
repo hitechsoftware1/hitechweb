@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -50,9 +49,9 @@ export function Portfolio() {
   }, [api]);
 
   return (
-    <section id="portfolio" className="py-24 lg:py-32 relative bg-background overflow-hidden">
+    <section id="portfolio" className="py-12 lg:py-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="mb-12 lg:mb-24 text-center md:text-left">
+        <div className="mb-8 lg:mb-24 text-center md:text-left">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
           <p className="text-sm lg:text-xl text-white/40 max-w-2xl font-light mx-auto md:mx-0">
             Exceptional solutions delivered for industry-leading organizations.

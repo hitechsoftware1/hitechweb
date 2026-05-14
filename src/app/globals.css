@@ -10,19 +10,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 210 100% 45%; /* Apple Blue */
+    --primary: 199 100% 50%; /* Vibrant Logo Blue */
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 4% 16%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 210 100% 45%;
+    --accent: 262 100% 60%; /* Logo Purple */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 4% 16%;
     --input: 240 4% 16%;
-    --ring: 210 100% 45%;
+    --ring: 199 100% 50%;
     --radius: 1.5rem;
   }
 }
@@ -34,8 +34,9 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     background-image: 
-      radial-gradient(circle at 50% -20%, hsla(210, 100%, 45%, 0.08), transparent 60%),
-      radial-gradient(circle at 0% 100%, hsla(270, 100%, 60%, 0.03), transparent 40%);
+      radial-gradient(circle at 50% -20%, hsla(199, 100%, 50%, 0.12), transparent 70%),
+      radial-gradient(circle at 0% 100%, hsla(262, 100%, 60%, 0.05), transparent 50%),
+      radial-gradient(circle at 100% 100%, hsla(199, 100%, 50%, 0.03), transparent 40%);
     background-attachment: fixed;
   }
 }
@@ -53,7 +54,7 @@
 }
 
 .glow-blue {
-  box-shadow: 0 0 40px hsla(210, 100%, 45%, 0.15);
+  box-shadow: 0 0 40px hsla(199, 100%, 50%, 0.15);
 }
 
 .neural-grid {

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -50,7 +51,24 @@ export function Pricing() {
 
   return (
     <section id="pricing" className="py-12 lg:py-32 bg-background relative overflow-hidden">
-      <div className="container mx-auto px-6">
+      
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-cover opacity-10 lg:opacity-20"
+        >
+          <source src="https://assets.mixkit.co/videos/31413/31413-720.mp4" type="video/mp4" />
+        </video>
+        {/* Overlays for texture */}
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 neural-grid opacity-30" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-10 lg:mb-24">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
           <p className="text-sm lg:text-xl text-white/40 max-w-2xl mx-auto font-light">

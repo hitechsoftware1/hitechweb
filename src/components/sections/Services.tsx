@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -64,9 +63,9 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="py-24 lg:py-32 relative bg-background overflow-hidden">
+    <section id="services" className="pt-12 pb-24 lg:pt-16 lg:pb-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
-        <div className="max-w-3xl mb-12 lg:mb-24">
+        <div className="max-w-3xl mb-12 lg:mb-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -13,7 +12,7 @@ const stats = [
 
 export function Stats() {
   return (
-    <section className="pb-16 lg:pb-32 pt-0 lg:pt-0 relative bg-background">
+    <section className="pb-8 lg:pb-12 pt-0 lg:pt-0 relative bg-background">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((stat, idx) => (

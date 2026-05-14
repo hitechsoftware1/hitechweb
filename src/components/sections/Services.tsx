@@ -60,9 +60,6 @@ export function Services() {
             Designed for <br />
             Performance.
           </h2>
-          <p className="text-xl text-white/50 font-light leading-relaxed">
-            We minimize complexity to maximize impact. Every line of code is written with surgical precision.
-          </p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">

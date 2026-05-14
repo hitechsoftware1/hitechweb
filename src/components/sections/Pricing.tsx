@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
   CarouselContent,
@@ -49,7 +50,7 @@ export function Pricing() {
   }, [api]);
 
   return (
-    <section id="pricing" className="py-24 lg:py-32 bg-background relative">
+    <section id="pricing" className="py-24 lg:py-32 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 lg:mb-24">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
@@ -65,10 +66,16 @@ export function Pricing() {
           ))}
         </div>
 
-        {/* Mobile/Tablet Coverflow Carousel View */}
+        {/* Mobile Automatic 3D Floating Carousel */}
         <div className="lg:hidden">
           <Carousel 
             setApi={setApi}
+            plugins={[
+              Autoplay({
+                delay: 5000,
+                stopOnInteraction: false,
+              }),
+            ]}
             opts={{ 
               align: "center",
               loop: true,
@@ -82,11 +89,15 @@ export function Pricing() {
                     animate={{
                       scale: current === idx ? 1.05 : 0.9,
                       opacity: current === idx ? 1 : 0.5,
+                      y: current === idx ? [0, -12, 0] : 0,
                     }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    transition={{ 
+                      scale: { duration: 0.5 },
+                      y: { repeat: Infinity, duration: 7, ease: "easeInOut" }
+                    }}
                     className={cn(
-                      "transition-all h-full duration-500",
-                      current === idx && "drop-shadow-[0_0_20px_rgba(0,113,227,0.3)]"
+                      "transition-all h-full duration-700",
+                      current === idx && "drop-shadow-[0_20px_40px_rgba(0,113,227,0.3)]"
                     )}
                   >
                     <PricingCard tier={tier} isMobile />
@@ -96,7 +107,7 @@ export function Pricing() {
             </CarouselContent>
           </Carousel>
           
-          <div className="flex justify-center gap-2 mt-12">
+          <div className="flex justify-center gap-2 mt-16">
             {tiers.map((_, idx) => (
               <div 
                 key={idx} 

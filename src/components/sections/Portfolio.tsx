@@ -7,6 +7,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
   CarouselContent,
@@ -49,7 +50,7 @@ export function Portfolio() {
   }, [api]);
 
   return (
-    <section id="portfolio" className="py-24 lg:py-32 relative bg-background">
+    <section id="portfolio" className="py-24 lg:py-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="mb-12 lg:mb-24 text-center md:text-left">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
@@ -65,10 +66,16 @@ export function Portfolio() {
           ))}
         </div>
 
-        {/* Mobile Coverflow Carousel View */}
-        <div className="md:hidden">
+        {/* Mobile Automatic 3D Floating Carousel */}
+        <div className="md:hidden perspective-1000">
           <Carousel 
             setApi={setApi}
+            plugins={[
+              Autoplay({
+                delay: 4000,
+                stopOnInteraction: false,
+              }),
+            ]}
             opts={{ 
               align: "center", 
               loop: true,
@@ -77,16 +84,20 @@ export function Portfolio() {
           >
             <CarouselContent className="-ml-4">
               {projects.map((project, idx) => (
-                <CarouselItem key={idx} className="pl-4 basis-[75%] sm:basis-[60%]">
+                <CarouselItem key={idx} className="pl-4 basis-[80%] sm:basis-[60%]">
                   <motion.div
                     animate={{
                       scale: current === idx ? 1.05 : 0.85,
                       opacity: current === idx ? 1 : 0.4,
+                      y: current === idx ? [0, -15, 0] : 0,
                     }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    transition={{ 
+                      scale: { duration: 0.5 },
+                      y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
+                    }}
                     className={cn(
-                      "transition-all duration-500",
-                      current === idx && "drop-shadow-[0_0_15px_rgba(0,113,227,0.4)]"
+                      "transition-all duration-700",
+                      current === idx && "drop-shadow-[0_20px_50px_rgba(0,113,227,0.4)]"
                     )}
                   >
                     <ProjectCard project={project} isMobile />
@@ -97,7 +108,7 @@ export function Portfolio() {
           </Carousel>
           
           {/* Progress Indicators */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center gap-2 mt-12">
             {projects.map((_, idx) => (
               <div 
                 key={idx} 

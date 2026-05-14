@@ -95,8 +95,8 @@ export function Navbar() {
           <Button variant="ghost" className="text-xs font-medium text-foreground/60 hover:text-foreground">
             Support
           </Button>
-          <Button className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all">
-            Get Started
+          <Button asChild className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all cursor-pointer">
+            <Link href="#contact">Get Started</Link>
           </Button>
         </div>
 
@@ -138,7 +138,9 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-4 lg:pt-6 border-t border-black/5 dark:border-white/5 flex flex-col gap-3">
-              <Button className="w-full h-11 lg:h-12 rounded-xl lg:rounded-2xl bg-foreground text-background font-bold text-sm">Get Started</Button>
+              <Button asChild className="w-full h-11 lg:h-12 rounded-xl lg:rounded-2xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link href="#contact">Get Started</Link>
+              </Button>
             </div>
           </motion.div>
         )}

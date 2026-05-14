@@ -5,6 +5,7 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
@@ -171,15 +172,17 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
         ))}
       </div>
 
-      <Button 
+      <Button asChild
         variant={tier.popular ? 'default' : 'outline'} 
         className={cn(
-          "w-full rounded-full font-bold",
+          "w-full rounded-full font-bold cursor-pointer",
           isMobile ? "h-11 text-xs" : "h-9 lg:h-12 text-[9px] lg:text-sm",
           tier.popular ? 'bg-primary text-primary-foreground hover:opacity-90' : 'border-foreground/10 hover:bg-foreground/5 text-foreground'
         )}
       >
-        {tier.price === "Custom" ? "Consult Sales" : "Begin Project"}
+        <Link href="#contact">
+          {tier.price === "Custom" ? "Consult Sales" : "Begin Project"}
+        </Link>
       </Button>
     </div>
   );

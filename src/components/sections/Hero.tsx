@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Globe } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TypingText } from '@/components/ui/typing-text';
 
@@ -63,14 +64,16 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full mt-2 lg:mt-4">
-              <Button size="sm" className="lg:h-14 lg:px-10 rounded-full h-8 px-4 text-[8px] lg:text-sm bg-foreground text-background font-bold hover:opacity-90 transition-all shadow-xl">
-                Launch Experience
+              <Button asChild size="sm" className="lg:h-14 lg:px-10 rounded-full h-8 px-4 text-[8px] lg:text-sm bg-foreground text-background font-bold hover:opacity-90 transition-all shadow-xl cursor-pointer">
+                <Link href="#contact">Launch Experience</Link>
               </Button>
-              <Button size="sm" variant="ghost" className="flex rounded-full h-8 px-4 lg:h-14 lg:px-10 text-[8px] lg:text-sm text-foreground hover:bg-foreground/5 transition-all items-center gap-2">
-                <div className="w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-foreground/10 flex items-center justify-center">
-                  <Play className="w-1.5 h-1.5 lg:w-3 lg:h-3 fill-current ml-0.5" />
-                </div>
-                View System Showcase
+              <Button asChild size="sm" variant="ghost" className="flex rounded-full h-8 px-4 lg:h-14 lg:px-10 text-[8px] lg:text-sm text-foreground hover:bg-foreground/5 transition-all items-center gap-2 cursor-pointer">
+                <Link href="#portfolio" className="flex items-center gap-2">
+                  <div className="w-5 h-5 lg:w-8 lg:h-8 rounded-full bg-foreground/10 flex items-center justify-center">
+                    <Play className="w-1.5 h-1.5 lg:w-3 lg:h-3 fill-current ml-0.5" />
+                  </div>
+                  View System Showcase
+                </Link>
               </Button>
             </div>
           </motion.div>

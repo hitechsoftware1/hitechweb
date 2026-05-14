@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -12,7 +13,7 @@ const stats = [
 
 export function Stats() {
   return (
-    <section className="py-16 lg:py-24 relative bg-background">
+    <section className="pb-16 lg:pb-32 pt-0 lg:pt-0 relative bg-background">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((stat, idx) => (
@@ -23,10 +24,10 @@ export function Stats() {
               transition={{ delay: idx * 0.1 }}
               className="flex flex-col items-center text-center group"
             >
-              <h3 className={`text-3xl lg:text-7xl font-bold font-headline mb-2 lg:mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
+              <h3 className={`text-4xl lg:text-8xl font-bold font-headline mb-2 lg:mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
                 {stat.value}
               </h3>
-              <p className="text-white/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.4em]">
+              <p className="text-white/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.5em]">
                 {stat.label}
               </p>
             </motion.div>

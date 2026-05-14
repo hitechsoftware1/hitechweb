@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 
 const stats = [
   { label: 'Enterprises', value: '150+', color: 'text-primary' },
-  { label: 'System Uptime', value: '99.99%', color: 'text-white' },
-  { label: 'Security Audits', value: '500+', color: 'text-white' },
-  { label: 'Launches', value: '1.2k', color: 'text-white' },
+  { label: 'System Uptime', value: '99.99%', color: 'text-foreground' },
+  { label: 'Security Audits', value: '500+', color: 'text-foreground' },
+  { label: 'Launches', value: '1.2k', color: 'text-foreground' },
 ];
 
 export function Stats() {
@@ -26,7 +26,7 @@ export function Stats() {
               <h3 className={`text-4xl lg:text-8xl font-bold font-headline mb-2 lg:mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
                 {stat.value}
               </h3>
-              <p className="text-white/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.5em]">
+              <p className="text-foreground/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.5em]">
                 {stat.label}
               </p>
             </motion.div>

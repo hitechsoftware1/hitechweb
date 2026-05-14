@@ -4,26 +4,48 @@
 
 @layer base {
   :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 199 100% 50%; /* Logo Blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 262 100% 60%; /* Logo Purple */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 32% 91%;
+    --input: 214.3 32% 91%;
+    --ring: 199 100% 50%;
+    --radius: 1.5rem;
+  }
+
+  .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 6%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 199 100% 50%; /* Vibrant Logo Blue */
+    --primary: 199 100% 50%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 4% 16%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 262 100% 60%; /* Logo Purple */
+    --accent: 262 100% 60%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 4% 16%;
     --input: 240 4% 16%;
     --ring: 199 100% 50%;
-    --radius: 1.5rem;
   }
 }
 
@@ -32,34 +54,50 @@
     @apply border-border outline-none;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply bg-background text-foreground font-body antialiased transition-colors duration-500;
+    background-image: 
+      radial-gradient(circle at 50% -20%, hsla(199, 100%, 50%, 0.1), transparent 70%),
+      radial-gradient(circle at 0% 100%, hsla(262, 100%, 60%, 0.03), transparent 50%);
+    background-attachment: fixed;
+  }
+  
+  .dark body {
     background-image: 
       radial-gradient(circle at 50% -20%, hsla(199, 100%, 50%, 0.12), transparent 70%),
       radial-gradient(circle at 0% 100%, hsla(262, 100%, 60%, 0.05), transparent 50%),
       radial-gradient(circle at 100% 100%, hsla(199, 100%, 50%, 0.03), transparent 40%);
-    background-attachment: fixed;
   }
 }
 
 .apple-glass {
-  @apply bg-white/[0.03] backdrop-blur-[32px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+  @apply backdrop-blur-[32px] border transition-all duration-500;
+  @apply bg-white/60 border-black/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
+  @apply dark:bg-black/40 dark:border-white/[0.08] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
 }
 
 .apple-card {
-  @apply relative overflow-hidden bg-[#1C1C1E]/40 backdrop-blur-xl border border-white/[0.05] rounded-[2.5rem] transition-all duration-700 hover:bg-[#1C1C1E]/60 hover:border-white/10;
+  @apply relative overflow-hidden backdrop-blur-xl border transition-all duration-700;
+  @apply bg-white/40 border-black/[0.05] shadow-sm;
+  @apply dark:bg-[#1C1C1E]/40 dark:border-white/[0.05] dark:shadow-none;
+  @apply hover:bg-white/60 dark:hover:bg-[#1C1C1E]/60;
 }
 
 .text-gradient-apple {
-  @apply bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent;
+  @apply bg-clip-text text-transparent bg-gradient-to-b;
+  @apply from-slate-900 to-slate-500 dark:from-white dark:to-white/60;
 }
 
 .glow-blue {
-  box-shadow: 0 0 40px hsla(199, 100%, 50%, 0.15);
+  box-shadow: 0 0 40px hsla(199, 100%, 50%, 0.1);
 }
 
 .neural-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0);
   background-size: 60px 60px;
+}
+
+.dark .neural-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
 }
 
 ::-webkit-scrollbar {
@@ -71,7 +109,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+  @apply bg-slate-300 dark:bg-white/10 rounded-full hover:bg-slate-400 dark:hover:bg-white/20 transition-colors;
 }
 
 @keyframes float {

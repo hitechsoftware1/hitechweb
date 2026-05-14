@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -34,7 +33,7 @@ export function AIConsultant() {
   ];
 
   return (
-    <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden min-h-[600px] lg:min-h-[900px] flex items-center">
+    <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden min-h-[600px] lg:min-h-[900px] flex items-center bg-background">
       
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
@@ -43,7 +42,7 @@ export function AIConsultant() {
           muted 
           loop 
           playsInline 
-          className="w-full h-full object-cover opacity-30 lg:opacity-50"
+          className="w-full h-full object-cover opacity-20 dark:opacity-50"
         >
           <source src="https://assets.mixkit.co/videos/4192/4192-720.mp4" type="video/mp4" />
         </video>
@@ -95,17 +94,17 @@ export function AIConsultant() {
               className="apple-card p-3 lg:p-8 border-primary/20 glow-blue relative z-30 ml-0 lg:-ml-8"
             >
               <div className="flex items-center gap-2 lg:gap-4 mb-2 lg:mb-6">
-                <div className="w-8 h-8 lg:w-16 lg:h-16 rounded-full bg-white flex items-center justify-center overflow-hidden border border-primary/50 p-0.5 lg:p-1">
-                   <div className="w-full h-full rounded-full bg-slate-200 flex items-center justify-center text-background">
+                <div className="w-8 h-8 lg:w-16 lg:h-16 rounded-full bg-background flex items-center justify-center overflow-hidden border border-primary/50 p-0.5 lg:p-1">
+                   <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-foreground">
                      <User className="w-4 h-4 lg:w-8 lg:h-8" />
                    </div>
                 </div>
                 <div>
-                  <h4 className="font-headline font-bold text-white text-[10px] lg:text-xl">JoelHitech</h4>
+                  <h4 className="font-headline font-bold text-foreground text-[10px] lg:text-xl">JoelHitech</h4>
                   <p className="text-[5px] lg:text-[10px] font-bold text-primary uppercase tracking-widest">Founder & CEO</p>
                 </div>
               </div>
-              <p className="text-white/70 font-light leading-relaxed italic text-[7px] lg:text-sm line-clamp-3 lg:line-clamp-none">
+              <p className="text-foreground/70 font-light leading-relaxed italic text-[7px] lg:text-sm line-clamp-3 lg:line-clamp-none">
                 "We don't just write code; we architect the digital soul of tomorrow."
               </p>
             </motion.div>
@@ -123,8 +122,8 @@ export function AIConsultant() {
               className="apple-glass p-2 lg:p-6 rounded-xl lg:rounded-[2.5rem] absolute top-4 -right-2 lg:-right-12 w-24 lg:w-48 z-40"
             >
               <Rocket className="w-4 h-4 lg:w-8 lg:h-8 text-primary mb-1 lg:mb-4" />
-              <p className="text-[5px] lg:text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5 lg:mb-2">Momentum</p>
-              <p className="text-[6px] lg:text-xs font-medium text-white/80">Rapid Scale</p>
+              <p className="text-[5px] lg:text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/40 mb-0.5 lg:mb-2">Momentum</p>
+              <p className="text-[6px] lg:text-xs font-medium text-foreground/80">Rapid Scale</p>
             </motion.div>
 
             {/* Core Card */}
@@ -132,12 +131,12 @@ export function AIConsultant() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
-              className="apple-glass p-2 lg:p-6 rounded-xl lg:rounded-[2rem] flex items-center gap-2 lg:gap-4 border-white/5 bg-white/[0.02] backdrop-blur-md"
+              className="apple-glass p-2 lg:p-6 rounded-xl lg:rounded-[2rem] flex items-center gap-2 lg:gap-4 border-foreground/5 bg-foreground/[0.02]"
             >
               <ShieldCheck className="w-4 h-4 lg:w-10 lg:h-10 text-primary shrink-0" />
               <div>
-                <p className="text-[5px] lg:text-[9px] font-bold uppercase tracking-[0.3em] text-white/30 mb-0.5">Security</p>
-                <p className="text-[6px] lg:text-sm font-light text-white/60">Zero-Trust Core.</p>
+                <p className="text-[5px] lg:text-[9px] font-bold uppercase tracking-[0.3em] text-foreground/30 mb-0.5">Security</p>
+                <p className="text-[6px] lg:text-sm font-light text-foreground/60">Zero-Trust Core.</p>
               </div>
             </motion.div>
 
@@ -157,7 +156,7 @@ export function AIConsultant() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-[8px] lg:text-xl text-white/50 font-light max-w-2xl leading-relaxed"
+                className="text-[8px] lg:text-xl text-foreground/50 font-light max-w-2xl leading-relaxed"
               >
                 Define your vision. Our neural engine will architect your transformation.
               </motion.p>
@@ -166,31 +165,31 @@ export function AIConsultant() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="apple-card p-4 lg:p-12 overflow-hidden bg-[#1C1C1E]/60 backdrop-blur-3xl border-primary/10 shadow-[0_10px_40px_rgba(0,113,227,0.1)]"
+              className="apple-card p-4 lg:p-12 overflow-hidden bg-card/60 border-primary/10 shadow-2xl"
             >
               <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-8">
                 <div className="w-5 h-5 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <Cpu className="w-2.5 h-2.5 lg:w-5 lg:h-5 text-primary" />
                 </div>
-                <span className="text-[6px] lg:text-xs font-bold tracking-widest text-white/40 uppercase">System Active</span>
+                <span className="text-[6px] lg:text-xs font-bold tracking-widest text-foreground/40 uppercase">System Active</span>
               </div>
 
               <Textarea 
                 placeholder="Business goals..."
-                className="bg-transparent border-none text-[10px] lg:text-2xl font-light focus-visible:ring-0 placeholder:text-white/10 min-h-[60px] lg:min-h-[140px] resize-none p-0 mb-4 lg:mb-8 text-white"
+                className="bg-transparent border-none text-[10px] lg:text-2xl font-light focus-visible:ring-0 placeholder:text-foreground/10 min-h-[60px] lg:min-h-[140px] resize-none p-0 mb-4 lg:mb-8 text-foreground"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
 
-              <div className="flex flex-col sm:flex-row justify-between items-center pt-4 lg:pt-8 border-t border-white/5 gap-2 lg:gap-0">
+              <div className="flex flex-col sm:flex-row justify-between items-center pt-4 lg:pt-8 border-t border-foreground/5 gap-2 lg:gap-0">
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[6px] lg:text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Ready</span>
+                  <span className="text-[6px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em]">Ready</span>
                 </div>
                 <Button 
                   onClick={handleConsult} 
                   disabled={loading || !input}
-                  className="w-full sm:w-auto rounded-full px-4 lg:px-10 h-8 lg:h-14 bg-white text-background font-bold hover:scale-105 transition-all flex items-center justify-center gap-1.5 lg:gap-3 group text-[8px] lg:text-sm"
+                  className="w-full sm:w-auto rounded-full px-4 lg:px-10 h-8 lg:h-14 bg-foreground text-background font-bold hover:scale-105 transition-all flex items-center justify-center gap-1.5 lg:gap-3 group text-[8px] lg:text-sm"
                 >
                   {loading ? (
                     <>
@@ -218,7 +217,7 @@ export function AIConsultant() {
                     <h3 className="text-[6px] lg:text-xs font-bold text-primary uppercase tracking-widest mb-2 lg:mb-6">Proposed</h3>
                     <div className="space-y-1 lg:space-y-4">
                       {result.recommendedServices.slice(0, 3).map((service, i) => (
-                        <div key={i} className="flex items-center gap-1.5 lg:gap-3 text-[8px] lg:text-lg text-white/80 font-medium">
+                        <div key={i} className="flex items-center gap-1.5 lg:gap-3 text-[8px] lg:text-lg text-foreground/80 font-medium">
                           <Check className="w-2 h-2 lg:w-5 lg:h-5 text-primary shrink-0" />
                           <span className="truncate">{service}</span>
                         </div>
@@ -226,9 +225,9 @@ export function AIConsultant() {
                     </div>
                   </div>
 
-                  <div className="apple-card p-3 lg:p-8 bg-white/[0.02] border-white/5 hidden lg:block">
-                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6">Strategy</h3>
-                    <p className="text-sm lg:text-lg text-white/70 font-light leading-relaxed">
+                  <div className="apple-card p-3 lg:p-8 bg-foreground/[0.02] border-foreground/5 hidden lg:block">
+                    <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-widest mb-6">Strategy</h3>
+                    <p className="text-sm lg:text-lg text-foreground/70 font-light leading-relaxed">
                       {result.justification}
                     </p>
                   </div>

@@ -37,9 +37,9 @@ export function Portfolio() {
   return (
     <section id="portfolio" className="py-24 lg:py-32 relative bg-background">
       <div className="container mx-auto px-6">
-        <div className="mb-16 lg:mb-24">
+        <div className="mb-12 lg:mb-24">
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
-          <p className="text-base lg:text-xl text-white/40 max-w-2xl font-light">
+          <p className="text-sm lg:text-xl text-white/40 max-w-2xl font-light">
             Exceptional solutions delivered for industry-leading organizations.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function Portfolio() {
           <Carousel opts={{ align: "start", dragFree: true }} className="w-full px-6">
             <CarouselContent className="-ml-4">
               {projects.map((project, idx) => (
-                <CarouselItem key={idx} className="pl-4 basis-[90%]">
+                <CarouselItem key={idx} className="pl-4 basis-[85%]">
                   <ProjectCard project={project} />
                 </CarouselItem>
               ))}
@@ -86,15 +86,15 @@ function ProjectCard({ project }: { project: any }) {
         <div className="absolute inset-0 bg-background/20 group-hover:bg-background/0 transition-all" />
       </div>
 
-      <div className="p-6 lg:p-10 flex-grow flex flex-col justify-between">
+      <div className="p-4 lg:p-10 flex-grow flex flex-col justify-between">
         <div>
-          <div className="flex justify-between items-center mb-4 lg:mb-6">
-            <Badge variant="outline" className="text-[8px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
-            <span className="text-[8px] lg:text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
+          <div className="flex justify-between items-center mb-3 lg:mb-6">
+            <Badge variant="outline" className="text-[7px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
+            <span className="text-[7px] lg:text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
           </div>
-          <h3 className="text-xl lg:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
+          <h3 className="text-lg lg:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
         </div>
-        <div className="flex items-center gap-2 text-white/40 text-xs lg:text-sm font-light mt-4 lg:mt-6">
+        <div className="flex items-center gap-2 text-white/40 text-[10px] lg:text-sm font-light mt-4 lg:mt-6">
           View Case Study <ArrowUpRight className="w-4 h-4" />
         </div>
       </div>

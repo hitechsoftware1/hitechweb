@@ -1,45 +1,64 @@
+
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Cloud, Brain, Smartphone, Shield, Zap } from 'lucide-react';
+import { Cpu, Cloud, Brain, Smartphone, Shield, Zap, Globe, CreditCard, Layout } from 'lucide-react';
 
 const services = [
   {
-    title: "Cloud Infrastructure",
-    description: "Elastic, high-availability architecture designed for global scale.",
-    icon: Cloud,
-    tag: "Scale"
-  },
-  {
-    title: "Intelligence & AI",
-    description: "Neural workflows that automate complex enterprise logic.",
-    icon: Brain,
-    tag: "Automate"
-  },
-  {
-    title: "Modern Platforms",
-    description: "Sub-second performance for high-traffic web ecosystems.",
+    title: "Enterprise Software",
+    description: "Custom ERP, CRM, and automation systems engineered for operational excellence.",
     icon: Cpu,
-    tag: "Speed"
+    tag: "Core Systems"
   },
   {
-    title: "Security Core",
-    description: "Zero-trust protocols to protect critical digital assets.",
-    icon: Shield,
-    tag: "Protected"
+    title: "Digital Platforms",
+    description: "Premium business, e-commerce, and portfolio ecosystems with global reach.",
+    icon: Globe,
+    tag: "Presence"
   },
   {
-    title: "Mobile Experiences",
-    description: "Refined native performance for the palm of your hand.",
+    title: "Mobile Mobility",
+    description: "Native iOS and Android experiences refined for the palm of your hand.",
     icon: Smartphone,
     tag: "Refined"
   },
   {
+    title: "Artificial Intelligence",
+    description: "Neural chatbots and predictive analytics that automate complex enterprise logic.",
+    icon: Brain,
+    tag: "Intelligence"
+  },
+  {
+    title: "Cloud Infrastructure",
+    description: "Elastic, high-availability architecture and VPS management for global scale.",
+    icon: Cloud,
+    tag: "Scale"
+  },
+  {
+    title: "Cybersecurity Core",
+    description: "Zero-trust protocols and secure authentication to protect critical assets.",
+    icon: Shield,
+    tag: "Protected"
+  },
+  {
+    title: "Financial Systems",
+    description: "Seamless Mobile Money, PayPal, and Stripe integrations for global commerce.",
+    icon: CreditCard,
+    tag: "Commerce"
+  },
+  {
+    title: "Experience Design",
+    description: "Modern UI/UX and brand identity systems built for the next generation.",
+    icon: Layout,
+    tag: "Aesthetic"
+  },
+  {
     title: "Strategic R&D",
-    description: "Future-proofing your technology stack for what's next.",
+    description: "Future-proofing stacks with IoT, Blockchain, and real-time API systems.",
     icon: Zap,
-    tag: "Vision"
+    tag: "Innovation"
   }
 ];
 

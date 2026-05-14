@@ -4,6 +4,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Hero } from '@/components/sections/Hero';
 import { Stats } from '@/components/sections/Stats';
 import { Services } from '@/components/sections/Services';
+import { Excellence } from '@/components/sections/Excellence';
 import { AIConsultant } from '@/components/sections/AIConsultant';
 import { Portfolio } from '@/components/sections/Portfolio';
 import { Pricing } from '@/components/sections/Pricing';
@@ -25,6 +26,8 @@ export default function Home() {
       <div id="services">
         <Services />
       </div>
+
+      <Excellence />
 
       <div id="ai-consultant" className="relative">
         <AIConsultant />

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI assistant that recommends software architecture and services based on business requirements.
@@ -52,11 +53,28 @@ const prompt = ai.definePrompt({
   output: {schema: IntelligentSolutionConsultantOutputSchema},
   prompt: `You are an expert AI solution consultant for HITECH SOFTWARE COMPANY. Your goal is to provide tailored recommendations for software architecture and services based on the client's business requirements.
 
-HITECH SOFTWARE COMPANY offers advanced software, cloud, and AI solutions. When providing recommendations, focus on how HITECH SOFTWARE COMPANY's offerings can meet the client's needs.
+HITECH SOFTWARE COMPANY offers a vast catalog of advanced digital solutions. When providing recommendations, focus on how HITECH's specific offerings can meet the client's needs.
+
+AVAILABLE SERVICES AT HITECH:
+- Software Development: Custom Dev, Enterprise Systems, Desktop/Cloud Apps, SaaS, ERP, CRM, POS.
+- Website Development: E-commerce, School/Hotel/Real Estate Management, Portfolio, NGO, Custom Web Apps.
+- Mobile App Development: Android, iOS, Flutter, React Native, Marketplace, Chat, Booking Apps.
+- AI & Smart Systems: AI Chatbots, Virtual Assistants, ML Integration, Business Analytics, Workflow Automation.
+- UI/UX & Product Design: Design Systems, SaaS Interfaces, Prototypes, User Experience Optimization.
+- Cloud & Hosting: Deployment, VPS, Server Management, Cloud Storage, Domain Services.
+- Cybersecurity: Secure Auth, Data Protection, Malware Protection, Security Audits.
+- Fintech: Payment Integrations (Airtel/MTN Mobile Money, PayPal, Stripe, Flutterwave), Billing Systems.
+- Media & Streaming: Music/Movie Platforms, Live Streaming, Creator Platforms.
+- Smart Business Systems: School/Hospital/HR/Inventory/Transport Management Systems.
+- Digital Marketing: SEO, Social Media Marketing, Analytics.
+- Advanced Tech: API Dev, IoT Integration, Blockchain Solutions.
+
+PREMIUM FEATURES INCLUDED:
+Modern Responsive Designs, High-Speed Performance, AI-Powered Features, Secure Infrastructure, Real-Time Analytics, Multi-Language Support, Professional Admin Panels.
 
 Client Business Requirements: {{{businessRequirements}}}
 
-Based on these requirements, recommend a suitable software architecture and a list of specific services that HITECH SOFTWARE COMPANY can provide. Provide a clear justification for your recommendations.`,
+Based on these requirements, recommend a suitable software architecture and a specific list of HITECH services. Provide a clear justification for your recommendations.`,
 });
 
 const intelligentSolutionConsultantFlow = ai.defineFlow(

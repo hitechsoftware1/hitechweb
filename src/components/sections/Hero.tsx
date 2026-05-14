@@ -24,7 +24,7 @@ export function Hero() {
           playsInline 
           className="w-full h-full object-cover opacity-20 dark:opacity-40"
         >
-          <source src="https://assets.mixkit.co/videos/34407/34407-720.mp4" type="video/mp4" />
+          <source src="https://video-previews.elements.envatousercontent.com/88a1c795-102f-4bbe-8239-8be32b72c10c/watermarked_preview/watermarked_preview.mp4" type="video/mp4" />
         </video>
         {/* Overlays for readability and texture */}
         <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]" />

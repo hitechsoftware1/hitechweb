@@ -20,19 +20,19 @@ export function Hero() {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="flex flex-col items-center gap-8"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-start gap-8"
           >
             <Badge variant="outline" className="bg-white/5 border-white/10 text-white/70 py-1.5 px-4 rounded-full flex items-center gap-2 mb-4 hover:border-white/20 transition-all cursor-default">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-[10px] font-bold tracking-widest uppercase">System Core Update v4.0</span>
             </Badge>
             
-            <h1 className="font-headline text-5xl lg:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gradient-apple">
+            <h1 className="font-headline text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-gradient-apple">
               Engineering the <br />
               <TypingText 
                 texts={["Visionary", "Extraordinary", "Intelligent", "Sublime"]} 
@@ -41,11 +41,11 @@ export function Hero() {
               Digital Ecosystem.
             </h1>
             
-            <p className="text-xl lg:text-2xl text-white/50 max-w-2xl leading-relaxed font-light mt-4">
-              HITECH builds the architectural foundations for world-class digital experiences. Precision code for global innovators.
+            <p className="text-xl text-white/50 max-w-xl leading-relaxed font-light">
+              HITECH builds the architectural foundations for world-class digital experiences. Precision code for global innovators and future-defining enterprises.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Button size="lg" className="rounded-full px-10 h-14 text-sm bg-white text-background font-bold hover:bg-white/90 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                 Launch Experience
               </Button>
@@ -59,13 +59,13 @@ export function Hero() {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-24 relative"
+            initial={{ opacity: 0, scale: 0.9, x: 40 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative"
           >
             <div className="apple-card p-2 group">
-              <div className="aspect-video relative rounded-[2rem] overflow-hidden">
+              <div className="aspect-[4/3] relative rounded-[2rem] overflow-hidden">
                 <Image 
                   src={heroImage?.imageUrl || "https://picsum.photos/seed/apple-tech/1200/800"} 
                   alt="Minimal Interface"
@@ -77,12 +77,25 @@ export function Hero() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                 
                 {/* Floating Widgets */}
-                <div className="absolute top-6 right-6 apple-glass p-4 rounded-2xl flex items-center gap-3">
+                <div className="absolute top-6 right-6 apple-glass p-4 rounded-2xl flex items-center gap-3 animate-float">
                   <Globe className="w-4 h-4 text-primary" />
                   <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Global Ops: Online</span>
                 </div>
+
+                <div className="absolute bottom-6 left-6 apple-glass p-4 rounded-2xl flex flex-col gap-1 backdrop-blur-3xl">
+                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em]">Compute Power</span>
+                  <div className="flex items-end gap-1">
+                    <div className="w-1 h-3 bg-primary/40 rounded-full" />
+                    <div className="w-1 h-5 bg-primary/60 rounded-full" />
+                    <div className="w-1 h-8 bg-primary rounded-full" />
+                    <div className="w-1 h-4 bg-primary/50 rounded-full" />
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Background Decorative Glow */}
+            <div className="absolute -z-10 -inset-4 bg-primary/20 blur-[100px] rounded-full opacity-30 animate-pulse" />
           </motion.div>
         </div>
       </div>

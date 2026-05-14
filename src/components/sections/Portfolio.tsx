@@ -6,6 +6,11 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 const projects = [
   {
@@ -39,39 +44,60 @@ export function Portfolio() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Desktop Grid View */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="apple-card group overflow-hidden"
-            >
-              <div className="aspect-[16/10] relative overflow-hidden">
-                <Image 
-                  src={project.image || ""} 
-                  alt={project.title}
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-background/20 group-hover:bg-background/0 transition-all" />
-              </div>
-
-              <div className="p-10">
-                <div className="flex justify-between items-center mb-6">
-                  <Badge variant="outline" className="text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
-                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
-                </div>
-                <h3 className="text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
-                <div className="flex items-center gap-2 text-white/40 text-sm font-light">
-                  View Case Study <ArrowUpRight className="w-4 h-4" />
-                </div>
-              </div>
-            </motion.div>
+            <ProjectCard key={idx} project={project} />
           ))}
+        </div>
+
+        {/* Mobile Carousel View to keep items side-by-side context */}
+        <div className="md:hidden -mx-6">
+          <Carousel opts={{ align: "start", dragFree: true }} className="w-full px-6">
+            <CarouselContent className="-ml-4">
+              {projects.map((project, idx) => (
+                <CarouselItem key={idx} className="pl-4 basis-[85%]">
+                  <ProjectCard project={project} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProjectCard({ project }: { project: any }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
+      className="apple-card group overflow-hidden h-full flex flex-col"
+    >
+      <div className="aspect-[16/10] relative overflow-hidden">
+        <Image 
+          src={project.image || ""} 
+          alt={project.title}
+          fill
+          className="object-cover transition-transform duration-1000 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-background/20 group-hover:bg-background/0 transition-all" />
+      </div>
+
+      <div className="p-10 flex-grow flex flex-col justify-between">
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <Badge variant="outline" className="text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
+            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
+          </div>
+          <h3 className="text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
+        </div>
+        <div className="flex items-center gap-2 text-white/40 text-sm font-light mt-6">
+          View Case Study <ArrowUpRight className="w-4 h-4" />
+        </div>
+      </div>
+    </motion.div>
   );
 }

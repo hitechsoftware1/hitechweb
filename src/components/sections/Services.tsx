@@ -65,7 +65,7 @@ export function Services() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {services.map((service, idx) => (
             <motion.div
               key={idx}
@@ -73,16 +73,16 @@ export function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, duration: 0.8 }}
               viewport={{ once: true }}
-              className="apple-card p-10 group"
+              className="apple-card p-6 md:p-10 group"
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 transition-all duration-500 group-hover:bg-white group-hover:text-background">
-                <service.icon className="w-6 h-6" />
+              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center mb-6 md:mb-8 transition-all duration-500 group-hover:bg-white group-hover:text-background">
+                <service.icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <div className="mb-4">
-                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{service.tag}</span>
+              <div className="mb-2 md:mb-4">
+                <span className="text-[8px] md:text-[10px] font-bold text-primary uppercase tracking-widest">{service.tag}</span>
               </div>
-              <h3 className="text-2xl font-headline font-bold text-white mb-4">{service.title}</h3>
-              <p className="text-white/40 leading-relaxed font-light">
+              <h3 className="text-lg md:text-2xl font-headline font-bold text-white mb-2 md:mb-4 leading-tight">{service.title}</h3>
+              <p className="text-[10px] md:text-sm text-white/40 leading-relaxed font-light line-clamp-3 md:line-clamp-none">
                 {service.description}
               </p>
             </motion.div>

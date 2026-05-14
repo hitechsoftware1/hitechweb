@@ -56,7 +56,7 @@ export function Portfolio() {
           <Carousel opts={{ align: "start", dragFree: true }} className="w-full px-6">
             <CarouselContent className="-ml-4">
               {projects.map((project, idx) => (
-                <CarouselItem key={idx} className="pl-4 basis-[85%]">
+                <CarouselItem key={idx} className="pl-4 basis-[80%]">
                   <ProjectCard project={project} />
                 </CarouselItem>
               ))}
@@ -92,10 +92,10 @@ function ProjectCard({ project }: { project: any }) {
             <Badge variant="outline" className="text-[7px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
             <span className="text-[7px] lg:text-[10px] font-bold text-white/30 uppercase tracking-widest">{project.metrics}</span>
           </div>
-          <h3 className="text-lg lg:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
+          <h3 className="text-base lg:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
         </div>
-        <div className="flex items-center gap-2 text-white/40 text-[10px] lg:text-sm font-light mt-4 lg:mt-6">
-          View Case Study <ArrowUpRight className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-white/40 text-[9px] lg:text-sm font-light mt-4 lg:mt-6">
+          View Case Study <ArrowUpRight className="w-3 h-3 lg:w-4 lg:h-4" />
         </div>
       </div>
     </motion.div>

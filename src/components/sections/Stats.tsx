@@ -4,17 +4,17 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const stats = [
-  { label: 'Global Enterprises', value: '150+', color: 'text-primary' },
+  { label: 'Enterprises', value: '150+', color: 'text-primary' },
   { label: 'System Uptime', value: '99.99%', color: 'text-white' },
   { label: 'Security Audits', value: '500+', color: 'text-white' },
-  { label: 'Successful Launches', value: '1.2k', color: 'text-white' },
+  { label: 'Launches', value: '1.2k', color: 'text-white' },
 ];
 
 export function Stats() {
   return (
-    <section className="py-24 relative bg-background">
+    <section className="py-16 lg:py-24 relative bg-background">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((stat, idx) => (
             <motion.div 
               key={idx}
@@ -23,10 +23,10 @@ export function Stats() {
               transition={{ delay: idx * 0.1 }}
               className="flex flex-col items-center text-center group"
             >
-              <h3 className={`text-5xl lg:text-7xl font-bold font-headline mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
+              <h3 className={`text-3xl lg:text-7xl font-bold font-headline mb-2 lg:mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
                 {stat.value}
               </h3>
-              <p className="text-white/30 font-bold uppercase text-[10px] tracking-[0.4em]">
+              <p className="text-white/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.4em]">
                 {stat.label}
               </p>
             </motion.div>

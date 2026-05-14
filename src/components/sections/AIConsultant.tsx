@@ -45,7 +45,7 @@ export function AIConsultant() {
           playsInline 
           className="w-full h-full object-cover opacity-30 lg:opacity-50"
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-network-loops-4433-preview.mp4" type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/4192/4192-720.mp4" type="video/mp4" />
         </video>
         {/* Overlays for readability and texture */}
         <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />

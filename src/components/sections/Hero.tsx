@@ -15,8 +15,25 @@ export function Hero() {
 
   return (
     <section className="relative flex items-center pt-16 lg:pt-24 pb-2 lg:pb-4 overflow-hidden bg-background">
+      
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-cover opacity-20 lg:opacity-40"
+        >
+          <source src="https://assets.mixkit.co/videos/34407/34407-720.mp4" type="video/mp4" />
+        </video>
+        {/* Overlays for readability and texture */}
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 neural-grid opacity-20" />
+      </div>
+
       {/* Background Lighting */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-primary/5 blur-[120px] rounded-full opacity-50" />
       </div>
 

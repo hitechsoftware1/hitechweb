@@ -1,38 +1,32 @@
-
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Globe, Award, Code2 } from 'lucide-react';
 
 const stats = [
-  { label: 'Global Enterprises', value: '150+', icon: Globe, color: 'text-primary' },
-  { label: 'Success Velocity', value: '99.9%', icon: Award, color: 'text-secondary' },
-  { label: 'Cloud Architects', value: '250+', icon: Users, color: 'text-cyan-400' },
-  { label: 'Lines of Innovation', value: '25M+', icon: Code2, color: 'text-green-400' },
+  { label: 'Global Enterprises', value: '150+', color: 'text-primary' },
+  { label: 'System Uptime', value: '99.99%', color: 'text-white' },
+  { label: 'Security Audits', value: '500+', color: 'text-white' },
+  { label: 'Successful Launches', value: '1.2k', color: 'text-white' },
 ];
 
 export function Stats() {
   return (
-    <section className="py-20 relative overflow-hidden bg-background">
+    <section className="py-24 relative bg-background">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
           {stats.map((stat, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="flex flex-col items-center text-center p-10 glass-card group"
+              className="flex flex-col items-center text-center group"
             >
-              <div className={`p-5 rounded-2xl bg-white/5 mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all ${stat.color}`}>
-                <stat.icon className="w-10 h-10" />
-              </div>
-              <h3 className="text-5xl lg:text-6xl font-bold font-headline mb-3 tracking-tighter text-gradient-primary">
+              <h3 className={`text-5xl lg:text-7xl font-bold font-headline mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
                 {stat.value}
               </h3>
-              <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-[0.3em]">
+              <p className="text-white/30 font-bold uppercase text-[10px] tracking-[0.4em]">
                 {stat.label}
               </p>
             </motion.div>

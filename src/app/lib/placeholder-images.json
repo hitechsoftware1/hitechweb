@@ -1,59 +1,28 @@
-
 {
   "placeholderImages": [
     {
       "id": "hero-bg",
-      "description": "Futuristic digital network background",
-      "imageUrl": "https://picsum.photos/seed/tech-hero/1920/1080",
-      "imageHint": "cyberpunk city network"
-    },
-    {
-      "id": "service-cloud",
-      "description": "Cloud computing abstract visualization",
-      "imageUrl": "https://picsum.photos/seed/cloud-service/800/600",
-      "imageHint": "cloud data"
-    },
-    {
-      "id": "service-ai",
-      "description": "Artificial intelligence brain mesh",
-      "imageUrl": "https://picsum.photos/seed/ai-service/800/600",
-      "imageHint": "artificial intelligence"
-    },
-    {
-      "id": "service-software",
-      "description": "Modern software code editor",
-      "imageUrl": "https://picsum.photos/seed/software-service/800/600",
-      "imageHint": "coding software"
+      "description": "Minimal tech background",
+      "imageUrl": "https://picsum.photos/seed/minimal-hero/1920/1080",
+      "imageHint": "minimal tech"
     },
     {
       "id": "project-1",
-      "description": "Fintech Dashboard Project",
-      "imageUrl": "https://picsum.photos/seed/fintech/800/600",
-      "imageHint": "fintech dashboard"
+      "description": "Fintech UI",
+      "imageUrl": "https://picsum.photos/seed/minimal-fin/800/600",
+      "imageHint": "minimal fintech"
     },
     {
       "id": "project-2",
-      "description": "HealthTech Platform",
-      "imageUrl": "https://picsum.photos/seed/health/800/600",
-      "imageHint": "health app"
+      "description": "Health OS",
+      "imageUrl": "https://picsum.photos/seed/minimal-health/800/600",
+      "imageHint": "minimal health"
     },
     {
       "id": "project-3",
-      "description": "Industrial IoT Solution",
-      "imageUrl": "https://picsum.photos/seed/iot/800/600",
-      "imageHint": "industrial technology"
-    },
-    {
-      "id": "team-member-1",
-      "description": "CTO and Founder",
-      "imageUrl": "https://picsum.photos/seed/ceo/400/400",
-      "imageHint": "professional man portrait"
-    },
-    {
-      "id": "team-member-2",
-      "description": "Lead AI Architect",
-      "imageUrl": "https://picsum.photos/seed/cto/400/400",
-      "imageHint": "professional woman portrait"
+      "description": "Industrial Hub",
+      "imageUrl": "https://picsum.photos/seed/minimal-ind/800/600",
+      "imageHint": "minimal industry"
     }
   ]
 }

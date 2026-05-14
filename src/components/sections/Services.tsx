@@ -1,116 +1,90 @@
-
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cloud, BrainCircuit, Code, Smartphone, Database, Lock, ChevronRight } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Cpu, Cloud, Brain, Smartphone, Shield, Zap } from 'lucide-react';
 
 const services = [
   {
-    title: "Quantum Cloud",
-    description: "Highly resilient multi-cloud architectures with automated failover and elastic scaling.",
+    title: "Cloud Infrastructure",
+    description: "Elastic, high-availability architecture designed for global scale.",
     icon: Cloud,
-    color: "from-blue-500/30 to-cyan-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(37,99,235,0.2)]",
-    specs: ["Global Mesh", "Auto-Scaling", "Edge Delivery"]
+    tag: "Scale"
   },
   {
-    title: "Neural Engine AI",
-    description: "Advanced machine learning models and RAG workflows designed for industrial precision.",
-    icon: BrainCircuit,
-    color: "from-purple-500/30 to-pink-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(168,85,247,0.2)]",
-    specs: ["Custom Training", "Agentic Ops", "LLM Fine-tuning"]
+    title: "Intelligence & AI",
+    description: "Neural workflows that automate complex enterprise logic.",
+    icon: Brain,
+    tag: "Automate"
   },
   {
-    title: "Velocity Web",
-    description: "Ultra-fast Next.js platforms optimized for sub-second performance and SEO dominance.",
-    icon: Code,
-    color: "from-emerald-500/30 to-green-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(16,185,129,0.2)]",
-    specs: ["Next.js 15 Core", "Rust Tooling", "Hydration Fixes"]
+    title: "Modern Platforms",
+    description: "Sub-second performance for high-traffic web ecosystems.",
+    icon: Cpu,
+    tag: "Speed"
   },
   {
-    title: "Mobile Synergy",
-    description: "Cross-platform ecosystems that feel indistinguishable from native performance.",
+    title: "Security Core",
+    description: "Zero-trust protocols to protect critical digital assets.",
+    icon: Shield,
+    tag: "Protected"
+  },
+  {
+    title: "Mobile Experiences",
+    description: "Refined native performance for the palm of your hand.",
     icon: Smartphone,
-    color: "from-orange-500/30 to-red-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(249,115,22,0.2)]",
-    specs: ["Expo Hybrid", "Native SDKs", "Real-time Sync"]
+    tag: "Refined"
   },
   {
-    title: "Core Data Hub",
-    description: "Real-time data warehouses capable of processing petabytes with zero latency.",
-    icon: Database,
-    color: "from-yellow-500/30 to-amber-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(234,179,8,0.2)]",
-    specs: ["Stream Analytics", "NoSQL Clusters", "BigQuery Ops"]
-  },
-  {
-    title: "Iron Fortress",
-    description: "Zero-trust security architecture for the world's most demanding enterprise clients.",
-    icon: Lock,
-    color: "from-indigo-500/30 to-violet-500/30",
-    glow: "group-hover:shadow-[0_0_50px_rgba(99,102,241,0.2)]",
-    specs: ["SOC3 Ready", "Biometric IAM", "E2E Encryption"]
+    title: "Strategic R&D",
+    description: "Future-proofing your technology stack for what's next.",
+    icon: Zap,
+    tag: "Vision"
   }
 ];
 
 export function Services() {
   return (
-    <section id="services" className="py-32 relative bg-background">
+    <section id="services" className="py-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col items-center text-center mb-24 gap-6">
-          <motion.span 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-primary font-black tracking-[0.5em] uppercase text-xs"
+        <div className="max-w-3xl mb-24">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="inline-flex items-center gap-2 mb-6 text-primary text-[10px] font-bold uppercase tracking-[0.4em]"
           >
-            Digital Ecosystems
-          </motion.span>
-          <h2 className="text-6xl lg:text-8xl font-headline font-bold tracking-tighter">
-            Next-Gen <span className="text-gradient-primary">Expertise</span>
+            <div className="w-8 h-[1px] bg-primary" />
+            Capabilities
+          </motion.div>
+          <h2 className="text-5xl lg:text-7xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+            Designed for <br />
+            Performance.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl font-light leading-relaxed">
-            We don't build websites. We build the future of your business through technological velocity.
+          <p className="text-xl text-white/50 font-light leading-relaxed">
+            We minimize complexity to maximize impact. Every line of code is written with surgical precision.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: idx * 0.1, duration: 0.8 }}
               viewport={{ once: true }}
+              className="apple-card p-10 group"
             >
-              <Card className={`glass-card group h-full border-white/5 ${service.glow} hover:-translate-y-2`}>
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-                <CardHeader className="relative z-10 p-10">
-                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
-                    <service.icon className="w-8 h-8" />
-                  </div>
-                  <CardTitle className="text-3xl font-headline mb-4 group-hover:text-primary transition-colors">{service.title}</CardTitle>
-                  <CardDescription className="text-lg text-muted-foreground/80 leading-relaxed font-light">
-                    {service.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative z-10 p-10 pt-0">
-                  <div className="flex flex-wrap gap-3 mb-10">
-                    {service.specs.map((spec, sIdx) => (
-                      <span key={sIdx} className="text-[10px] font-bold uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10 group-hover:border-primary/30 transition-all">
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-                  <Button variant="link" className="p-0 h-auto text-primary text-lg font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                    System Specs <ChevronRight className="w-5 h-5" />
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 transition-all duration-500 group-hover:bg-white group-hover:text-background">
+                <service.icon className="w-6 h-6" />
+              </div>
+              <div className="mb-4">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{service.tag}</span>
+              </div>
+              <h3 className="text-2xl font-headline font-bold text-white mb-4">{service.title}</h3>
+              <p className="text-white/40 leading-relaxed font-light">
+                {service.description}
+              </p>
             </motion.div>
           ))}
         </div>

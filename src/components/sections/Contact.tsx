@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Phone, MapPin, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, CheckCircle2, MessageCircle } from 'lucide-react';
 
 export function Contact() {
   const [step, setStep] = useState(1);
@@ -36,7 +36,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Email Us</p>
-                  <p className="text-[8px] lg:text-lg font-medium text-foreground/90 truncate max-w-[100px] lg:max-w-none">hello@hitech.software</p>
+                  <p className="text-[8px] lg:text-lg font-medium text-foreground/90 truncate max-w-[100px] lg:max-w-none">hitechsoftware03@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 lg:gap-4 group">
@@ -44,8 +44,17 @@ export function Contact() {
                   <Phone className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
                 </div>
                 <div>
-                  <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Global Call</p>
-                  <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+1 (555) 902-3000</p>
+                  <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Call Us</p>
+                  <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+256 742 928 508</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 lg:gap-4 group">
+                <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
+                  <MessageCircle className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
+                </div>
+                <div>
+                  <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">WhatsApp</p>
+                  <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+256 759 408 917</p>
                 </div>
               </div>
               <div className="hidden lg:flex items-center gap-4 group">
@@ -53,8 +62,8 @@ export function Contact() {
                   <MapPin className="text-primary w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Headquarters</p>
-                  <p className="text-lg font-medium text-foreground/90">San Francisco, CA</p>
+                  <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Location</p>
+                  <p className="text-lg font-medium text-foreground/90">Naalya Kampala, Uganda</p>
                 </div>
               </div>
             </div>

@@ -69,9 +69,10 @@ export function Footer() {
 
           <div className="col-span-1">
             <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em] mb-6 lg:mb-8">Contact</h4>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-3 lg:mb-4">San Francisco, California</p>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-3 lg:mb-4">hello@hitech.software</p>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light">+1 (800) HITECH-01</p>
+            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">Naalya Kampala, Uganda</p>
+            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">hitechsoftware03@gmail.com</p>
+            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">+256 742 928 508</p>
+            <p className="text-foreground/50 text-xs lg:text-sm font-light">WA: +256 759 408 917</p>
           </div>
         </div>
 

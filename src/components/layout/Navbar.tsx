@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,15 +44,15 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Solutions', href: '/services' },
-    { name: 'Showcase', href: '/portfolio' },
-    { name: 'About', href: '/about' },
-    { name: 'Studio', href: '/#ai-consultant' },
+    { name: 'Case Studies', href: '/case-studies' },
+    { name: 'Careers', href: '/careers' },
+    { name: 'Calculator', href: '/pricing-calculator' },
   ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-4 lg:px-6 py-4 lg:py-6">
       <div className={cn(
-        "max-w-6xl mx-auto flex items-center justify-between transition-all duration-700 px-4 lg:px-8 py-2 lg:py-3 rounded-full",
+        "max-w-7xl mx-auto flex items-center justify-between transition-all duration-700 px-4 lg:px-8 py-2 lg:py-3 rounded-full",
         isScrolled ? "apple-glass" : "bg-transparent"
       )}>
         <Link href="/" className="flex items-center gap-2 lg:gap-3 group">
@@ -75,14 +75,14 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link 
               key={link.name} 
               href={link.href}
               className={cn(
-                "text-xs font-medium tracking-tight transition-colors",
-                pathname === link.href ? "text-primary" : "text-foreground/60 hover:text-foreground"
+                "text-[10px] lg:text-xs font-bold uppercase tracking-widest transition-colors",
+                pathname === link.href ? "text-primary" : "text-foreground/40 hover:text-foreground"
               )}
             >
               {link.name}
@@ -97,6 +97,11 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
+          <Button asChild variant="outline" className="rounded-full border-primary/20 hover:bg-primary/5 text-primary font-bold text-xs h-10 px-6">
+            <Link href="/portal" className="flex items-center gap-2">
+              <LayoutDashboard className="w-4 h-4" /> Portal
+            </Link>
+          </Button>
           <Button asChild className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all cursor-pointer">
             <Link href="/contact">Get Started</Link>
           </Button>
@@ -126,7 +131,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-20 left-4 right-4 apple-glass rounded-[1.5rem] p-6 flex flex-col gap-4 md:hidden overflow-hidden"
+            className="absolute top-24 left-4 right-4 apple-glass rounded-[1.5rem] p-6 flex flex-col gap-4 md:hidden overflow-hidden"
           >
             {navLinks.map((link) => (
               <Link 
@@ -139,6 +144,14 @@ export function Navbar() {
                 <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
               </Link>
             ))}
+            <Link 
+              href="/portal"
+              className="text-lg font-headline font-medium text-primary flex items-center justify-between"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Client Portal
+              <LayoutDashboard className="w-5 h-5" />
+            </Link>
             <div className="pt-4 border-t border-black/5 dark:border-white/5">
               <Button asChild className="w-full h-12 rounded-xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
                 <Link href="/contact">Get Started</Link>

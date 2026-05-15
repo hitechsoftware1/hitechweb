@@ -1,8 +1,10 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronRight, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,6 +15,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const pathname = usePathname();
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
   useEffect(() => {
@@ -20,7 +23,6 @@ export function Navbar() {
       setIsScrolled(window.scrollY > 50);
     };
     
-    // Theme initialization
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
     if (savedTheme) {
       setTheme(savedTheme);
@@ -41,14 +43,14 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Solutions', href: '#services' },
-    { name: 'Showcase', href: '#portfolio' },
-    { name: 'Studio', href: '#ai-consultant' },
-    { name: 'Investment', href: '#pricing' },
+    { name: 'Solutions', href: '/services' },
+    { name: 'Showcase', href: '/portfolio' },
+    { name: 'About', href: '/about' },
+    { name: 'Studio', href: '/#ai-consultant' },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] px-4 lg:px-6 py-4 lg:py-8">
+    <nav className="fixed top-0 left-0 right-0 z-[100] px-4 lg:px-6 py-4 lg:py-6">
       <div className={cn(
         "max-w-6xl mx-auto flex items-center justify-between transition-all duration-700 px-4 lg:px-8 py-2 lg:py-3 rounded-full",
         isScrolled ? "apple-glass" : "bg-transparent"
@@ -78,7 +80,10 @@ export function Navbar() {
             <Link 
               key={link.name} 
               href={link.href}
-              className="text-xs font-medium tracking-tight text-foreground/60 hover:text-foreground transition-colors"
+              className={cn(
+                "text-xs font-medium tracking-tight transition-colors",
+                pathname === link.href ? "text-primary" : "text-foreground/60 hover:text-foreground"
+              )}
             >
               {link.name}
             </Link>
@@ -92,11 +97,8 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <Button variant="ghost" className="text-xs font-medium text-foreground/60 hover:text-foreground">
-            Support
-          </Button>
           <Button asChild className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all cursor-pointer">
-            <Link href="#contact">Get Started</Link>
+            <Link href="/contact">Get Started</Link>
           </Button>
         </div>
 
@@ -124,22 +126,22 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-20 left-4 right-4 apple-glass rounded-[1.5rem] lg:rounded-[2rem] p-6 lg:p-8 flex flex-col gap-4 lg:gap-6 md:hidden overflow-hidden"
+            className="absolute top-20 left-4 right-4 apple-glass rounded-[1.5rem] p-6 flex flex-col gap-4 md:hidden overflow-hidden"
           >
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href}
-                className="text-lg lg:text-xl font-headline font-medium hover:text-primary transition-colors flex items-center justify-between group"
+                className="text-lg font-headline font-medium hover:text-primary transition-colors flex items-center justify-between group"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.name}
                 <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
               </Link>
             ))}
-            <div className="pt-4 lg:pt-6 border-t border-black/5 dark:border-white/5 flex flex-col gap-3">
-              <Button asChild className="w-full h-11 lg:h-12 rounded-xl lg:rounded-2xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
-                <Link href="#contact">Get Started</Link>
+            <div className="pt-4 border-t border-black/5 dark:border-white/5">
+              <Button asChild className="w-full h-12 rounded-xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link href="/contact">Get Started</Link>
               </Button>
             </div>
           </motion.div>

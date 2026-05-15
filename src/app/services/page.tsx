@@ -13,13 +13,31 @@ export default function ServicesPage() {
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
       
-      <section className="container mx-auto px-6 mb-24 text-center">
-        <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-          Enterprise <br /> Capabilities.
-        </h1>
-        <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl mx-auto">
-          Full-stack engineering precision for the modern digital era. From neural AI chatbots to global fintech rails.
-        </p>
+      {/* Hero Header with Video Background */}
+      <section className="relative py-12 lg:py-24 mb-24 overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="w-full h-full object-cover opacity-10 dark:opacity-20"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-technological-particles-loop-background-20412-large.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 neural-grid opacity-30" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10 text-center">
+          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+            Enterprise <br /> Capabilities.
+          </h1>
+          <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl mx-auto">
+            Full-stack engineering precision for the modern digital era. From neural AI chatbots to global fintech rails.
+          </p>
+        </div>
       </section>
 
       <Services />

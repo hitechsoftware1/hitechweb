@@ -5,7 +5,7 @@ import React from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Clock, ArrowRight, Star, Heart, Rocket, Shield } from 'lucide-react';
+import { Briefcase, MapPin, Clock, ArrowRight, Star, Heart, Rocket, Shield, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
@@ -26,18 +26,25 @@ const jobs = [
     description: "Defining the visual language of the next generation of enterprise software."
   },
   {
-    title: "Cybersecurity Analyst",
-    type: "Contract",
-    location: "Kampala",
-    department: "Security",
-    description: "Ensuring zero-trust integrity for global digital platforms."
-  },
-  {
     title: "AI Engineer",
     type: "Full-time",
     location: "Remote",
     department: "Neural Systems",
     description: "Developing generative AI workflows and neural chat integrations."
+  },
+  {
+    title: "Frontend Engineering Intern",
+    type: "Internship",
+    location: "Kampala / Remote",
+    department: "Internship Program",
+    description: "Join our core engineering team to build sublime user experiences."
+  },
+  {
+    title: "UI/UX Design Intern",
+    type: "Internship",
+    location: "Remote",
+    department: "Internship Program",
+    description: "Learn the HITECH design standard and architect visual systems."
   }
 ];
 
@@ -62,7 +69,7 @@ export default function CareersPage() {
             Build the <br /> Extraordinary.
           </h1>
           <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            Join a team of elite engineers and designers architecture the future of global enterprise systems.
+            Join a team of elite engineers and designers architecting the future of global enterprise systems. From senior roles to our high-growth internship programs.
           </p>
         </motion.div>
       </section>
@@ -73,8 +80,8 @@ export default function CareersPage() {
           {[
             { icon: Rocket, title: "High Velocity", text: "We ship quality code fast, iterating on real-world feedback." },
             { icon: Heart, title: "Remote-First", text: "Global talent, local impact. Work from anywhere that inspires you." },
-            { icon: Shield, title: "Precision", text: "We value structural integrity and clean, maintainable architecture." },
-            { icon: Star, title: "Elite Peers", text: "Work alongside the best engineering minds in the region." }
+            { icon: GraduationCap, title: "Mentorship", text: "Our internship tracks provide direct access to chief architects." },
+            { icon: Shield, title: "Precision", text: "We value structural integrity and clean, maintainable architecture." }
           ].map((item, idx) => (
             <motion.div 
               key={idx}
@@ -96,7 +103,10 @@ export default function CareersPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-headline font-bold">Open Positions</h2>
-            <Badge variant="outline" className="rounded-full border-primary/20 text-primary">{jobs.length} roles</Badge>
+            <div className="flex gap-4">
+              <Badge variant="outline" className="rounded-full border-primary/20 text-primary">{jobs.filter(j => j.type === 'Full-time').length} Full-time</Badge>
+              <Badge variant="outline" className="rounded-full border-accent/20 text-accent">{jobs.filter(j => j.type === 'Internship').length} Internships</Badge>
+            </div>
           </div>
           <div className="space-y-4">
             {jobs.map((job, idx) => (
@@ -110,7 +120,12 @@ export default function CareersPage() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-xl font-bold">{job.title}</h3>
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-full">{job.department}</span>
+                    <span className={cn(
+                      "text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full",
+                      job.type === 'Internship' ? "bg-accent/10 text-accent" : "bg-primary/10 text-primary"
+                    )}>
+                      {job.department}
+                    </span>
                   </div>
                   <div className="flex items-center gap-6 text-sm text-foreground/40 font-medium">
                     <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {job.location}</span>
@@ -129,4 +144,8 @@ export default function CareersPage() {
       <Footer />
     </main>
   );
+}
+
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
 }

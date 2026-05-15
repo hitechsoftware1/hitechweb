@@ -52,7 +52,6 @@ export function AIConsultant() {
       const output = await intelligentSolutionConsultant({ businessRequirements: input });
       setResult(output);
       
-      // Automatically generate voice summary
       const ttsResult = await textToSpeech({ 
         text: `Here is your strategy. Recommended Architecture: ${output.recommendedArchitecture}. Justification: ${output.justification}`
       });
@@ -86,8 +85,19 @@ export function AIConsultant() {
   return (
     <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden bg-background">
       
-      {/* Background Decor */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Decor & Video */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-cover opacity-10 dark:opacity-20"
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-artificial-intelligence-neural-network-animation-22003-large.mp4" type="video/mp4" />
+        </video>
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px]" />
         <div className="absolute inset-0 neural-grid opacity-30" />
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-primary/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-accent/5 blur-[120px] rounded-full" />

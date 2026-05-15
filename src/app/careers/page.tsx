@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Star, Heart, Rocket, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const jobs = [
   {
@@ -42,13 +42,10 @@ const jobs = [
 ];
 
 export default function CareersPage() {
-  const { toast } = useToast();
+  const router = useRouter();
 
   const handleApply = (jobTitle: string) => {
-    toast({
-      title: "Application Initiated",
-      description: `Opening secure portal for ${jobTitle} application...`,
-    });
+    router.push(`/careers/apply?role=${encodeURIComponent(jobTitle)}`);
   };
 
   return (
@@ -70,7 +67,7 @@ export default function CareersPage() {
         </motion.div>
       </section>
 
-      {/* Culture Section - Updated to grid-cols-2 for mobile to keep the "grid view" */}
+      {/* Culture Section */}
       <section className="container mx-auto px-6 mb-32">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {[

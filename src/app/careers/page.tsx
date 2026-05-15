@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Star, Heart, Rocket, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 const jobs = [
   {
@@ -41,6 +42,15 @@ const jobs = [
 ];
 
 export default function CareersPage() {
+  const { toast } = useToast();
+
+  const handleApply = (jobTitle: string) => {
+    toast({
+      title: "Application Initiated",
+      description: `Opening secure portal for ${jobTitle} application...`,
+    });
+  };
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -60,9 +70,9 @@ export default function CareersPage() {
         </motion.div>
       </section>
 
-      {/* Culture Section */}
+      {/* Culture Section - Updated to grid-cols-2 for mobile to keep the "grid view" */}
       <section className="container mx-auto px-6 mb-32">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {[
             { icon: Rocket, title: "High Velocity", text: "We ship quality code fast, iterating on real-world feedback." },
             { icon: Heart, title: "Remote-First", text: "Global talent, local impact. Work from anywhere that inspires you." },
@@ -74,11 +84,11 @@ export default function CareersPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.1 }}
-              className="apple-card p-10 flex flex-col gap-4"
+              className="apple-card p-6 lg:p-10 flex flex-col gap-3 lg:gap-4 group hover:border-primary/30"
             >
-              <item.icon className="w-8 h-8 text-primary" />
-              <h3 className="text-xl font-headline font-bold">{item.title}</h3>
-              <p className="text-sm text-foreground/50 leading-relaxed">{item.text}</p>
+              <item.icon className="w-6 h-6 lg:w-8 lg:h-8 text-primary group-hover:scale-110 transition-transform" />
+              <h3 className="text-sm lg:text-xl font-headline font-bold">{item.title}</h3>
+              <p className="text-[10px] lg:text-sm text-foreground/50 leading-relaxed line-clamp-3 lg:line-clamp-none">{item.text}</p>
             </motion.div>
           ))}
         </div>
@@ -89,7 +99,7 @@ export default function CareersPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-headline font-bold">Open Positions</h2>
-            <Badge variant="outline" className="rounded-full">{jobs.length} roles</Badge>
+            <Badge variant="outline" className="rounded-full border-primary/20 text-primary">{jobs.length} roles</Badge>
           </div>
           <div className="space-y-4">
             {jobs.map((job, idx) => (
@@ -98,6 +108,7 @@ export default function CareersPage() {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 className="apple-glass p-8 rounded-[2rem] flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-primary/30 transition-all cursor-pointer"
+                onClick={() => handleApply(job.title)}
               >
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -109,7 +120,7 @@ export default function CareersPage() {
                     <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {job.type}</span>
                   </div>
                 </div>
-                <Button className="rounded-full bg-foreground text-background group-hover:bg-primary group-hover:text-white transition-all">
+                <Button className="rounded-full bg-foreground text-background group-hover:bg-primary group-hover:text-white transition-all h-12 px-8">
                   Apply Now <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </motion.div>

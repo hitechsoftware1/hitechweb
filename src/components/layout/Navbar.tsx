@@ -5,11 +5,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3 } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,10 +50,15 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Solutions', href: '/services', icon: Zap },
-    { name: 'AI Studio', href: '/ai-tools', icon: Terminal },
-    { name: 'Case Studies', href: '/case-studies', icon: BarChart3 },
-    { name: 'Careers', href: '/careers', icon: Briefcase },
+    { name: 'Portfolio', href: '/portfolio', icon: BarChart3 },
     { name: 'Status', href: '/status', icon: Terminal },
+  ];
+
+  const resourceLinks = [
+    { name: 'Testimonials', href: '/testimonials', icon: Star },
+    { name: 'Insights', href: '/blog', icon: Newspaper },
+    { name: 'Careers', href: '/careers', icon: Briefcase },
+    { name: 'About', href: '/about', icon: Info },
   ];
 
   return (
@@ -89,6 +100,22 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors flex items-center gap-1.5 focus:outline-none">
+              Resources <ChevronDown className="w-3 h-3" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="apple-glass border-foreground/10 rounded-2xl p-2 min-w-[200px]">
+              {resourceLinks.map((res) => (
+                <DropdownMenuItem key={res.name} asChild className="rounded-xl focus:bg-primary/10 focus:text-primary p-0">
+                  <Link href={res.href} className="flex items-center gap-3 w-full px-4 py-3">
+                    <res.icon className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">{res.name}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="hidden md:flex items-center gap-4">
@@ -134,7 +161,7 @@ export function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-24 left-4 right-4 apple-glass rounded-[1.5rem] p-6 flex flex-col gap-4 md:hidden overflow-hidden"
           >
-            {navLinks.map((link) => (
+            {[...navLinks, ...resourceLinks].map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href}

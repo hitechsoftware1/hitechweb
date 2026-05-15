@@ -5,7 +5,6 @@ import { Footer } from '@/components/layout/Footer';
 import { Stats } from '@/components/sections/Stats';
 import { Excellence } from '@/components/sections/Excellence';
 import { User, Shield, Target, Award, Milestone, Rocket, Users, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export default function AboutPage() {
   const timeline = [
@@ -21,15 +20,32 @@ export default function AboutPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="container mx-auto px-6 mb-24">
-        <div className="max-w-4xl">
-          <span className="text-primary font-bold tracking-[0.4em] uppercase text-[10px] mb-4 block">Our Origin & Vision</span>
-          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            Architecting the <br /> Digital Future.
-          </h1>
-          <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            HITECH is a premium software engineering firm specializing in high-performance digital ecosystems. We don't just build apps; we engineer the structural integrity of tomorrow's market leaders.
-          </p>
+      <section className="relative py-24 mb-24 overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="w-full h-full object-cover opacity-10 dark:opacity-20"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-modern-city-at-night-aerial-view-3331-large.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 neural-grid opacity-30" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl">
+            <span className="text-primary font-bold tracking-[0.4em] uppercase text-[10px] mb-4 block">Our Origin & Vision</span>
+            <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+              Architecting the <br /> Digital Future.
+            </h1>
+            <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
+              HITECH is a premium software engineering firm specializing in high-performance digital ecosystems. We don't just build apps; we engineer the structural integrity of tomorrow's market leaders.
+            </p>
+          </div>
         </div>
       </section>
 

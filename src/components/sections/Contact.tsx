@@ -92,11 +92,11 @@ export function Contact() {
                       <div className="grid gap-2 lg:gap-4">
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Full Name</Label>
-                          <Input className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="John Doe" required />
+                          <Input className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="Yournamehere" required />
                         </div>
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Work Email</Label>
-                          <Input type="email" className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="john@company.com" required />
+                          <Input type="email" className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="emailyo@tekawo.com" required />
                         </div>
                       </div>
                       <Button onClick={nextStep} type="button" className="w-full h-7 lg:h-11 rounded-lg lg:rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-[8px] lg:text-sm transition-all">Next</Button>

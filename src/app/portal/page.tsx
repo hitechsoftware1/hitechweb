@@ -19,8 +19,30 @@ import {
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function ClientPortal() {
+  const { toast } = useToast();
+
+  const handleAction = (action: string) => {
+    toast({
+      title: "System Request",
+      description: `Initiating: ${action}. Please wait while we fetch the latest data from the neural cluster.`,
+    });
+  };
+
+  const handleStaging = () => {
+    toast({
+      title: "Staging Environment",
+      description: "Redirecting to your secure staging environment...",
+    });
+    // Simulating redirect
+    setTimeout(() => {
+      window.open('https://staging.hitech.systems', '_blank');
+    }, 1000);
+  };
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -57,6 +79,7 @@ export default function ClientPortal() {
             ].map((item, i) => (
               <button 
                 key={i}
+                onClick={() => handleAction(item.name)}
                 className={cn(
                   "w-full flex items-center justify-between px-6 py-4 rounded-xl transition-all group",
                   item.active ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
@@ -132,19 +155,33 @@ export default function ClientPortal() {
               <div className="apple-card p-10 bg-primary/5 border-primary/10">
                 <h3 className="text-xl font-headline font-bold mb-8">Quick Actions</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Contact Lead</span>
+                  <Button asChild variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                    <Link href="/contact" className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <MessageSquare className="w-5 h-5 text-primary" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Contact Lead</span>
+                    </Link>
                   </Button>
-                  <Button variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button 
+                    onClick={() => handleAction("Loading Technical Specifications")}
+                    variant="outline" 
+                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
+                  >
                     <FileText className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">View Specs</span>
                   </Button>
-                  <Button variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button 
+                    onClick={handleStaging}
+                    variant="outline" 
+                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
+                  >
                     <ArrowUpRight className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">Staging Link</span>
                   </Button>
-                  <Button variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button 
+                    onClick={() => handleAction("Opening Environment Settings")}
+                    variant="outline" 
+                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
+                  >
                     <Settings className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">Settings</span>
                   </Button>

@@ -94,7 +94,7 @@ export function AIConsultant() {
           playsInline 
           className="w-full h-full object-cover opacity-10 dark:opacity-20"
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-artificial-intelligence-neural-network-animation-22003-large.mp4" type="video/mp4" />
+          <source src="https://video-previews.elements.envatousercontent.com/ba65e2b2-0f68-49bc-a9c5-f8f156ada54a/watermarked_preview/watermarked_preview.mp4" type="video/mp4" />
         </video>
         {/* Overlays */}
         <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px]" />

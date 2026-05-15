@@ -81,7 +81,7 @@ export default function PortfolioPage() {
               <div className="apple-card p-2 group">
                 <div className="aspect-[16/10] relative rounded-[2rem] overflow-hidden">
                   <Image 
-                    src={project.image || "https://picsum.photos/seed/port/800/600"} 
+                    src={project.image || "https://video-previews.elements.envatousercontent.com/files/c369f1c0-97e8-45f7-98a9-647ac6b9fd61/video_preview_h264.mp4"} 
                     alt={project.title} 
                     fill 
                     className="object-cover transition-transform duration-1000 group-hover:scale-110"

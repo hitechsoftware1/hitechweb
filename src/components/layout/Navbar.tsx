@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -43,10 +43,11 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Solutions', href: '/services' },
-    { name: 'Case Studies', href: '/case-studies' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Calculator', href: '/pricing-calculator' },
+    { name: 'Solutions', href: '/services', icon: Zap },
+    { name: 'AI Studio', href: '/ai-tools', icon: Terminal },
+    { name: 'Case Studies', href: '/case-studies', icon: BarChart3 },
+    { name: 'Careers', href: '/careers', icon: Briefcase },
+    { name: 'Status', href: '/status', icon: Terminal },
   ];
 
   return (
@@ -75,13 +76,13 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <Link 
               key={link.name} 
               href={link.href}
               className={cn(
-                "text-[10px] lg:text-xs font-bold uppercase tracking-widest transition-colors",
+                "text-[10px] lg:text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2",
                 pathname === link.href ? "text-primary" : "text-foreground/40 hover:text-foreground"
               )}
             >
@@ -103,7 +104,7 @@ export function Navbar() {
             </Link>
           </Button>
           <Button asChild className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all cursor-pointer">
-            <Link href="/contact">Get Started</Link>
+            <Link href="/request-project">Get Started</Link>
           </Button>
         </div>
 
@@ -140,7 +141,10 @@ export function Navbar() {
                 className="text-lg font-headline font-medium hover:text-primary transition-colors flex items-center justify-between group"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {link.name}
+                <div className="flex items-center gap-3">
+                  <link.icon className="w-5 h-5 text-primary" />
+                  {link.name}
+                </div>
                 <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all" />
               </Link>
             ))}
@@ -154,7 +158,7 @@ export function Navbar() {
             </Link>
             <div className="pt-4 border-t border-black/5 dark:border-white/5">
               <Button asChild className="w-full h-12 rounded-xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
-                <Link href="/contact">Get Started</Link>
+                <Link href="/request-project">Get Started</Link>
               </Button>
             </div>
           </motion.div>

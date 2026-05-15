@@ -77,7 +77,7 @@ export default function ServicesPage() {
             Our solutions architects are ready to help you build the next generation of your enterprise.
           </p>
           <Button asChild size="lg" className="rounded-full bg-white text-primary font-bold hover:bg-white/90">
-            <Link href="/contact" className="flex items-center gap-2">
+            <Link href="/request-project" className="flex items-center gap-2">
               Start Your Project <ArrowRight className="w-5 h-5" />
             </Link>
           </Button>

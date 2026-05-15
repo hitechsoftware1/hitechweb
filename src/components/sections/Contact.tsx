@@ -113,10 +113,12 @@ export function Contact() {
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Budget</Label>
                           <select className="w-full h-7 lg:h-11 bg-background border border-foreground/10 rounded-lg lg:rounded-xl px-2 lg:px-3 focus:outline-none focus:ring-1 focus:ring-primary text-[9px] lg:text-sm text-foreground">
+                          <option>below$5k - $5k</option>
+                            <option>$5k - $10k</option>
+                            <option>$10k - $25k</option>
+                            <option>$25k - $50k</option>
                             <option>$50k - $100k</option>
-                            <option>$100k - $250k</option>
-                            <option>$250k - $500k</option>
-                            <option>$500k+</option>
+                            <option>$100k+</option>
                           </select>
                         </div>
                         <div className="space-y-1 lg:space-y-2">

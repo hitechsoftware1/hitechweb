@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI assistant that recommends software architecture and services based on business requirements.
@@ -41,6 +40,10 @@ export type IntelligentSolutionConsultantOutput = z.infer<
   typeof IntelligentSolutionConsultantOutputSchema
 >;
 
+/**
+ * Expert solution consultant for HITECH SOFTWARE COMPANY.
+ * @param input The business requirements from the client.
+ */
 export async function intelligentSolutionConsultant(
   input: IntelligentSolutionConsultantInput
 ): Promise<IntelligentSolutionConsultantOutput> {
@@ -53,28 +56,23 @@ const prompt = ai.definePrompt({
   output: {schema: IntelligentSolutionConsultantOutputSchema},
   prompt: `You are an expert AI solution consultant for HITECH SOFTWARE COMPANY. Your goal is to provide tailored recommendations for software architecture and services based on the client's business requirements.
 
-HITECH SOFTWARE COMPANY offers a vast catalog of advanced digital solutions. When providing recommendations, focus on how HITECH's specific offerings can meet the client's needs.
+HITECH SOFTWARE COMPANY is a premium engineering firm specializing in high-performance digital ecosystems.
 
 AVAILABLE SERVICES AT HITECH:
-- Software Development: Custom Dev, Enterprise Systems, Desktop/Cloud Apps, SaaS, ERP, CRM, POS.
-- Website Development: E-commerce, School/Hotel/Real Estate Management, Portfolio, NGO, Custom Web Apps.
-- Mobile App Development: Android, iOS, Flutter, React Native, Marketplace, Chat, Booking Apps.
-- AI & Smart Systems: AI Chatbots, Virtual Assistants, ML Integration, Business Analytics, Workflow Automation.
-- UI/UX & Product Design: Design Systems, SaaS Interfaces, Prototypes, User Experience Optimization.
-- Cloud & Hosting: Deployment, VPS, Server Management, Cloud Storage, Domain Services.
-- Cybersecurity: Secure Auth, Data Protection, Malware Protection, Security Audits.
-- Fintech: Payment Integrations (Airtel/MTN Mobile Money, PayPal, Stripe, Flutterwave), Billing Systems.
-- Media & Streaming: Music/Movie Platforms, Live Streaming, Creator Platforms.
-- Smart Business Systems: School/Hospital/HR/Inventory/Transport Management Systems.
-- Digital Marketing: SEO, Social Media Marketing, Analytics.
-- Advanced Tech: API Dev, IoT Integration, Blockchain Solutions.
-
-PREMIUM FEATURES INCLUDED:
-Modern Responsive Designs, High-Speed Performance, AI-Powered Features, Secure Infrastructure, Real-Time Analytics, Multi-Language Support, Professional Admin Panels.
+- Software Development: Custom ERP, CRM, Enterprise Systems, SaaS, Desktop Apps.
+- Website Development: E-commerce, Management Systems (School, Hotel, Real Estate), Portfolio.
+- Mobile App Development: Android, iOS, Flutter, React Native, Marketplace, Booking Apps.
+- AI & Smart Systems: Neural Chatbots, Virtual Assistants, ML Integration, Workflow Automation.
+- UI/UX & Product Design: Design Systems, SaaS Interfaces, User Experience Optimization.
+- Cloud & Hosting: VPS Management, Cloud Storage, Deployment Pipelines.
+- Cybersecurity: Secure Auth, Data Protection, Security Audits.
+- Fintech: Payment Integrations (Mobile Money, PayPal, Stripe), Billing Systems.
+- Media & Streaming: Live Streaming, Creator Platforms.
+- Advanced Tech: API Development, IoT Integration, Blockchain.
 
 Client Business Requirements: {{{businessRequirements}}}
 
-Based on these requirements, recommend a suitable software architecture and a specific list of HITECH services. Provide a clear justification for your recommendations.`,
+Based on these requirements, recommend a specific list of HITECH services and a suitable architecture. Provide a clear justification for why this combination is optimal for their vision.`,
 });
 
 const intelligentSolutionConsultantFlow = ai.defineFlow(
@@ -85,6 +83,7 @@ const intelligentSolutionConsultantFlow = ai.defineFlow(
   },
   async (input) => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) throw new Error('Failed to generate a recommendation.');
+    return output;
   }
 );

@@ -34,16 +34,14 @@ const CandlestickShape = (props: any) => {
   const isGrowing = close >= open;
   const fill = isGrowing ? 'hsl(var(--primary))' : 'hsl(var(--accent))';
   
-  // Calculate relative positions within the height provided by the chart
   const xCenter = x + width / 2;
-  const maxValue = 8000; // Expected max scale
-  const chartHeight = 300; // Reference height
+  const maxValue = 8000;
+  const chartHeight = 300;
   
   const getY = (val: number) => chartHeight - (val / maxValue) * chartHeight;
 
   return (
     <g className="transition-all duration-500">
-      {/* Wick */}
       <line
         x1={xCenter}
         y1={getY(high)}
@@ -54,7 +52,6 @@ const CandlestickShape = (props: any) => {
         strokeDasharray="2 2"
         opacity={0.5}
       />
-      {/* Candle Body */}
       <rect
         x={x}
         y={getY(Math.max(open, close))}
@@ -70,8 +67,24 @@ const CandlestickShape = (props: any) => {
 
 export function Stats() {
   return (
-    <section className="pb-12 lg:pb-32 pt-0 relative bg-background overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section className="py-12 lg:py-32 relative bg-background overflow-hidden">
+      
+      {/* Background Video & Overlays */}
+      <div className="absolute inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-cover opacity-10 dark:opacity-20"
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-data-computing-animation-in-a-server-room-22001-large.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 neural-grid opacity-30" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
         
         {/* Statistics Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20 lg:mb-32">
@@ -95,7 +108,7 @@ export function Stats() {
 
         {/* Interactive Performance Chart */}
         <div className="max-w-5xl mx-auto">
-          <div className="apple-card p-6 lg:p-12 border-primary/10">
+          <div className="apple-card p-6 lg:p-12 border-primary/10 bg-card/40">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
               <div>
                 <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-2 block">Engineering Velocity</span>

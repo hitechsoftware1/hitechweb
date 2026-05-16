@@ -1,21 +1,63 @@
+
 "use client";
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Phone, MapPin, CheckCircle2, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, CheckCircle2, MessageCircle, Loader2 } from 'lucide-react';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { useToast } from '@/hooks/use-toast';
 
 export function Contact() {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const db = useFirestore();
+  const { toast } = useToast();
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    budget: 'below$5k - $5k',
+    message: ''
+  });
 
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (!db) return;
+    setLoading(true);
+
+    const messageData = {
+      ...formData,
+      status: 'unread',
+      createdAt: serverTimestamp()
+    };
+
+    addDoc(collection(db, 'contactMessages'), messageData)
+      .then(() => {
+        setSubmitted(true);
+        setLoading(false);
+        toast({
+          title: "Message Transmitted",
+          description: "Your inquiry has been stored in our neural history.",
+        });
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: 'contactMessages',
+          operation: 'create',
+          requestResourceData: messageData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
+      });
   };
 
   return (
@@ -57,15 +99,6 @@ export function Contact() {
                   <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+256 759 408 917</p>
                 </div>
               </div>
-              <div className="hidden lg:flex items-center gap-4 group">
-                <div className="w-12 h-12 rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
-                  <MapPin className="text-primary w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Location</p>
-                  <p className="text-lg font-medium text-foreground/90">Naalya Kampala, Uganda</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -79,7 +112,7 @@ export function Contact() {
                   </div>
                   <h3 className="text-lg lg:text-2xl font-headline font-bold mb-2 lg:mb-4 text-foreground">Inquiry Received</h3>
                   <p className="text-foreground/50 text-[8px] lg:text-sm">Our solutions architect will contact you soon.</p>
-                  <Button variant="link" onClick={() => setSubmitted(false)} className="mt-4 lg:mt-8 text-primary font-bold text-[10px] lg:text-sm p-0 h-auto">Send another</Button>
+                  <Button variant="link" onClick={() => { setSubmitted(false); setStep(1); }} className="mt-4 lg:mt-8 text-primary font-bold text-[10px] lg:text-sm p-0 h-auto">Send another</Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
@@ -92,11 +125,24 @@ export function Contact() {
                       <div className="grid gap-2 lg:gap-4">
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Full Name</Label>
-                          <Input className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="Yournamehere" required />
+                          <Input 
+                            value={formData.fullName}
+                            onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                            className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" 
+                            placeholder="Your name" 
+                            required 
+                          />
                         </div>
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Work Email</Label>
-                          <Input type="email" className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" placeholder="emailyo@tekawo.com" required />
+                          <Input 
+                            type="email" 
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            className="bg-foreground/5 border-foreground/10 h-7 lg:h-11 text-[9px] lg:text-sm rounded-lg lg:rounded-xl focus:ring-primary/50 text-foreground" 
+                            placeholder="email@company.com" 
+                            required 
+                          />
                         </div>
                       </div>
                       <Button onClick={nextStep} type="button" className="w-full h-7 lg:h-11 rounded-lg lg:rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-[8px] lg:text-sm transition-all">Next</Button>
@@ -112,8 +158,12 @@ export function Contact() {
                       <div className="grid gap-2 lg:gap-4">
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Budget</Label>
-                          <select className="w-full h-7 lg:h-11 bg-background border border-foreground/10 rounded-lg lg:rounded-xl px-2 lg:px-3 focus:outline-none focus:ring-1 focus:ring-primary text-[9px] lg:text-sm text-foreground">
-                          <option>below$5k - $5k</option>
+                          <select 
+                            value={formData.budget}
+                            onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                            className="w-full h-7 lg:h-11 bg-background border border-foreground/10 rounded-lg lg:rounded-xl px-2 lg:px-3 focus:outline-none focus:ring-1 focus:ring-primary text-[9px] lg:text-sm text-foreground"
+                          >
+                            <option>below$5k - $5k</option>
                             <option>$5k - $10k</option>
                             <option>$10k - $25k</option>
                             <option>$25k - $50k</option>
@@ -123,12 +173,24 @@ export function Contact() {
                         </div>
                         <div className="space-y-1 lg:space-y-2">
                           <Label className="text-[6px] lg:text-[10px] uppercase tracking-widest text-foreground/40">Brief</Label>
-                          <textarea className="w-full bg-foreground/5 border-foreground/10 rounded-lg lg:rounded-xl p-2 h-16 lg:h-28 text-[9px] lg:text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none text-foreground" placeholder="Goals..." required />
+                          <textarea 
+                            value={formData.message}
+                            onChange={(e) => setFormData({...formData, message: e.target.value})}
+                            className="w-full bg-foreground/5 border-foreground/10 rounded-lg lg:rounded-xl p-2 h-16 lg:h-28 text-[9px] lg:text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none text-foreground" 
+                            placeholder="Goals..." 
+                            required 
+                          />
                         </div>
                       </div>
                       <div className="flex gap-2">
                         <Button onClick={prevStep} type="button" variant="outline" className="flex-1 h-7 lg:h-11 rounded-lg lg:rounded-xl border-foreground/10 hover:bg-foreground/5 text-[8px] lg:text-sm font-bold text-foreground">Back</Button>
-                        <Button type="submit" className="flex-[2] h-7 lg:h-11 rounded-lg lg:rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-[8px] lg:text-sm shadow-xl shadow-foreground/5 transition-all">Submit</Button>
+                        <Button 
+                          type="submit" 
+                          disabled={loading}
+                          className="flex-[2] h-7 lg:h-11 rounded-lg lg:rounded-xl bg-foreground text-background hover:opacity-90 font-bold text-[8px] lg:text-sm shadow-xl shadow-foreground/5 transition-all"
+                        >
+                          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit'}
+                        </Button>
                       </div>
                     </div>
                   )}

@@ -12,19 +12,18 @@ import {
   DollarSign, 
   MessageSquare,
   ShieldAlert,
-  Settings,
   MoreVertical,
   Loader2,
   Download,
   FileText,
   Trash2,
   CheckCircle2,
-  ExternalLink,
   Filter,
-  ArrowRight
+  ArrowRight,
+  Mail,
+  Archive
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +39,7 @@ import {
 export default function AdminDashboard() {
   const db = useFirestore();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'inquiries' | 'applications'>('inquiries');
+  const [activeTab, setActiveTab] = useState<'inquiries' | 'applications' | 'messages'>('inquiries');
 
   // Firestore Queries
   const inquiriesQuery = useMemo(() => {
@@ -53,14 +52,20 @@ export default function AdminDashboard() {
     return query(collection(db, 'jobApplications'), orderBy('createdAt', 'desc'), limit(50));
   }, [db]);
 
+  const messagesQuery = useMemo(() => {
+    if (!db) return null;
+    return query(collection(db, 'contactMessages'), orderBy('createdAt', 'desc'), limit(50));
+  }, [db]);
+
   const { data: inquiries, loading: inquiriesLoading } = useCollection(inquiriesQuery);
   const { data: applications, loading: applicationsLoading } = useCollection(applicationsQuery);
+  const { data: messages, loading: messagesLoading } = useCollection(messagesQuery);
 
   // Actions
-  const handleStatusUpdate = async (type: 'inquiries' | 'applications', id: string, newStatus: string) => {
+  const handleStatusUpdate = async (type: string, id: string, newStatus: string) => {
     if (!db) return;
     try {
-      const docRef = doc(db, type === 'inquiries' ? 'projectInquiries' : 'jobApplications', id);
+      const docRef = doc(db, type, id);
       await updateDoc(docRef, { status: newStatus });
       toast({
         title: "System Update",
@@ -75,12 +80,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDelete = async (type: 'inquiries' | 'applications', id: string) => {
+  const handleDelete = async (type: string, id: string) => {
     if (!db) return;
-    if (!confirm("Are you sure you want to purge this record from the cluster?")) return;
+    if (!confirm("Are you sure you want to purge this record?")) return;
     
     try {
-      const docRef = doc(db, type === 'inquiries' ? 'projectInquiries' : 'jobApplications', id);
+      const docRef = doc(db, type, id);
       await deleteDoc(docRef);
       toast({
         title: "Record Purged",
@@ -109,13 +114,8 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
-  const generatePDFMock = () => {
-    toast({
-      title: "PDF Engine Initializing",
-      description: "Generating system report... Please use 'Print to PDF' in the next screen.",
-    });
-    setTimeout(() => window.print(), 1000);
-  };
+  const currentData = activeTab === 'inquiries' ? inquiries : activeTab === 'applications' ? applications : messages;
+  const currentLoading = activeTab === 'inquiries' ? inquiriesLoading : activeTab === 'applications' ? applicationsLoading : messagesLoading;
 
   return (
     <main className="min-h-screen bg-background pt-32 pb-24 print:pt-0">
@@ -129,15 +129,8 @@ export default function AdminDashboard() {
           </div>
           <div className="flex gap-4">
             <Button 
-              variant="outline" 
-              className="rounded-full h-12 px-6 border-foreground/10"
-              onClick={generatePDFMock}
-            >
-              <FileText className="w-4 h-4 mr-2" /> System Report
-            </Button>
-            <Button 
               className="rounded-full h-12 px-6 bg-primary text-white font-bold"
-              onClick={() => exportToCSV(activeTab === 'inquiries' ? (inquiries || []) : (applications || []), `hitech_audit_${activeTab}`)}
+              onClick={() => exportToCSV(currentData || [], `hitech_audit_${activeTab}`)}
             >
               <Download className="w-4 h-4 mr-2" /> Export Audit
             </Button>
@@ -154,8 +147,8 @@ export default function AdminDashboard() {
               {[
                 { label: "Project Inquiries", val: inquiries?.length || "0", icon: MessageSquare, color: "text-amber-500" },
                 { label: "Job Applications", val: applications?.length || "0", icon: Users, color: "text-purple-500" },
-                { label: "Active Systems", val: "14", icon: Layers, color: "text-blue-500" },
-                { label: "Estimated Value", val: "$420k", icon: DollarSign, color: "text-emerald-500" }
+                { label: "System Messages", val: messages?.length || "0", icon: Mail, color: "text-blue-500" },
+                { label: "Active Systems", val: "14", icon: Layers, color: "text-emerald-500" }
               ].map((stat, i) => (
                 <div key={i} className="apple-card p-6 flex flex-col justify-between">
                   <stat.icon className={cn("w-6 h-6 mb-4", stat.color)} />
@@ -176,27 +169,37 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab('inquiries')}
                 className={cn(
                   "w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all",
-                  activeTab === 'inquiries' ? "bg-primary text-white shadow-xl shadow-primary/20" : "hover:bg-foreground/5 text-foreground/60"
+                  activeTab === 'inquiries' ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <MessageSquare className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Inquiries</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Projects</span>
                 </div>
-                {inquiries?.length && <span className="text-[10px] font-bold opacity-60">{inquiries.length}</span>}
               </button>
               <button 
                 onClick={() => setActiveTab('applications')}
                 className={cn(
                   "w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all",
-                  activeTab === 'applications' ? "bg-primary text-white shadow-xl shadow-primary/20" : "hover:bg-foreground/5 text-foreground/60"
+                  activeTab === 'applications' ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <Users className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Applications</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Talent</span>
                 </div>
-                {applications?.length && <span className="text-[10px] font-bold opacity-60">{applications.length}</span>}
+              </button>
+              <button 
+                onClick={() => setActiveTab('messages')}
+                className={cn(
+                  "w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all",
+                  activeTab === 'messages' ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Mailbox</span>
+                </div>
               </button>
             </div>
 
@@ -205,15 +208,9 @@ export default function AdminDashboard() {
                 <ShieldAlert className="w-5 h-5 text-primary" />
                 <h4 className="font-bold text-sm">Cluster Health</h4>
               </div>
-              <div className="space-y-6">
-                <div className="border-l-2 border-primary/20 pl-4">
-                  <p className="text-xs font-bold mb-1">Firestore Sync</p>
-                  <p className="text-[10px] text-foreground/40">Real-time streams active on all nodes.</p>
-                </div>
-                <div className="border-l-2 border-green-500/20 pl-4">
-                  <p className="text-xs font-bold mb-1 text-green-500">Neural Engine</p>
-                  <p className="text-[10px] text-foreground/40">Consultant AI responding to inquiries.</p>
-                </div>
+              <div className="space-y-4 text-[10px] font-bold text-foreground/40 uppercase tracking-widest">
+                <p>History Logging: ACTIVE</p>
+                <p>Neural Storage: SYNCED</p>
               </div>
             </div>
           </div>
@@ -221,167 +218,83 @@ export default function AdminDashboard() {
           {/* Main Data Table Area */}
           <div className="lg:col-span-9 space-y-8">
             <AnimatePresence mode="wait">
-              {activeTab === 'inquiries' ? (
-                <motion.div 
-                  key="inquiries"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="apple-card p-10 overflow-hidden"
-                >
-                  <div className="flex items-center justify-between mb-10">
-                    <h3 className="text-2xl font-headline font-bold">Project Inquiries</h3>
-                    <div className="flex gap-2">
-                       {inquiriesLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
-                       <Filter className="w-4 h-4 text-foreground/20 cursor-pointer" />
-                    </div>
-                  </div>
+              <motion.div 
+                key={activeTab}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="apple-card p-10 overflow-hidden"
+              >
+                <div className="flex items-center justify-between mb-10">
+                  <h3 className="text-2xl font-headline font-bold">
+                    {activeTab === 'inquiries' ? 'Project Inquiries' : activeTab === 'applications' ? 'Talent Pipeline' : 'System Mailbox'}
+                  </h3>
+                  {currentLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+                </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b border-foreground/5">
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Client</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Type / Budget</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Actions</th>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-foreground/5">
+                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Sender / Context</th>
+                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
+                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-foreground/5">
+                      {currentData?.map((item: any) => (
+                        <tr key={item.id} className="group hover:bg-foreground/[0.02] transition-all">
+                          <td className="py-6">
+                            <p className="font-bold text-sm">{item.fullName}</p>
+                            <p className="text-[10px] text-foreground/40">{item.email}</p>
+                            <p className="text-[10px] text-foreground/30 mt-1 italic line-clamp-2">
+                              {activeTab === 'messages' ? item.message : activeTab === 'inquiries' ? `${item.projectType}: ${item.description}` : `${item.role}`}
+                            </p>
+                          </td>
+                          <td className="py-6">
+                            <span className={cn(
+                              "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest",
+                              item.status === 'new' || item.status === 'applied' || item.status === 'unread' ? "bg-primary/10 text-primary" : "bg-green-500/10 text-green-500"
+                            )}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td className="py-6 text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="apple-glass p-2 rounded-2xl min-w-[160px]">
+                                {activeTab === 'messages' && (
+                                  <DropdownMenuItem onClick={() => handleStatusUpdate('contactMessages', item.id, 'read')} className="rounded-xl flex gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Mark Read
+                                  </DropdownMenuItem>
+                                )}
+                                {activeTab === 'inquiries' && (
+                                  <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'reviewing')} className="rounded-xl flex gap-2">
+                                    <Layers className="w-4 h-4 text-amber-500" /> Review
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuSeparator className="bg-foreground/5" />
+                                <DropdownMenuItem onClick={() => handleDelete(activeTab === 'inquiries' ? 'projectInquiries' : activeTab === 'applications' ? 'jobApplications' : 'contactMessages', item.id)} className="rounded-xl text-destructive flex gap-2">
+                                  <Trash2 className="w-4 h-4" /> Delete Record
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-foreground/5">
-                        {inquiries?.map((inq: any) => (
-                          <tr key={inq.id} className="group hover:bg-foreground/[0.02] transition-all">
-                            <td className="py-6">
-                              <p className="font-bold text-sm">{inq.fullName}</p>
-                              <p className="text-[10px] text-foreground/40">{inq.email}</p>
-                              <p className="text-[10px] text-foreground/30 mt-1 italic line-clamp-1">"{inq.description}"</p>
-                            </td>
-                            <td className="py-6">
-                              <p className="text-xs font-bold uppercase">{inq.projectType}</p>
-                              <p className="text-[10px] text-foreground/40 font-bold">{inq.budget}</p>
-                            </td>
-                            <td className="py-6">
-                              <span className={cn(
-                                "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest",
-                                inq.status === 'new' ? "bg-primary/10 text-primary" : 
-                                inq.status === 'reviewing' ? "bg-amber-500/10 text-amber-500" :
-                                "bg-green-500/10 text-green-500"
-                              )}>
-                                {inq.status || 'new'}
-                              </span>
-                            </td>
-                            <td className="py-6 text-right">
-                              <div className="flex justify-end gap-2">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl border border-foreground/5">
-                                      <MoreVertical className="w-4 h-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent className="apple-glass p-2 rounded-2xl min-w-[160px]">
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('inquiries', inq.id, 'reviewing')} className="rounded-xl flex gap-2">
-                                      <Layers className="w-4 h-4 text-amber-500" /> Review
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('inquiries', inq.id, 'contacted')} className="rounded-xl flex gap-2">
-                                      <CheckCircle2 className="w-4 h-4 text-green-500" /> Mark Contacted
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator className="bg-foreground/5" />
-                                    <DropdownMenuItem onClick={() => handleDelete('inquiries', inq.id)} className="rounded-xl text-destructive focus:text-destructive flex gap-2">
-                                      <Trash2 className="w-4 h-4" /> Purge Record
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                        {(!inquiries || inquiries.length === 0) && !inquiriesLoading && (
-                          <tr>
-                            <td colSpan={4} className="py-20 text-center text-foreground/20 text-[10px] font-bold uppercase tracking-[0.4em]">Zero inquiries detected.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="applications"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="apple-card p-10 overflow-hidden"
-                >
-                  <div className="flex items-center justify-between mb-10">
-                    <h3 className="text-2xl font-headline font-bold">Talent Pipeline</h3>
-                    {applicationsLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
-                  </div>
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b border-foreground/5">
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Candidate</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Role</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                          <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Actions</th>
+                      ))}
+                      {(!currentData || currentData.length === 0) && !currentLoading && (
+                        <tr>
+                          <td colSpan={3} className="py-20 text-center text-foreground/20 text-[10px] font-bold uppercase tracking-[0.4em]">Cluster clear.</td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-foreground/5">
-                        {applications?.map((app: any) => (
-                          <tr key={app.id} className="group hover:bg-foreground/[0.02] transition-all">
-                            <td className="py-6">
-                              <p className="font-bold text-sm">{app.fullName}</p>
-                              <p className="text-[10px] text-foreground/40">{app.email}</p>
-                              <a href={app.portfolio} target="_blank" className="text-[10px] text-primary flex items-center gap-1 mt-1 hover:underline">
-                                <ExternalLink className="w-3 h-3" /> Technical Portfolio
-                              </a>
-                            </td>
-                            <td className="py-6">
-                              <p className="text-xs font-bold">{app.role}</p>
-                            </td>
-                            <td className="py-6">
-                              <span className={cn(
-                                "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest",
-                                app.status === 'applied' ? "bg-purple-500/10 text-purple-500" : 
-                                app.status === 'interviewing' ? "bg-blue-500/10 text-blue-500" :
-                                "bg-green-500/10 text-green-500"
-                              )}>
-                                {app.status || 'applied'}
-                              </span>
-                            </td>
-                            <td className="py-6 text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl border border-foreground/5">
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="apple-glass p-2 rounded-2xl min-w-[160px]">
-                                  <DropdownMenuItem onClick={() => handleStatusUpdate('applications', app.id, 'interviewing')} className="rounded-xl flex gap-2">
-                                    <ArrowRight className="w-4 h-4 text-blue-500" /> Start Interview
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusUpdate('applications', app.id, 'hired')} className="rounded-xl flex gap-2">
-                                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Hire
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator className="bg-foreground/5" />
-                                  <DropdownMenuItem onClick={() => handleDelete('applications', app.id)} className="rounded-xl text-destructive focus:text-destructive flex gap-2">
-                                    <Trash2 className="w-4 h-4" /> Purge Application
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </td>
-                          </tr>
-                        ))}
-                        {(!applications || applications.length === 0) && !applicationsLoading && (
-                          <tr>
-                            <td colSpan={4} className="py-20 text-center text-foreground/20 text-[10px] font-bold uppercase tracking-[0.4em]">Pipeline clear. No candidates detected.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </motion.div>
-              )}
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>

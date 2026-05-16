@@ -22,7 +22,6 @@ import {
   Cpu,
   Send,
   Loader2,
-  User,
   Sparkles,
   ChevronLeft,
   Volume2,
@@ -60,7 +59,7 @@ export default function ClientPortal(props: {
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', content: "Hello. I am Zainab, your neural concierge. I am a representative of HITECH, founded by the visionary JoelHitech Lubega. How can I assist with your architecture today?", time: "System Boot" }
+    { role: 'model', content: "Hello. I am Zainab, your neural concierge. How can I assist with your architecture today?", time: "System Boot" }
   ]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);

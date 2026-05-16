@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -10,18 +11,21 @@ import {
   ChevronRight, 
   ChevronLeft, 
   CheckCircle2, 
-  Sparkles,
   Zap,
-  Shield,
   Smartphone,
   Globe,
-  Brain
+  Brain,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const projectTypes = [
   { id: 'web', name: 'Web Platform', icon: Globe },
@@ -32,10 +36,48 @@ const projectTypes = [
 
 export default function RequestProjectPage() {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const db = useFirestore();
+
+  const [formData, setFormData] = useState({
+    projectType: '',
+    budget: '$5k - $10k',
+    timeline: '1 - 3 Months',
+    description: '',
+    fullName: '',
+    email: '',
+    company: ''
+  });
 
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
+
+  const handleSubmit = async () => {
+    if (!db) return;
+    setLoading(true);
+
+    const inquiryData = {
+      ...formData,
+      status: 'new',
+      createdAt: serverTimestamp()
+    };
+
+    addDoc(collection(db, 'projectInquiries'), inquiryData)
+      .then(() => {
+        setSubmitted(true);
+        setLoading(false);
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: 'projectInquiries',
+          operation: 'create',
+          requestResourceData: inquiryData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
+      });
+  };
 
   return (
     <main className="min-h-screen bg-background pt-32">
@@ -98,14 +140,19 @@ export default function RequestProjectPage() {
                         {projectTypes.map((type) => (
                           <button 
                             key={type.id}
-                            className="apple-glass p-8 rounded-3xl flex flex-col items-center gap-4 hover:border-primary/50 transition-all border-foreground/5"
+                            onClick={() => setFormData({ ...formData, projectType: type.id })}
+                            className={`apple-glass p-8 rounded-3xl flex flex-col items-center gap-4 transition-all border ${formData.projectType === type.id ? 'border-primary bg-primary/5' : 'border-foreground/5 hover:border-primary/50'}`}
                           >
-                            <type.icon className="w-8 h-8 text-primary" />
+                            <type.icon className={`w-8 h-8 ${formData.projectType === type.id ? 'text-primary' : 'text-foreground/40'}`} />
                             <span className="font-bold text-sm">{type.name}</span>
                           </button>
                         ))}
                       </div>
-                      <Button onClick={nextStep} className="w-full h-14 rounded-2xl bg-foreground text-background font-bold group">
+                      <Button 
+                        disabled={!formData.projectType}
+                        onClick={nextStep} 
+                        className="w-full h-14 rounded-2xl bg-foreground text-background font-bold group"
+                      >
                         Continue <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </motion.div>
@@ -126,7 +173,11 @@ export default function RequestProjectPage() {
                       <div className="space-y-6">
                         <div className="space-y-2">
                           <Label className="text-xs uppercase tracking-widest text-foreground/40">Budget Range</Label>
-                          <select className="w-full h-14 bg-background border border-foreground/10 rounded-2xl px-4 focus:outline-none focus:ring-2 focus:ring-primary">
+                          <select 
+                            value={formData.budget}
+                            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                            className="w-full h-14 bg-background border border-foreground/10 rounded-2xl px-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
                             <option>$5k - $10k</option>
                             <option>$10k - $25k</option>
                             <option>$25k - $50k</option>
@@ -135,7 +186,11 @@ export default function RequestProjectPage() {
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs uppercase tracking-widest text-foreground/40">Timeline</Label>
-                          <select className="w-full h-14 bg-background border border-foreground/10 rounded-2xl px-4 focus:outline-none focus:ring-2 focus:ring-primary">
+                          <select 
+                            value={formData.timeline}
+                            onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                            className="w-full h-14 bg-background border border-foreground/10 rounded-2xl px-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
                             <option>1 - 3 Months</option>
                             <option>3 - 6 Months</option>
                             <option>6+ Months</option>
@@ -143,12 +198,17 @@ export default function RequestProjectPage() {
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs uppercase tracking-widest text-foreground/40">Description</Label>
-                          <Textarea className="min-h-[150px] rounded-2xl p-4" placeholder="Tell us what you're building..." />
+                          <Textarea 
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            className="min-h-[150px] rounded-2xl p-4" 
+                            placeholder="Tell us what you're building..." 
+                          />
                         </div>
                       </div>
                       <div className="flex gap-4">
                         <Button variant="outline" onClick={prevStep} className="flex-1 h-14 rounded-2xl">Back</Button>
-                        <Button onClick={nextStep} className="flex-[2] h-14 rounded-2xl bg-foreground text-background font-bold">Next</Button>
+                        <Button disabled={!formData.description} onClick={nextStep} className="flex-[2] h-14 rounded-2xl bg-foreground text-background font-bold">Next</Button>
                       </div>
                     </motion.div>
                   )}
@@ -169,22 +229,46 @@ export default function RequestProjectPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label className="text-xs uppercase tracking-widest text-foreground/40">Full Name</Label>
-                            <Input className="h-14 rounded-2xl" placeholder="John Doe" />
+                            <Input 
+                              value={formData.fullName}
+                              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                              className="h-14 rounded-2xl" 
+                              placeholder="John Doe" 
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label className="text-xs uppercase tracking-widest text-foreground/40">Work Email</Label>
-                            <Input className="h-14 rounded-2xl" placeholder="john@company.com" />
+                            <Input 
+                              type="email"
+                              value={formData.email}
+                              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                              className="h-14 rounded-2xl" 
+                              placeholder="john@company.com" 
+                            />
                           </div>
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs uppercase tracking-widest text-foreground/40">Company Name</Label>
-                          <Input className="h-14 rounded-2xl" placeholder="Acme Inc." />
+                          <Input 
+                            value={formData.company}
+                            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                            className="h-14 rounded-2xl" 
+                            placeholder="Acme Inc." 
+                          />
                         </div>
                       </div>
                       <div className="flex gap-4">
                         <Button variant="outline" onClick={prevStep} className="flex-1 h-14 rounded-2xl">Back</Button>
-                        <Button onClick={() => setSubmitted(true)} className="flex-[2] h-14 rounded-2xl bg-primary text-white font-bold shadow-xl shadow-primary/20 group">
-                          Launch Inquiry <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                        <Button 
+                          disabled={loading || !formData.fullName || !formData.email}
+                          onClick={handleSubmit} 
+                          className="flex-[2] h-14 rounded-2xl bg-primary text-white font-bold shadow-xl shadow-primary/20 group"
+                        >
+                          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                            <>
+                              Launch Inquiry <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </>
+                          )}
                         </Button>
                       </div>
                     </motion.div>
@@ -201,8 +285,4 @@ export default function RequestProjectPage() {
       <Footer />
     </main>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

@@ -1,0 +1,68 @@
+
+{
+  "entities": {
+    "ProjectInquiry": {
+      "title": "Project Inquiry",
+      "description": "A request for a new project submission from a potential client.",
+      "type": "object",
+      "properties": {
+        "projectType": { "type": "string", "enum": ["web", "mobile", "ai", "cloud"] },
+        "budget": { "type": "string" },
+        "timeline": { "type": "string" },
+        "description": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "company": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "reviewing", "contacted", "closed"], "default": "new" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["projectType", "fullName", "email", "description"]
+    },
+    "JobApplication": {
+      "title": "Job Application",
+      "description": "A submission from a candidate applying for a position at HITECH.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string" },
+        "portfolio": { "type": "string" },
+        "coverLetter": { "type": "string" },
+        "resumeUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["applied", "interviewing", "hired", "rejected"], "default": "applied" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "role"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Extended information for authenticated users (Clients or Admins).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "client"], "default": "client" },
+        "company": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/projectInquiries/{inquiryId}": {
+      "schema": "#/backend/entities/ProjectInquiry",
+      "description": "Collection of project requests."
+    },
+    "/jobApplications/{applicationId}": {
+      "schema": "#/backend/entities/JobApplication",
+      "description": "Collection of candidate applications."
+    },
+    "/users/{userId}": {
+      "schema": "#/backend/entities/UserProfile",
+      "description": "User profile data."
+    }
+  }
+}

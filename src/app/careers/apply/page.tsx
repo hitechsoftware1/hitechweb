@@ -10,9 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Upload, Send, ChevronLeft, Briefcase, FileText, User } from 'lucide-react';
+import { CheckCircle2, Upload, Send, ChevronLeft, Briefcase, FileText, User, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 function ApplyFormContent() {
   const searchParams = useSearchParams();
@@ -21,24 +25,49 @@ function ApplyFormContent() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const db = useFirestore();
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    portfolio: '',
+    coverLetter: '',
+  });
 
   useEffect(() => {
     if (roleFromQuery) setRole(roleFromQuery);
   }, [roleFromQuery]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      toast({
-        title: "Application Submitted",
-        description: "Your technical profile has been uploaded to our recruitment cluster.",
+    const applicationData = {
+      ...formData,
+      role,
+      status: 'applied',
+      createdAt: serverTimestamp()
+    };
+
+    addDoc(collection(db, 'jobApplications'), applicationData)
+      .then(() => {
+        setSubmitted(true);
+        setLoading(false);
+        toast({
+          title: "Application Submitted",
+          description: "Your technical profile has been uploaded to our recruitment cluster.",
+        });
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: 'jobApplications',
+          operation: 'create',
+          requestResourceData: applicationData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
       });
-    }, 2000);
   };
 
   return (
@@ -85,13 +114,26 @@ function ApplyFormContent() {
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 flex items-center gap-2">
                       <User className="w-3 h-3" /> Full Name
                     </Label>
-                    <Input className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" placeholder="John Doe" required />
+                    <Input 
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" 
+                      placeholder="John Doe" 
+                      required 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 flex items-center gap-2">
                       <FileText className="w-3 h-3" /> Work Email
                     </Label>
-                    <Input type="email" className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" placeholder="john@company.com" required />
+                    <Input 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" 
+                      placeholder="john@company.com" 
+                      required 
+                    />
                   </div>
                 </div>
 
@@ -110,12 +152,24 @@ function ApplyFormContent() {
 
                 <div className="space-y-2">
                   <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">Portfolio / LinkedIn / GitHub</Label>
-                  <Input className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" placeholder="https://..." required />
+                  <Input 
+                    value={formData.portfolio}
+                    onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                    className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" 
+                    placeholder="https://..." 
+                    required 
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">Cover Letter / Why HITECH?</Label>
-                  <Textarea className="min-h-[150px] rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" placeholder="Tell us about your technical journey and what you bring to the team..." required />
+                  <Textarea 
+                    value={formData.coverLetter}
+                    onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
+                    className="min-h-[150px] rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50" 
+                    placeholder="Tell us about your technical journey and what you bring to the team..." 
+                    required 
+                  />
                 </div>
 
                 <div className="space-y-4">
@@ -134,9 +188,9 @@ function ApplyFormContent() {
                   disabled={loading}
                   className="w-full h-14 rounded-xl bg-primary text-white font-bold hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl shadow-primary/20"
                 >
-                  {loading ? "Processing Application..." : (
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                     <>
-                      Submit Application <Send className="w-5 h-5" />
+                      Submit Application <Send className="w-5 h-5 ml-2" />
                     </>
                   )}
                 </Button>

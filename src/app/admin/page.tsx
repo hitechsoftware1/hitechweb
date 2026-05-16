@@ -10,23 +10,33 @@ import {
   Users, 
   Layers, 
   DollarSign, 
-  ArrowUpRight, 
   MessageSquare,
-  Clock,
   ShieldAlert,
   Settings,
-  MoreVertical
+  MoreVertical,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-
-const recentInquiries = [
-  { name: "Sarah Jenkins", project: "Web Platform", budget: "$12k", time: "2h ago", status: "New" },
-  { name: "Mark Peterson", project: "AI Chatbot", budget: "$25k", time: "5h ago", status: "Review" },
-  { name: "Elena Rossi", project: "Mobile App", budget: "$18k", time: "1d ago", status: "Contacted" }
-];
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 
 export default function AdminDashboard() {
+  const db = useFirestore();
+  
+  const inquiriesQuery = React.useMemo(() => {
+    if (!db) return null;
+    return query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc'), limit(10));
+  }, [db]);
+
+  const applicationsQuery = React.useMemo(() => {
+    if (!db) return null;
+    return query(collection(db, 'jobApplications'), orderBy('createdAt', 'desc'), limit(10));
+  }, [db]);
+
+  const { data: inquiries, loading: inquiriesLoading } = useCollection(inquiriesQuery);
+  const { data: applications, loading: applicationsLoading } = useCollection(applicationsQuery);
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -57,10 +67,10 @@ export default function AdminDashboard() {
             {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[
-                { label: "Active Projects", val: "14", icon: Layers, color: "text-blue-500" },
-                { label: "Total Users", val: "1.2k", icon: Users, color: "text-purple-500" },
-                { label: "Revenue Q1", val: "$420k", icon: DollarSign, color: "text-emerald-500" },
-                { label: "Inquiries", val: "48", icon: MessageSquare, color: "text-amber-500" }
+                { label: "Project Inquiries", val: inquiries?.length || "0", icon: MessageSquare, color: "text-amber-500" },
+                { label: "Applications", val: applications?.length || "0", icon: Users, color: "text-purple-500" },
+                { label: "Active Nodes", val: "14", icon: Layers, color: "text-blue-500" },
+                { label: "Revenue Q1", val: "$420k", icon: DollarSign, color: "text-emerald-500" }
               ].map((stat, i) => (
                 <div key={i} className="apple-card p-6 flex flex-col justify-between">
                   <stat.icon className={cn("w-6 h-6 mb-4", stat.color)} />
@@ -72,45 +82,11 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            {/* Performance Overview */}
-            <div className="apple-card p-10">
-              <div className="flex items-center justify-between mb-10">
-                <h3 className="text-xl font-headline font-bold">Project Velocity</h3>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Global Output</p>
-                  <p className="text-xl font-bold text-primary">High</p>
-                </div>
-              </div>
-              <div className="space-y-8">
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-bold">Lumina OS Development</span>
-                    <span className="text-sm text-foreground/40">75%</span>
-                  </div>
-                  <Progress value={75} className="h-1.5" />
-                </div>
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-bold">Quantum API Integration</span>
-                    <span className="text-sm text-foreground/40">92%</span>
-                  </div>
-                  <Progress value={92} className="h-1.5" />
-                </div>
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-bold">Nexus Hub Cloud Migration</span>
-                    <span className="text-sm text-foreground/40">30%</span>
-                  </div>
-                  <Progress value={30} className="h-1.5" />
-                </div>
-              </div>
-            </div>
-
             {/* Recent Inquiries Table */}
             <div className="apple-card p-10 overflow-hidden">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-xl font-headline font-bold">Recent Inquiries</h3>
-                <Button variant="ghost" className="text-xs font-bold text-primary">View All</Button>
+                {inquiriesLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -124,13 +100,13 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-foreground/5">
-                    {recentInquiries.map((inq, idx) => (
-                      <tr key={idx} className="group hover:bg-foreground/[0.02] transition-all">
+                    {inquiries?.map((inq: any) => (
+                      <tr key={inq.id} className="group hover:bg-foreground/[0.02] transition-all">
                         <td className="py-4">
-                          <p className="font-bold text-sm">{inq.name}</p>
-                          <p className="text-[10px] text-foreground/40">{inq.time}</p>
+                          <p className="font-bold text-sm">{inq.fullName}</p>
+                          <p className="text-[10px] text-foreground/40">{inq.email}</p>
                         </td>
-                        <td className="py-4 text-sm">{inq.project}</td>
+                        <td className="py-4 text-sm uppercase">{inq.projectType}</td>
                         <td className="py-4 text-sm font-bold">{inq.budget}</td>
                         <td className="py-4">
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
@@ -144,6 +120,57 @@ export default function AdminDashboard() {
                         </td>
                       </tr>
                     ))}
+                    {inquiries?.length === 0 && !inquiriesLoading && (
+                      <tr>
+                        <td colSpan={5} className="py-12 text-center text-foreground/30 text-xs font-bold uppercase tracking-widest">No recent inquiries</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Recent Applications Table */}
+            <div className="apple-card p-10 overflow-hidden">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-headline font-bold">Job Applications</h3>
+                {applicationsLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-foreground/5">
+                      <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Applicant</th>
+                      <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Role</th>
+                      <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
+                      <th className="pb-4"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-foreground/5">
+                    {applications?.map((app: any) => (
+                      <tr key={app.id} className="group hover:bg-foreground/[0.02] transition-all">
+                        <td className="py-4">
+                          <p className="font-bold text-sm">{app.fullName}</p>
+                          <p className="text-[10px] text-foreground/40">{app.email}</p>
+                        </td>
+                        <td className="py-4 text-sm">{app.role}</td>
+                        <td className="py-4">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-500">
+                            {app.status}
+                          </span>
+                        </td>
+                        <td className="py-4 text-right">
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                    {applications?.length === 0 && !applicationsLoading && (
+                      <tr>
+                        <td colSpan={4} className="py-12 text-center text-foreground/30 text-xs font-bold uppercase tracking-widest">No recent applications</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -160,34 +187,13 @@ export default function AdminDashboard() {
               </div>
               <div className="space-y-6">
                 <div className="border-l-2 border-primary/20 pl-4">
-                  <p className="text-xs font-bold mb-1">Backup Successful</p>
-                  <p className="text-[10px] text-foreground/40">Daily database backup completed at 03:00 UTC.</p>
+                  <p className="text-xs font-bold mb-1">Database Sync</p>
+                  <p className="text-[10px] text-foreground/40">Real-time listeners active on project clusters.</p>
                 </div>
                 <div className="border-l-2 border-amber-500/20 pl-4">
-                  <p className="text-xs font-bold mb-1 text-amber-500">Security Audit Flag</p>
-                  <p className="text-[10px] text-foreground/40">3 unusual login attempts detected from Lagos, NG.</p>
+                  <p className="text-xs font-bold mb-1 text-amber-500">Lead Volume</p>
+                  <p className="text-[10px] text-foreground/40">{inquiries?.length || 0} inquiries require review.</p>
                 </div>
-              </div>
-            </div>
-
-            <div className="apple-card p-8">
-              <h4 className="font-bold text-sm mb-6">Team Activity</h4>
-              <div className="space-y-6">
-                {[
-                  { name: "JoelHitech", action: "Merged #42" },
-                  { name: "Admin_1", action: "Invited new client" },
-                  { name: "Bot_Neural", action: "Updated model v4" }
-                ].map((act, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center text-[10px] font-bold">
-                      {act.name[0]}
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold">{act.name}</p>
-                      <p className="text-[10px] text-foreground/40">{act.action}</p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

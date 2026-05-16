@@ -9,6 +9,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export function Footer() {
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
+  const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
 
   return (
     <footer className="bg-background pt-16 lg:pt-32 pb-8 lg:pb-16 border-t border-foreground/5">
@@ -71,9 +72,9 @@ export function Footer() {
           <div className="col-span-1">
             <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em] mb-6 lg:mb-8">Contact</h4>
             <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">Naalya Kampala, Uganda</p>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">hitechsoftware03@gmail.com</p>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">+256 742 928 508</p>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light">WA: +256 759 408 917</p>
+            <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">hitechsoftware03@gmail.com</a>
+            <a href="tel:+256742928508" className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">+256 742 928 508</a>
+            <a href="https://wa.me/256759408917" target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light block hover:text-primary transition-colors">WA: +256 759 408 917</a>
           </div>
         </div>
 
@@ -84,7 +85,7 @@ export function Footer() {
           <div className="flex gap-4 lg:gap-8 text-[9px] lg:text-[10px] font-bold text-foreground/20 uppercase tracking-widest">
             <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
             <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
-            <Link href="#" className="hover:text-primary transition-colors">System Status</Link>
+            <Link href="/status" className="hover:text-primary transition-colors">System Status</Link>
           </div>
         </div>
       </div>

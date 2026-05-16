@@ -6,6 +6,8 @@ import { Contact } from '@/components/sections/Contact';
 import { Mail, Phone, MapPin, MessageCircle, Clock, Globe } from 'lucide-react';
 
 export default function ContactPage() {
+  const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -21,22 +23,22 @@ export default function ContactPage() {
 
       <div className="container mx-auto px-6 mb-32">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-24">
-          <div className="apple-card p-10 flex flex-col gap-6">
+          <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="apple-card p-10 flex flex-col gap-6 hover:border-primary/50 transition-colors cursor-pointer decoration-transparent">
             <Mail className="w-10 h-10 text-primary" />
             <div>
               <h3 className="text-xl font-headline font-bold mb-2">Email</h3>
               <p className="text-foreground/60">hitechsoftware03@gmail.com</p>
               <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">24h Response Goal</p>
             </div>
-          </div>
-          <div className="apple-card p-10 flex flex-col gap-6">
+          </a>
+          <a href="tel:+256742928508" className="apple-card p-10 flex flex-col gap-6 hover:border-primary/50 transition-colors cursor-pointer decoration-transparent">
             <Phone className="w-10 h-10 text-primary" />
             <div>
               <h3 className="text-xl font-headline font-bold mb-2">Phone</h3>
               <p className="text-foreground/60">+256 742 928 508</p>
               <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">Mon - Fri, 9am - 6pm</p>
             </div>
-          </div>
+          </a>
           <div className="apple-card p-10 flex flex-col gap-6">
             <MapPin className="w-10 h-10 text-primary" />
             <div>

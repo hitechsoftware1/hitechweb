@@ -60,6 +60,8 @@ export function Contact() {
       });
   };
 
+  const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
+
   return (
     <section id="contact" className="py-12 lg:py-20 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
@@ -72,7 +74,7 @@ export function Contact() {
             </p>
 
             <div className="space-y-3 lg:space-y-6">
-              <a href="mailto:hitechsoftware03@gmail.com" className="flex items-center gap-2 lg:gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
+              <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 lg:gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <Mail className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
                 </div>

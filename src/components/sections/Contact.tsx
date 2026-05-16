@@ -72,7 +72,7 @@ export function Contact() {
             </p>
 
             <div className="space-y-3 lg:space-y-6">
-              <div className="flex items-center gap-2 lg:gap-4 group">
+              <a href="mailto:hitechsoftware03@gmail.com" className="flex items-center gap-2 lg:gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <Mail className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
                 </div>
@@ -80,8 +80,8 @@ export function Contact() {
                   <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Email Us</p>
                   <p className="text-[8px] lg:text-lg font-medium text-foreground/90 truncate max-w-[100px] lg:max-w-none">hitechsoftware03@gmail.com</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 lg:gap-4 group">
+              </a>
+              <a href="tel:+256742928508" className="flex items-center gap-2 lg:gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <Phone className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
                 </div>
@@ -89,8 +89,8 @@ export function Contact() {
                   <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Call Us</p>
                   <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+256 742 928 508</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 lg:gap-4 group">
+              </a>
+              <a href="https://wa.me/256759408917" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 lg:gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <MessageCircle className="text-primary w-3 h-3 lg:w-5 lg:h-5" />
                 </div>
@@ -98,7 +98,7 @@ export function Contact() {
                   <p className="text-[6px] lg:text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">WhatsApp</p>
                   <p className="text-[8px] lg:text-lg font-medium text-foreground/90">+256 759 408 917</p>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
 

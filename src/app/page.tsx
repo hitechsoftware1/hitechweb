@@ -13,7 +13,14 @@ import { Footer } from '@/components/layout/Footer';
 import { MessageCircle } from 'lucide-react';
 import { MouseFollower } from '@/components/ui/mouse-follower';
 
-export default function Home() {
+export default async function Home(props: {
+  params: Promise<any>;
+  searchParams: Promise<any>;
+}) {
+  // Unwrap params and searchParams for Next.js 15
+  await props.params;
+  await props.searchParams;
+
   return (
     <main className="min-h-screen relative">
       <MouseFollower />

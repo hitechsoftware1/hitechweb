@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, use } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,7 +36,14 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
-export default function AdminDashboard() {
+export default function AdminDashboard(props: {
+  params: Promise<any>;
+  searchParams: Promise<any>;
+}) {
+  // Unwrap params and searchParams for Next.js 15
+  use(props.params);
+  use(props.searchParams);
+
   const db = useFirestore();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'inquiries' | 'applications' | 'messages'>('inquiries');

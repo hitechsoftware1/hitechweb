@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, use } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,7 +34,14 @@ const projectTypes = [
   { id: 'cloud', name: 'Cloud Infrastructure', icon: Zap }
 ];
 
-export default function RequestProjectPage() {
+export default function RequestProjectPage(props: {
+  params: Promise<any>;
+  searchParams: Promise<any>;
+}) {
+  // Unwrap params and searchParams for Next.js 15
+  use(props.params);
+  use(props.searchParams);
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);

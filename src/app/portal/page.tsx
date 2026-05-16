@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { use } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
@@ -21,8 +21,16 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
-export default function ClientPortal() {
+export default function ClientPortal(props: {
+  params: Promise<any>;
+  searchParams: Promise<any>;
+}) {
+  // Unwrap params and searchParams for Next.js 15
+  use(props.params);
+  use(props.searchParams);
+
   const { toast } = useToast();
 
   const handleAction = (action: string) => {
@@ -196,8 +204,4 @@ export default function ClientPortal() {
       <Footer />
     </main>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

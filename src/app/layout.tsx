@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en" className={`dark scroll-smooth ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground">
         <FirebaseClientProvider>
+          <FirebaseErrorListener />
           {children}
           <Toaster />
         </FirebaseClientProvider>

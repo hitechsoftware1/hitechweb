@@ -21,11 +21,12 @@ import {
   Filter,
   ArrowRight,
   Mail,
-  Archive
+  Archive,
+  RefreshCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import {
@@ -35,12 +36,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AdminDashboard(props: {
   params: Promise<any>;
   searchParams: Promise<any>;
 }) {
-  // Unwrap params and searchParams for Next.js 15
   use(props.params);
   use(props.searchParams);
 
@@ -48,7 +50,6 @@ export default function AdminDashboard(props: {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'inquiries' | 'applications' | 'messages'>('inquiries');
 
-  // Firestore Queries
   const inquiriesQuery = useMemo(() => {
     if (!db) return null;
     return query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc'), limit(50));
@@ -68,57 +69,46 @@ export default function AdminDashboard(props: {
   const { data: applications, loading: applicationsLoading } = useCollection(applicationsQuery);
   const { data: messages, loading: messagesLoading } = useCollection(messagesQuery);
 
-  // Actions
-  const handleStatusUpdate = async (type: string, id: string, newStatus: string) => {
+  const handleStatusUpdate = (type: string, id: string, newStatus: string) => {
     if (!db) return;
-    try {
-      const docRef = doc(db, type, id);
-      await updateDoc(docRef, { status: newStatus });
-      toast({
-        title: "System Update",
-        description: `Status successfully updated to ${newStatus}.`,
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Update Failed",
-        description: "Could not sync status with the neural cluster.",
-      });
-    }
-  };
-
-  const handleDelete = async (type: string, id: string) => {
-    if (!db) return;
-    if (!confirm("Are you sure you want to purge this record?")) return;
+    const docRef = doc(db, type, id);
     
-    try {
-      const docRef = doc(db, type, id);
-      await deleteDoc(docRef);
-      toast({
-        title: "Record Purged",
-        description: "The technical data has been permanently removed.",
+    updateDoc(docRef, { status: newStatus })
+      .then(() => {
+        toast({
+          title: "Status Synchronized",
+          description: `Entity [${id}] updated to ${newStatus}.`,
+        });
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: { status: newStatus },
+        });
+        errorEmitter.emit('permission-error', permissionError);
       });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Purge Failed",
-        description: "Security protocols blocked the deletion.",
-      });
-    }
   };
 
-  const exportToCSV = (data: any[], filename: string) => {
-    if (!data || data.length === 0) return;
-    const headers = Object.keys(data[0]).join(",");
-    const rows = data.map(item => Object.values(item).map(val => `"${val}"`).join(","));
-    const csvContent = "data:text/csv;charset=utf-8," + headers + "\n" + rows.join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDelete = (type: string, id: string) => {
+    if (!db) return;
+    if (!confirm("Confirm record purge? This action is irreversible.")) return;
+    
+    const docRef = doc(db, type, id);
+    deleteDoc(docRef)
+      .then(() => {
+        toast({
+          title: "Neural Purge Complete",
+          description: "Record has been removed from all local and cloud clusters.",
+        });
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   const currentData = activeTab === 'inquiries' ? inquiries : activeTab === 'applications' ? applications : messages;
@@ -131,16 +121,19 @@ export default function AdminDashboard(props: {
       <section className="container mx-auto px-6 mb-12 print:hidden">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2 block">Enterprise Admin Command</span>
-            <h1 className="text-4xl lg:text-6xl font-headline font-bold tracking-tight">Ecosystem <br /> Overview.</h1>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2 block">Enterprise Command Dashboard</span>
+            <h1 className="text-4xl lg:text-6xl font-headline font-bold tracking-tight">HITECH <br /> Control Center.</h1>
           </div>
           <div className="flex gap-4">
-            <Button 
-              className="rounded-full h-12 px-6 bg-primary text-white font-bold"
-              onClick={() => exportToCSV(currentData || [], `hitech_audit_${activeTab}`)}
-            >
-              <Download className="w-4 h-4 mr-2" /> Export Audit
-            </Button>
+             <div className="apple-glass px-6 py-4 rounded-2xl flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center animate-pulse">
+                <RefreshCcw className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Live Sync</p>
+                <p className="text-sm font-bold">Active Connection</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -148,27 +141,6 @@ export default function AdminDashboard(props: {
       <div className="container mx-auto px-6 mb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Dashboard Stats Panel */}
-          <div className="lg:col-span-12 print:hidden">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-              {[
-                { label: "Project Inquiries", val: inquiries?.length || "0", icon: MessageSquare, color: "text-amber-500" },
-                { label: "Job Applications", val: applications?.length || "0", icon: Users, color: "text-purple-500" },
-                { label: "System Messages", val: messages?.length || "0", icon: Mail, color: "text-blue-500" },
-                { label: "Active Systems", val: "14", icon: Layers, color: "text-emerald-500" }
-              ].map((stat, i) => (
-                <div key={i} className="apple-card p-6 flex flex-col justify-between">
-                  <stat.icon className={cn("w-6 h-6 mb-4", stat.color)} />
-                  <div>
-                    <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{stat.label}</p>
-                    <p className="text-2xl font-bold">{stat.val}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Sidebar Tabs */}
           <div className="lg:col-span-3 space-y-4 print:hidden">
             <div className="apple-glass p-4 rounded-3xl flex flex-col gap-2">
               <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em] px-4 mb-2">Neural Channels</p>
@@ -181,8 +153,9 @@ export default function AdminDashboard(props: {
               >
                 <div className="flex items-center gap-3">
                   <MessageSquare className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Projects</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Project Leads</span>
                 </div>
+                <span className="text-[10px] font-bold opacity-50">{inquiries?.length || 0}</span>
               </button>
               <button 
                 onClick={() => setActiveTab('applications')}
@@ -195,6 +168,7 @@ export default function AdminDashboard(props: {
                   <Users className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wider">Talent</span>
                 </div>
+                <span className="text-[10px] font-bold opacity-50">{applications?.length || 0}</span>
               </button>
               <button 
                 onClick={() => setActiveTab('messages')}
@@ -205,24 +179,13 @@ export default function AdminDashboard(props: {
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Mailbox</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Inbox</span>
                 </div>
+                <span className="text-[10px] font-bold opacity-50">{messages?.length || 0}</span>
               </button>
-            </div>
-
-            <div className="apple-card p-8 bg-primary/5 border-primary/10">
-              <div className="flex items-center gap-3 mb-6">
-                <ShieldAlert className="w-5 h-5 text-primary" />
-                <h4 className="font-bold text-sm">Cluster Health</h4>
-              </div>
-              <div className="space-y-4 text-[10px] font-bold text-foreground/40 uppercase tracking-widest">
-                <p>History Logging: ACTIVE</p>
-                <p>Neural Storage: SYNCED</p>
-              </div>
             </div>
           </div>
 
-          {/* Main Data Table Area */}
           <div className="lg:col-span-9 space-y-8">
             <AnimatePresence mode="wait">
               <motion.div 
@@ -230,11 +193,11 @@ export default function AdminDashboard(props: {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="apple-card p-10 overflow-hidden"
+                className="apple-card p-8 lg:p-10 overflow-hidden"
               >
                 <div className="flex items-center justify-between mb-10">
                   <h3 className="text-2xl font-headline font-bold">
-                    {activeTab === 'inquiries' ? 'Project Inquiries' : activeTab === 'applications' ? 'Talent Pipeline' : 'System Mailbox'}
+                    {activeTab === 'inquiries' ? 'Project Requests' : activeTab === 'applications' ? 'Talent Pipeline' : 'Neural Mailbox'}
                   </h3>
                   {currentLoading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
                 </div>
@@ -243,9 +206,9 @@ export default function AdminDashboard(props: {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="border-b border-foreground/5">
-                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Sender / Context</th>
+                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Context / Origin</th>
                         <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Actions</th>
+                        <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Ops</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-foreground/5">
@@ -254,14 +217,18 @@ export default function AdminDashboard(props: {
                           <td className="py-6">
                             <p className="font-bold text-sm">{item.fullName}</p>
                             <p className="text-[10px] text-foreground/40">{item.email}</p>
-                            <p className="text-[10px] text-foreground/30 mt-1 italic line-clamp-2">
-                              {activeTab === 'messages' ? item.message : activeTab === 'inquiries' ? `${item.projectType}: ${item.description}` : `${item.role}`}
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {activeTab === 'inquiries' && <span className="text-[9px] font-bold bg-primary/5 text-primary px-2 py-0.5 rounded uppercase">{item.projectType}</span>}
+                              {activeTab === 'applications' && <span className="text-[9px] font-bold bg-accent/5 text-accent px-2 py-0.5 rounded uppercase">{item.role}</span>}
+                            </div>
+                            <p className="text-[10px] text-foreground/30 mt-2 line-clamp-2 max-w-md italic">
+                              {activeTab === 'messages' ? item.message : activeTab === 'inquiries' ? item.description : item.coverLetter}
                             </p>
                           </td>
                           <td className="py-6">
                             <span className={cn(
                               "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest",
-                              item.status === 'new' || item.status === 'applied' || item.status === 'unread' ? "bg-primary/10 text-primary" : "bg-green-500/10 text-green-500"
+                              ["new", "applied", "unread"].includes(item.status) ? "bg-primary/10 text-primary animate-pulse" : "bg-green-500/10 text-green-500"
                             )}>
                               {item.status}
                             </span>
@@ -274,19 +241,24 @@ export default function AdminDashboard(props: {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent className="apple-glass p-2 rounded-2xl min-w-[160px]">
-                                {activeTab === 'messages' && (
+                                {activeTab === 'messages' && item.status !== 'read' && (
                                   <DropdownMenuItem onClick={() => handleStatusUpdate('contactMessages', item.id, 'read')} className="rounded-xl flex gap-2">
-                                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Mark Read
+                                    <CheckCircle2 className="w-4 h-4 text-green-500" /> Archive Message
                                   </DropdownMenuItem>
                                 )}
-                                {activeTab === 'inquiries' && (
+                                {activeTab === 'inquiries' && item.status !== 'reviewing' && (
                                   <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'reviewing')} className="rounded-xl flex gap-2">
-                                    <Layers className="w-4 h-4 text-amber-500" /> Review
+                                    <Layers className="w-4 h-4 text-amber-500" /> Mark Reviewing
+                                  </DropdownMenuItem>
+                                )}
+                                {activeTab === 'applications' && item.status !== 'interviewing' && (
+                                  <DropdownMenuItem onClick={() => handleStatusUpdate('jobApplications', item.id, 'interviewing')} className="rounded-xl flex gap-2">
+                                    <Users className="w-4 h-4 text-purple-500" /> Schedule Interview
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuSeparator className="bg-foreground/5" />
-                                <DropdownMenuItem onClick={() => handleDelete(activeTab === 'inquiries' ? 'projectInquiries' : activeTab === 'applications' ? 'jobApplications' : 'contactMessages', item.id)} className="rounded-xl text-destructive flex gap-2">
-                                  <Trash2 className="w-4 h-4" /> Delete Record
+                                <DropdownMenuItem onClick={() => handleDelete(activeTab === 'inquiries' ? 'projectInquiries' : activeTab === 'applications' ? 'jobApplications' : 'contactMessages', item.id)} className="rounded-xl text-destructive flex gap-2 font-bold">
+                                  <Trash2 className="w-4 h-4" /> Purge Entity
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -295,7 +267,7 @@ export default function AdminDashboard(props: {
                       ))}
                       {(!currentData || currentData.length === 0) && !currentLoading && (
                         <tr>
-                          <td colSpan={3} className="py-20 text-center text-foreground/20 text-[10px] font-bold uppercase tracking-[0.4em]">Cluster clear.</td>
+                          <td colSpan={3} className="py-20 text-center text-foreground/20 text-[10px] font-bold uppercase tracking-[0.4em]">Neural cluster clear. No active entities.</td>
                         </tr>
                       )}
                     </tbody>

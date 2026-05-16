@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, use } from 'react';
+import React, { useState, use, useRef, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,15 +20,28 @@ import {
   ExternalLink,
   Shield,
   Zap,
-  Cpu
+  Cpu,
+  Send,
+  Loader2,
+  User,
+  Sparkles,
+  ChevronLeft
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { zainabChat } from '@/ai/flows/zainab';
 
 type PortalTab = 'dashboard' | 'discussions' | 'deliverables' | 'timeline' | 'environment';
+
+interface Message {
+  role: 'user' | 'model';
+  content: string;
+  time: string;
+}
 
 export default function ClientPortal(props: {
   params: Promise<any>;
@@ -39,6 +52,17 @@ export default function ClientPortal(props: {
 
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<PortalTab>('dashboard');
+  const [isChatActive, setIsChatActive] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [userInput, setUserInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'model', content: "Hello. I am Zainab, your neural concierge. How can I assist with your architecture today?", time: "System Boot" }
+  ]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isChatActive]);
 
   const handleAction = (action: string) => {
     toast({
@@ -62,6 +86,38 @@ export default function ClientPortal(props: {
     setTimeout(() => {
       window.open('https://staging.hitech.systems', '_blank');
     }, 1500);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userInput.trim() || chatLoading) return;
+
+    const userMessage = userInput.trim();
+    setUserInput('');
+    const newMessages = [...messages, { role: 'user', content: userMessage, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } as Message];
+    setMessages(newMessages);
+    setChatLoading(true);
+
+    try {
+      const response = await zainabChat({
+        message: userMessage,
+        history: messages.map(m => ({ role: m.role, content: m.content }))
+      });
+
+      setMessages([...newMessages, { 
+        role: 'model', 
+        content: response.response, 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+      }]);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Neural Sync Error",
+        description: "Zainab is momentarily offline. Re-establishing link...",
+      });
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   const renderContent = () => {
@@ -148,34 +204,131 @@ export default function ClientPortal(props: {
 
       case 'discussions':
         return (
-          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-10">
-            <h3 className="text-2xl font-headline font-bold mb-8">Neural Discussions</h3>
-            <div className="space-y-6">
-              {[
-                { author: "JoelHitech", role: "Chief Architect", msg: "The latest API integration tests are passing with 4ms latency. Ready for staging review.", time: "10:45 AM" },
-                { author: "Client Admin", role: "Product Owner", msg: "Looks great. Can we confirm the security protocols for the mobile gateway?", time: "11:20 AM" },
-                { author: "SRE Lead", role: "Infrastructure", msg: "Zero-trust protocols active. Tunnels are secured with HITECH Standard v4.", time: "12:05 PM" }
-              ].map((chat, i) => (
-                <div key={i} className="flex gap-6 items-start pb-6 border-b border-foreground/5 last:border-0">
-                  <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center shrink-0">
-                    <Cpu className="w-6 h-6 text-primary" />
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-0 flex flex-col min-h-[600px] overflow-hidden">
+            <AnimatePresence mode="wait">
+              {!isChatActive ? (
+                <motion.div 
+                  key="inbox"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="p-10 flex flex-col h-full"
+                >
+                  <h3 className="text-2xl font-headline font-bold mb-8">Neural Discussions</h3>
+                  <div className="space-y-6 flex-grow">
+                    {[
+                      { author: "JoelHitech", role: "Chief Architect", msg: "The latest API integration tests are passing with 4ms latency. Ready for staging review.", time: "10:45 AM" },
+                      { author: "Client Admin", role: "Product Owner", msg: "Looks great. Can we confirm the security protocols for the mobile gateway?", time: "11:20 AM" },
+                      { author: "SRE Lead", role: "Infrastructure", msg: "Zero-trust protocols active. Tunnels are secured with HITECH Standard v4.", time: "12:05 PM" }
+                    ].map((chat, i) => (
+                      <div key={i} className="flex gap-6 items-start pb-6 border-b border-foreground/5 last:border-0">
+                        <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center shrink-0">
+                          <Cpu className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-bold text-sm">{chat.author}</span>
+                            <span className="text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-full">{chat.role}</span>
+                            <span className="text-[10px] text-foreground/30">{chat.time}</span>
+                          </div>
+                          <p className="text-sm text-foreground/70 font-light leading-relaxed">{chat.msg}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="font-bold text-sm">{chat.author}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-full">{chat.role}</span>
-                      <span className="text-[10px] text-foreground/30">{chat.time}</span>
+                  <div className="mt-10 pt-10 border-t border-foreground/5">
+                    <Button onClick={() => setIsChatActive(true)} className="w-full h-14 rounded-2xl bg-primary text-white font-bold hover:scale-[1.01] shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+                      Start Discussion with Zainab <Sparkles className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="chatroom"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="flex flex-col h-[600px]"
+                >
+                  <div className="p-6 border-b border-foreground/5 flex items-center justify-between bg-primary/5">
+                    <div className="flex items-center gap-4">
+                      <Button variant="ghost" size="icon" onClick={() => setIsChatActive(false)} className="rounded-full hover:bg-foreground/5">
+                        <ChevronLeft className="w-5 h-5" />
+                      </Button>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center border-2 border-white/20 shadow-lg">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm">Zainab</h4>
+                          <p className="text-[9px] font-bold text-primary uppercase tracking-[0.2em]">Neural Concierge Online</p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-foreground/70 font-light leading-relaxed">{chat.msg}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Active Link</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-10 pt-10 border-t border-foreground/5">
-              <Button onClick={() => handleAction("Initializing secure communication channel...")} variant="outline" className="w-full h-12 rounded-xl text-primary font-bold hover:bg-primary/5">
-                Start New Discussion <MessageSquare className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
+
+                  <div className="flex-grow overflow-y-auto p-8 space-y-6 custom-scrollbar">
+                    {messages.map((msg, idx) => (
+                      <div key={idx} className={cn(
+                        "flex flex-col max-w-[80%]",
+                        msg.role === 'user' ? "ml-auto items-end" : "items-start"
+                      )}>
+                        <div className={cn(
+                          "p-5 rounded-[1.5rem] text-sm leading-relaxed",
+                          msg.role === 'user' 
+                            ? "bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10" 
+                            : "bg-foreground/5 text-foreground/80 rounded-tl-none"
+                        )}>
+                          {msg.content}
+                        </div>
+                        <span className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mt-2 px-2">
+                          {msg.role === 'user' ? 'You' : 'Zainab'} // {msg.time}
+                        </span>
+                      </div>
+                    ))}
+                    {chatLoading && (
+                      <div className="flex flex-col items-start max-w-[80%]">
+                        <div className="bg-foreground/5 p-5 rounded-[1.5rem] rounded-tl-none flex items-center gap-3">
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          <span className="text-xs font-medium text-foreground/40 italic">Zainab is thinking...</span>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={chatEndRef} />
+                  </div>
+
+                  <form onSubmit={handleSendMessage} className="p-6 border-t border-foreground/5 bg-background">
+                    <div className="flex gap-4 items-center">
+                      <div className="relative flex-grow">
+                        <Input 
+                          value={userInput}
+                          onChange={(e) => setUserInput(e.target.value)}
+                          placeholder="Type your message to Zainab..."
+                          className="h-14 rounded-2xl bg-foreground/5 border-none focus-visible:ring-2 focus-visible:ring-primary/50 pr-12 text-sm"
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Zap className="w-4 h-4 text-primary opacity-20" />
+                        </div>
+                      </div>
+                      <Button 
+                        type="submit" 
+                        disabled={!userInput.trim() || chatLoading}
+                        className="h-14 w-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
+                      >
+                        <Send className="w-5 h-5" />
+                      </Button>
+                    </div>
+                    <p className="text-[8px] text-center text-foreground/20 uppercase tracking-[0.3em] mt-4">
+                      Encrypted End-to-End // HITECH Neural Protocol v4.2
+                    </p>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         );
 
@@ -333,14 +486,14 @@ export default function ClientPortal(props: {
           <div className="lg:col-span-3 space-y-2">
             {[
               { id: 'dashboard', icon: LayoutDashboard, name: "Dashboard" },
-              { id: 'discussions', icon: MessageSquare, name: "Discussions", count: 3 },
+              { id: 'discussions', icon: MessageSquare, name: "Discussions", count: messages.length > 1 ? messages.length : 3 },
               { id: 'deliverables', icon: FileText, name: "Deliverables" },
               { id: 'timeline', icon: Calendar, name: "Timeline" },
               { id: 'environment', icon: Settings, name: "Environment" }
             ].map((item) => (
               <button 
                 key={item.id}
-                onClick={() => setActiveTab(item.id as PortalTab)}
+                onClick={() => { setActiveTab(item.id as PortalTab); if(item.id !== 'discussions') setIsChatActive(false); }}
                 className={cn(
                   "w-full flex items-center justify-between px-6 py-4 rounded-xl transition-all group",
                   activeTab === item.id ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"

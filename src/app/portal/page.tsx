@@ -1,10 +1,10 @@
 
 "use client";
 
-import React, { use } from 'react';
+import React, { useState, use } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -15,7 +15,12 @@ import {
   TrendingUp,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Download,
+  ExternalLink,
+  Shield,
+  Zap,
+  Cpu
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -23,15 +28,17 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
+type PortalTab = 'dashboard' | 'discussions' | 'deliverables' | 'timeline' | 'environment';
+
 export default function ClientPortal(props: {
   params: Promise<any>;
   searchParams: Promise<any>;
 }) {
-  // Unwrap params and searchParams for Next.js 15
   use(props.params);
   use(props.searchParams);
 
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<PortalTab>('dashboard');
 
   const handleAction = (action: string) => {
     toast({
@@ -45,10 +52,241 @@ export default function ClientPortal(props: {
       title: "Staging Environment",
       description: "Redirecting to your secure staging environment...",
     });
-    // Simulating redirect
     setTimeout(() => {
       window.open('https://staging.hitech.systems', '_blank');
     }, 1000);
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="apple-card p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Build Progress</h4>
+                  <Clock className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-3xl font-headline font-bold mb-4">Phase 3</p>
+                <Progress value={75} className="h-2 mb-4" />
+                <p className="text-xs text-foreground/40 font-medium">Integration & Neural Tuning</p>
+              </div>
+              <div className="apple-card p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Active Sprint</h4>
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                </div>
+                <p className="text-3xl font-headline font-bold mb-2">Sprint 12</p>
+                <p className="text-xs text-foreground/40 font-medium">14 tasks completed / 2 pending</p>
+              </div>
+              <div className="apple-card p-8 border-accent/20">
+                <div className="flex items-center justify-between mb-6">
+                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Next Milestone</h4>
+                  <AlertCircle className="w-4 h-4 text-accent" />
+                </div>
+                <p className="text-3xl font-headline font-bold mb-2">Beta Release</p>
+                <p className="text-xs text-foreground/40 font-medium">Scheduled for March 24, 2024</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="apple-card p-10">
+                <h3 className="text-xl font-headline font-bold mb-8">Recent Activity</h3>
+                <div className="space-y-6">
+                  {[
+                    { title: "API Documentation updated", time: "2h ago", user: "JoelHitech" },
+                    { title: "Dashboard UI Refinement", time: "5h ago", user: "Design Team" },
+                    { title: "Staging deployment successful", time: "1d ago", user: "SRE Lead" }
+                  ].map((act, idx) => (
+                    <div key={idx} className="flex gap-4 border-l-2 border-primary/20 pl-6 pb-2">
+                      <div>
+                        <p className="text-sm font-bold text-foreground/90">{act.title}</p>
+                        <p className="text-[10px] text-foreground/40 font-medium uppercase tracking-widest mt-1">{act.time} // {act.user}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="apple-card p-10 bg-primary/5 border-primary/10">
+                <h3 className="text-xl font-headline font-bold mb-8">Quick Actions</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button asChild variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                    <Link href="/contact" className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <MessageSquare className="w-5 h-5 text-primary" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Contact Lead</span>
+                    </Link>
+                  </Button>
+                  <Button onClick={() => handleAction("Loading Technical Specifications")} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">View Specs</span>
+                  </Button>
+                  <Button onClick={handleStaging} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                    <ArrowUpRight className="w-5 h-5 text-primary" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Staging Link</span>
+                  </Button>
+                  <Button onClick={() => setActiveTab('environment')} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                    <Settings className="w-5 h-5 text-primary" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Settings</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+
+      case 'discussions':
+        return (
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-10">
+            <h3 className="text-2xl font-headline font-bold mb-8">Neural Discussions</h3>
+            <div className="space-y-6">
+              {[
+                { author: "JoelHitech", role: "Chief Architect", msg: "The latest API integration tests are passing with 4ms latency. Ready for staging review.", time: "10:45 AM" },
+                { author: "Client Admin", role: "Product Owner", msg: "Looks great. Can we confirm the security protocols for the mobile gateway?", time: "11:20 AM" },
+                { author: "SRE Lead", role: "Infrastructure", msg: "Zero-trust protocols active. Tunnels are secured with HITECH Standard v4.", time: "12:05 PM" }
+              ].map((chat, i) => (
+                <div key={i} className="flex gap-6 items-start pb-6 border-b border-foreground/5 last:border-0">
+                  <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center shrink-0">
+                    <Cpu className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="font-bold text-sm">{chat.author}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-full">{chat.role}</span>
+                      <span className="text-[10px] text-foreground/30">{chat.time}</span>
+                    </div>
+                    <p className="text-sm text-foreground/70 font-light leading-relaxed">{chat.msg}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 pt-10 border-t border-foreground/5">
+              <Button variant="outline" className="w-full h-12 rounded-xl text-primary font-bold">Start New Discussion <MessageSquare className="w-4 h-4 ml-2" /></Button>
+            </div>
+          </motion.div>
+        );
+
+      case 'deliverables':
+        return (
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-10">
+            <h3 className="text-2xl font-headline font-bold mb-8">System Deliverables</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-foreground/5">
+                    <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Artifact</th>
+                    <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Version</th>
+                    <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Size</th>
+                    <th className="pb-4 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-foreground/5">
+                  {[
+                    { name: "Technical Specs v2.4", type: "PDF", size: "4.2 MB", version: "Final" },
+                    { name: "Neural API Keys (Staging)", type: "JSON", size: "12 KB", version: "Rev 1" },
+                    { name: "Architecture Diagram", type: "SVG", size: "1.8 MB", version: "v1.2" }
+                  ].map((file, i) => (
+                    <tr key={i} className="group">
+                      <td className="py-6">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-4 h-4 text-primary" />
+                          <span className="text-sm font-bold">{file.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-6"><span className="text-xs text-foreground/50">{file.version}</span></td>
+                      <td className="py-6"><span className="text-xs text-foreground/50">{file.size}</span></td>
+                      <td className="py-6 text-right">
+                        <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/10 hover:text-primary"><Download className="w-4 h-4" /></Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        );
+
+      case 'timeline':
+        return (
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-10">
+            <h3 className="text-2xl font-headline font-bold mb-10">Project Roadmap</h3>
+            <div className="space-y-12">
+              {[
+                { title: "Foundation & Core Architecture", status: "completed", date: "Feb 12", desc: "Setting up secure VPS clusters and neural logic foundations." },
+                { title: "Neural API Integration", status: "completed", date: "Feb 28", desc: "Connecting enterprise data streams to AI reasoning engines." },
+                { title: "Dashboard & Visual Logic", status: "current", date: "Mar 15", desc: "Finalizing high-fidelity client command centers." },
+                { title: "Beta Testing & Scale", status: "pending", date: "Mar 30", desc: "Stress testing concurrent sessions and caching layers." }
+              ].map((milestone, i) => (
+                <div key={i} className="flex gap-8 relative group">
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center z-10 border-4 border-background",
+                      milestone.status === 'completed' ? "bg-green-500 text-white" : milestone.status === 'current' ? "bg-primary text-white animate-pulse" : "bg-foreground/5 text-foreground/20"
+                    )}>
+                      {milestone.status === 'completed' ? <CheckCircle2 className="w-5 h-5" /> : milestone.status === 'current' ? <Zap className="w-5 h-5" /> : <Calendar className="w-5 h-5" />}
+                    </div>
+                    {i !== 3 && <div className="absolute top-10 w-[2px] h-[calc(100%+3rem)] bg-foreground/5" />}
+                  </div>
+                  <div className="pb-4">
+                    <div className="flex items-center gap-4 mb-2">
+                      <h4 className="text-lg font-bold">{milestone.title}</h4>
+                      <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{milestone.date}</span>
+                    </div>
+                    <p className="text-sm text-foreground/50 font-light leading-relaxed max-w-lg">{milestone.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case 'environment':
+        return (
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-10">
+            <h3 className="text-2xl font-headline font-bold mb-10">Environment Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="apple-glass p-8 rounded-3xl border-primary/20">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-primary" />
+                    <h4 className="font-bold text-sm">Staging Cluster</h4>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                </div>
+                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Access Endpoint</p>
+                <div className="bg-foreground/5 p-4 rounded-xl flex items-center justify-between group">
+                  <code className="text-xs text-primary">staging.hitech.systems</code>
+                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={handleStaging} />
+                </div>
+                <div className="mt-8 flex gap-4">
+                  <Button size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">View Logs</Button>
+                  <Button size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">Purge Cache</Button>
+                </div>
+              </div>
+
+              <div className="apple-glass p-8 rounded-3xl opacity-40">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-accent" />
+                    <h4 className="font-bold text-sm">Production Core</h4>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-foreground/10" />
+                </div>
+                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Locked Endpoint</p>
+                <div className="bg-foreground/5 p-4 rounded-xl flex items-center justify-between">
+                  <code className="text-xs text-foreground/30">api.hitech.production</code>
+                  <AlertCircle className="w-4 h-4 text-foreground/20" />
+                </div>
+                <p className="mt-8 text-[10px] text-center font-bold text-foreground/30 uppercase tracking-widest">Requires Phase 4 Completion</p>
+              </div>
+            </div>
+          </motion.div>
+        );
+    }
   };
 
   return (
@@ -76,21 +314,20 @@ export default function ClientPortal(props: {
       <div className="container mx-auto px-6 mb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Sidebar Navigation */}
           <div className="lg:col-span-3 space-y-2">
             {[
-              { icon: LayoutDashboard, name: "Dashboard", active: true },
-              { icon: MessageSquare, name: "Discussions", count: 3 },
-              { icon: FileText, name: "Deliverables" },
-              { icon: Calendar, name: "Timeline" },
-              { icon: Settings, name: "Environment" }
-            ].map((item, i) => (
+              { id: 'dashboard', icon: LayoutDashboard, name: "Dashboard" },
+              { id: 'discussions', icon: MessageSquare, name: "Discussions", count: 3 },
+              { id: 'deliverables', icon: FileText, name: "Deliverables" },
+              { id: 'timeline', icon: Calendar, name: "Timeline" },
+              { id: 'environment', icon: Settings, name: "Environment" }
+            ].map((item) => (
               <button 
-                key={i}
-                onClick={() => handleAction(item.name)}
+                key={item.id}
+                onClick={() => setActiveTab(item.id as PortalTab)}
                 className={cn(
                   "w-full flex items-center justify-between px-6 py-4 rounded-xl transition-all group",
-                  item.active ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
+                  activeTab === item.id ? "bg-primary text-white" : "hover:bg-foreground/5 text-foreground/60"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -98,7 +335,10 @@ export default function ClientPortal(props: {
                   <span className="text-sm font-bold">{item.name}</span>
                 </div>
                 {item.count && (
-                  <span className="w-5 h-5 rounded-full bg-accent text-[10px] flex items-center justify-center font-bold">
+                  <span className={cn(
+                    "w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold",
+                    activeTab === item.id ? "bg-white/20" : "bg-accent text-white"
+                  )}>
                     {item.count}
                   </span>
                 )}
@@ -106,97 +346,10 @@ export default function ClientPortal(props: {
             ))}
           </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-9 space-y-8">
-            
-            {/* Project Status Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="apple-card p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Build Progress</h4>
-                  <Clock className="w-4 h-4 text-primary" />
-                </div>
-                <p className="text-3xl font-headline font-bold mb-4">Phase 3</p>
-                <Progress value={75} className="h-2 mb-4" />
-                <p className="text-xs text-foreground/40 font-medium">Integration & Neural Tuning</p>
-              </div>
-
-              <div className="apple-card p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Active Sprint</h4>
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                </div>
-                <p className="text-3xl font-headline font-bold mb-2">Sprint 12</p>
-                <p className="text-xs text-foreground/40 font-medium">14 tasks completed / 2 pending</p>
-              </div>
-
-              <div className="apple-card p-8 border-accent/20">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Next Milestone</h4>
-                  <AlertCircle className="w-4 h-4 text-accent" />
-                </div>
-                <p className="text-3xl font-headline font-bold mb-2">Beta Release</p>
-                <p className="text-xs text-foreground/40 font-medium">Scheduled for March 24, 2024</p>
-              </div>
-            </div>
-
-            {/* Recent Activity / Deliverables */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="apple-card p-10">
-                <h3 className="text-xl font-headline font-bold mb-8">Recent Activity</h3>
-                <div className="space-y-6">
-                  {[
-                    { title: "API Documentation updated", time: "2h ago", user: "JoelHitech" },
-                    { title: "Dashboard UI Refinement", time: "5h ago", user: "Design Team" },
-                    { title: "Staging deployment successful", time: "1d ago", user: "SRE Lead" }
-                  ].map((act, idx) => (
-                    <div key={idx} className="flex gap-4 border-l-2 border-primary/20 pl-6 pb-2">
-                      <div>
-                        <p className="text-sm font-bold text-foreground/90">{act.title}</p>
-                        <p className="text-[10px] text-foreground/40 font-medium uppercase tracking-widest mt-1">{act.time} // {act.user}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="apple-card p-10 bg-primary/5 border-primary/10">
-                <h3 className="text-xl font-headline font-bold mb-8">Quick Actions</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button asChild variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
-                    <Link href="/contact" className="w-full h-full flex flex-col items-center justify-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-primary" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">Contact Lead</span>
-                    </Link>
-                  </Button>
-                  <Button 
-                    onClick={() => handleAction("Loading Technical Specifications")}
-                    variant="outline" 
-                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
-                  >
-                    <FileText className="w-5 h-5 text-primary" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">View Specs</span>
-                  </Button>
-                  <Button 
-                    onClick={handleStaging}
-                    variant="outline" 
-                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
-                  >
-                    <ArrowUpRight className="w-5 h-5 text-primary" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Staging Link</span>
-                  </Button>
-                  <Button 
-                    onClick={() => handleAction("Opening Environment Settings")}
-                    variant="outline" 
-                    className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background"
-                  >
-                    <Settings className="w-5 h-5 text-primary" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Settings</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
+          <div className="lg:col-span-9">
+            <AnimatePresence mode="wait">
+              {renderContent()}
+            </AnimatePresence>
           </div>
         </div>
       </div>

@@ -47,14 +47,21 @@ export default function ClientPortal(props: {
     });
   };
 
+  const handleDownload = (artifact: string) => {
+    toast({
+      title: "Secure Transfer Initiated",
+      description: `Artifact [${artifact}] is being prepared for end-to-end encrypted download.`,
+    });
+  };
+
   const handleStaging = () => {
     toast({
       title: "Staging Environment",
-      description: "Redirecting to your secure staging environment...",
+      description: "Redirecting to your secure staging environment cluster...",
     });
     setTimeout(() => {
       window.open('https://staging.hitech.systems', '_blank');
-    }, 1000);
+    }, 1500);
   };
 
   const renderContent = () => {
@@ -115,21 +122,21 @@ export default function ClientPortal(props: {
               <div className="apple-card p-10 bg-primary/5 border-primary/10">
                 <h3 className="text-xl font-headline font-bold mb-8">Quick Actions</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button asChild variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button asChild variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background transition-all hover:scale-[1.02]">
                     <Link href="/contact" className="w-full h-full flex flex-col items-center justify-center gap-2">
                       <MessageSquare className="w-5 h-5 text-primary" />
                       <span className="text-[10px] font-bold uppercase tracking-widest">Contact Lead</span>
                     </Link>
                   </Button>
-                  <Button onClick={() => handleAction("Loading Technical Specifications")} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button onClick={() => setActiveTab('deliverables')} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background transition-all hover:scale-[1.02]">
                     <FileText className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">View Specs</span>
                   </Button>
-                  <Button onClick={handleStaging} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button onClick={handleStaging} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background transition-all hover:scale-[1.02]">
                     <ArrowUpRight className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">Staging Link</span>
                   </Button>
-                  <Button onClick={() => setActiveTab('environment')} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background">
+                  <Button onClick={() => setActiveTab('environment')} variant="outline" className="h-24 rounded-2xl flex flex-col gap-2 border-foreground/5 hover:bg-foreground/5 bg-background transition-all hover:scale-[1.02]">
                     <Settings className="w-5 h-5 text-primary" />
                     <span className="text-[10px] font-bold uppercase tracking-widest">Settings</span>
                   </Button>
@@ -165,7 +172,9 @@ export default function ClientPortal(props: {
               ))}
             </div>
             <div className="mt-10 pt-10 border-t border-foreground/5">
-              <Button variant="outline" className="w-full h-12 rounded-xl text-primary font-bold">Start New Discussion <MessageSquare className="w-4 h-4 ml-2" /></Button>
+              <Button onClick={() => handleAction("Initializing secure communication channel...")} variant="outline" className="w-full h-12 rounded-xl text-primary font-bold hover:bg-primary/5">
+                Start New Discussion <MessageSquare className="w-4 h-4 ml-2" />
+              </Button>
             </div>
           </motion.div>
         );
@@ -190,7 +199,7 @@ export default function ClientPortal(props: {
                     { name: "Neural API Keys (Staging)", type: "JSON", size: "12 KB", version: "Rev 1" },
                     { name: "Architecture Diagram", type: "SVG", size: "1.8 MB", version: "v1.2" }
                   ].map((file, i) => (
-                    <tr key={i} className="group">
+                    <tr key={i} className="group hover:bg-foreground/[0.01] transition-colors">
                       <td className="py-6">
                         <div className="flex items-center gap-3">
                           <FileText className="w-4 h-4 text-primary" />
@@ -200,7 +209,14 @@ export default function ClientPortal(props: {
                       <td className="py-6"><span className="text-xs text-foreground/50">{file.version}</span></td>
                       <td className="py-6"><span className="text-xs text-foreground/50">{file.size}</span></td>
                       <td className="py-6 text-right">
-                        <Button size="icon" variant="ghost" className="rounded-full hover:bg-primary/10 hover:text-primary"><Download className="w-4 h-4" /></Button>
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="rounded-full hover:bg-primary/10 hover:text-primary transition-all"
+                          onClick={() => handleDownload(file.name)}
+                        >
+                          <Download className="w-4 h-4" />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -224,7 +240,7 @@ export default function ClientPortal(props: {
                 <div key={i} className="flex gap-8 relative group">
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center z-10 border-4 border-background",
+                      "w-10 h-10 rounded-full flex items-center justify-center z-10 border-4 border-background transition-all",
                       milestone.status === 'completed' ? "bg-green-500 text-white" : milestone.status === 'current' ? "bg-primary text-white animate-pulse" : "bg-foreground/5 text-foreground/20"
                     )}>
                       {milestone.status === 'completed' ? <CheckCircle2 className="w-5 h-5" /> : milestone.status === 'current' ? <Zap className="w-5 h-5" /> : <Calendar className="w-5 h-5" />}
@@ -258,17 +274,17 @@ export default function ClientPortal(props: {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 </div>
                 <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Access Endpoint</p>
-                <div className="bg-foreground/5 p-4 rounded-xl flex items-center justify-between group">
+                <div className="bg-foreground/5 p-4 rounded-xl flex items-center justify-between group cursor-pointer" onClick={handleStaging}>
                   <code className="text-xs text-primary">staging.hitech.systems</code>
-                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={handleStaging} />
+                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="mt-8 flex gap-4">
-                  <Button size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">View Logs</Button>
-                  <Button size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">Purge Cache</Button>
+                  <Button onClick={() => handleAction("Fetching real-time logs...")} size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">View Logs</Button>
+                  <Button onClick={() => handleAction("Purging regional cache layers...")} size="sm" variant="outline" className="text-[10px] h-8 rounded-lg">Purge Cache</Button>
                 </div>
               </div>
 
-              <div className="apple-glass p-8 rounded-3xl opacity-40">
+              <div className="apple-glass p-8 rounded-3xl opacity-40 grayscale">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-accent" />

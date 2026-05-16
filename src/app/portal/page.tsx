@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, use, useRef, useEffect } from 'react';
@@ -25,7 +24,9 @@ import {
   Loader2,
   User,
   Sparkles,
-  ChevronLeft
+  ChevronLeft,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { zainabChat } from '@/ai/flows/zainab';
+import { textToSpeech } from '@/ai/flows/tts-flow';
 
 type PortalTab = 'dashboard' | 'discussions' | 'deliverables' | 'timeline' | 'environment';
 
@@ -41,6 +43,7 @@ interface Message {
   role: 'user' | 'model';
   content: string;
   time: string;
+  audio?: string;
 }
 
 export default function ClientPortal(props: {
@@ -54,11 +57,13 @@ export default function ClientPortal(props: {
   const [activeTab, setActiveTab] = useState<PortalTab>('dashboard');
   const [isChatActive, setIsChatActive] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', content: "Hello. I am Zainab, your neural concierge. How can I assist with your architecture today?", time: "System Boot" }
+    { role: 'model', content: "Hello. I am Zainab, your neural concierge. I am a representative of HITECH, founded by the visionary JoelHitech Lubega. How can I assist with your architecture today?", time: "System Boot" }
   ]);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -104,11 +109,29 @@ export default function ClientPortal(props: {
         history: messages.map(m => ({ role: m.role, content: m.content }))
       });
 
+      let audioUri = '';
+      if (isSpeechEnabled) {
+        try {
+          const tts = await textToSpeech({ text: response.response });
+          audioUri = tts.audioUri;
+        } catch (ttsErr) {
+          console.error("Speech synthesis failed", ttsErr);
+        }
+      }
+
       setMessages([...newMessages, { 
         role: 'model', 
         content: response.response, 
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        audio: audioUri
       }]);
+
+      if (audioUri && isSpeechEnabled) {
+        if (audioRef.current) {
+          audioRef.current.src = audioUri;
+          audioRef.current.play();
+        }
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -205,6 +228,7 @@ export default function ClientPortal(props: {
       case 'discussions':
         return (
           <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="apple-card p-0 flex flex-col min-h-[600px] overflow-hidden">
+            <audio ref={audioRef} className="hidden" />
             <AnimatePresence mode="wait">
               {!isChatActive ? (
                 <motion.div 
@@ -265,25 +289,48 @@ export default function ClientPortal(props: {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Active Link</span>
+                    <div className="flex items-center gap-4">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => setIsSpeechEnabled(!isSpeechEnabled)}
+                        className={cn("rounded-full", isSpeechEnabled ? "text-primary bg-primary/10" : "text-foreground/40")}
+                      >
+                        {isSpeechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                      </Button>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Active Link</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex-grow overflow-y-auto p-8 space-y-6 custom-scrollbar">
+                  <div className="flex-grow overflow-y-auto p-8 space-y-6 custom-scrollbar bg-foreground/[0.01]">
                     {messages.map((msg, idx) => (
                       <div key={idx} className={cn(
-                        "flex flex-col max-w-[80%]",
+                        "flex flex-col max-w-[85%]",
                         msg.role === 'user' ? "ml-auto items-end" : "items-start"
                       )}>
                         <div className={cn(
-                          "p-5 rounded-[1.5rem] text-sm leading-relaxed",
+                          "p-5 rounded-[1.5rem] text-sm leading-relaxed whitespace-pre-wrap font-light",
                           msg.role === 'user' 
                             ? "bg-primary text-white rounded-tr-none shadow-lg shadow-primary/10" 
-                            : "bg-foreground/5 text-foreground/80 rounded-tl-none"
+                            : "bg-background border border-foreground/5 text-foreground/80 rounded-tl-none shadow-sm"
                         )}>
                           {msg.content}
+                          {msg.role === 'model' && msg.audio && (
+                            <button 
+                              onClick={() => {
+                                if (audioRef.current) {
+                                  audioRef.current.src = msg.audio!;
+                                  audioRef.current.play();
+                                }
+                              }}
+                              className="mt-3 flex items-center gap-2 text-[10px] font-bold text-primary hover:opacity-80 transition-opacity"
+                            >
+                              <Volume2 className="w-3 h-3" /> Replay Briefing
+                            </button>
+                          )}
                         </div>
                         <span className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mt-2 px-2">
                           {msg.role === 'user' ? 'You' : 'Zainab'} // {msg.time}
@@ -307,7 +354,7 @@ export default function ClientPortal(props: {
                         <Input 
                           value={userInput}
                           onChange={(e) => setUserInput(e.target.value)}
-                          placeholder="Type your message to Zainab..."
+                          placeholder="Ask Zainab about JoelHitech or your architecture..."
                           className="h-14 rounded-2xl bg-foreground/5 border-none focus-visible:ring-2 focus-visible:ring-primary/50 pr-12 text-sm"
                         />
                         <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -323,7 +370,7 @@ export default function ClientPortal(props: {
                       </Button>
                     </div>
                     <p className="text-[8px] text-center text-foreground/20 uppercase tracking-[0.3em] mt-4">
-                      Encrypted End-to-End // HITECH Neural Protocol v4.2
+                      Encrypted End-to-End // Neural Briefing System v5.0
                     </p>
                   </form>
                 </motion.div>

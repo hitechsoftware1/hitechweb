@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -10,11 +9,26 @@ export function FirebaseClientProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Initialize Firebase only once on the client
-  const { firebaseApp, firestore, auth } = useMemo(() => initializeFirebase(), []);
+  // Initialize Firebase only once on the client with error boundaries
+  const firebase = useMemo(() => {
+    try {
+      return initializeFirebase();
+    } catch (error) {
+      console.error("HITECH Neural Core: Critical failure during Firebase initialization.", error);
+      return null;
+    }
+  }, []);
+
+  if (!firebase) {
+    return <>{children}</>;
+  }
 
   return (
-    <FirebaseProvider firebaseApp={firebaseApp} firestore={firestore} auth={auth}>
+    <FirebaseProvider 
+      firebaseApp={firebase.firebaseApp} 
+      firestore={firebase.firestore} 
+      auth={firebase.auth}
+    >
       {children}
     </FirebaseProvider>
   );

@@ -10,11 +10,11 @@ import Image from 'next/image';
 
 const testimonials = [
   {
-    name: "Alexander Wright",
-    role: "CTO, Global Finance",
-    text: "HITECH didn't just build a dashboard; they engineered a sub-5ms liquidity engine that transformed our trading floor. Their architectural precision is unmatched.",
+    name: "Henry Kimbugwe",
+    role: "CTO, CozyllenFurniture",
+    text: "HITECH didn't just build a Website; they engineered a sub-5ms liquidity engine that transformed our trading floor. Their architectural precision is unmatched.",
     stars: 5,
-    project: "Quantum Core"
+    project: "Cozyleenwebsite"
   },
   {
     name: "Dr. Sarah Chen",

@@ -50,16 +50,57 @@
     },
     "UserProfile": {
       "title": "User Profile",
-      "description": "Extended information for authenticated users (Clients or Admins).",
+      "description": "Extended information for authenticated users.",
       "type": "object",
       "properties": {
         "uid": { "type": "string" },
         "displayName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
-        "role": { "type": "string", "enum": ["admin", "client"], "default": "client" },
-        "company": { "type": "string" }
+        "role": { "type": "string", "enum": ["admin", "staff", "client"], "default": "client" },
+        "company": { "type": "string" },
+        "joinedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Internal tasks assigned to HITECH staff members.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "status": { "type": "string", "enum": ["todo", "in-progress", "completed", "verified"] },
+        "dueDate": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "assignedTo", "priority", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily punch-in logs for staff members.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "date": { "type": "string" },
+        "punchInTime": { "type": "string", "format": "date-time" },
+        "officeCodeUsed": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+      },
+      "required": ["userId", "date", "status"]
+    },
+    "OfficeCode": {
+      "title": "Office Code",
+      "description": "Daily validation code required for attendance punch-in.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "date": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["code", "date"]
     }
   },
   "auth": {
@@ -76,11 +117,23 @@
     },
     "/contactMessages/{messageId}": {
       "schema": "#/backend/entities/ContactMessage",
-      "description": "General system messages and inquiries."
+      "description": "General system messages."
     },
     "/users/{userId}": {
       "schema": "#/backend/entities/UserProfile",
       "description": "User profile data."
+    },
+    "/tasks/{taskId}": {
+      "schema": "#/backend/entities/Task",
+      "description": "Workforce task assignments."
+    },
+    "/attendance/{logId}": {
+      "schema": "#/backend/entities/Attendance",
+      "description": "Staff attendance logs."
+    },
+    "/officeCodes/{codeId}": {
+      "schema": "#/backend/entities/OfficeCode",
+      "description": "Daily office validation codes."
     }
   }
 }

@@ -5,11 +5,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useUser } from '@/firebase';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,7 @@ export function Navbar() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const pathname = usePathname();
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
+  const { user } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -125,11 +127,21 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
+          
+          {user && (
+            <Button asChild variant="outline" className="rounded-full border-primary/20 hover:bg-primary/5 text-primary font-bold text-xs h-10 px-6">
+              <Link href="/staff" className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4" /> Staff
+              </Link>
+            </Button>
+          )}
+
           <Button asChild variant="outline" className="rounded-full border-primary/20 hover:bg-primary/5 text-primary font-bold text-xs h-10 px-6">
             <Link href="/portal" className="flex items-center gap-2">
               <LayoutDashboard className="w-4 h-4" /> Portal
             </Link>
           </Button>
+
           <Button asChild className="rounded-full px-6 h-10 bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all cursor-pointer">
             <Link href="/request-project">Get Started</Link>
           </Button>
@@ -183,6 +195,16 @@ export function Navbar() {
               Client Portal
               <LayoutDashboard className="w-5 h-5" />
             </Link>
+            {user && (
+              <Link 
+                href="/staff"
+                className="text-lg font-headline font-medium text-accent flex items-center justify-between"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Staff Portal
+                <ShieldCheck className="w-5 h-5" />
+              </Link>
+            )}
             <div className="pt-4 border-t border-black/5 dark:border-white/5">
               <Button asChild className="w-full h-12 rounded-xl bg-foreground text-background font-bold text-sm" onClick={() => setIsMobileMenuOpen(false)}>
                 <Link href="/request-project">Get Started</Link>

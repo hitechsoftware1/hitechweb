@@ -538,6 +538,39 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderAllowances = () => (
+    <motion.div 
+      key="allowances"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-12"
+    >
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">My Allowances</h1>
+        <p className="text-sm text-zinc-400">Request your monthly allowances — admin approval required</p>
+      </div>
+
+      <div className="space-y-6">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Available Allowances</h3>
+        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-16 text-center">
+          <p className="text-xs text-zinc-400 font-medium italic opacity-60">
+            No allowances assigned to your account yet. Contact admin to set up allowances.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Request History</h3>
+        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-16 text-center">
+          <p className="text-xs text-zinc-400 font-medium italic opacity-60">
+            No allowance requests yet
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -591,7 +624,8 @@ export default function MyAccountPage() {
           {activeTab === 'Profile' && renderProfile()}
           {activeTab === 'Attendance' && renderAttendance()}
           {activeTab === 'Advance Retainer' && renderAdvanceRetainer()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && (
+          {activeTab === 'Allowances' && renderAllowances()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

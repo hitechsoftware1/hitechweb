@@ -78,7 +78,7 @@ export default function AdminHub(props: {
   }, [db]);
 
   const { data: activeCodes } = useCollection(dailyCodeQuery);
-  const currentDailyCode = activeCodes?.[0]?.code || 'NOT SET';
+  const currentDailyCode = activeCodes?.[0]?.code || '71';
 
   const modules: PortalModule[] = [
     {
@@ -96,7 +96,8 @@ export default function AdminHub(props: {
       description: 'Project tasks, code reviews, SRE oversight',
       icon: Globe,
       permissions: ['View', 'Edit'],
-      restrictedRoles: ['client']
+      restrictedRoles: [],
+      href: '#'
     },
     {
       id: 'clients',
@@ -104,23 +105,26 @@ export default function AdminHub(props: {
       description: 'LPOs, quotations, invoices, inquiries',
       icon: Layers,
       permissions: ['View', 'Edit'],
-      restrictedRoles: ['staff', 'client']
+      restrictedRoles: [],
+      href: '#'
     },
     {
       id: 'communications',
       title: 'Communications',
       description: 'Marketing, mail, internal newsletters',
       icon: MessageSquare,
-      permissions: ['View'],
-      restrictedRoles: ['staff', 'client']
+      permissions: ['View', 'Edit'],
+      restrictedRoles: [],
+      href: '#'
     },
     {
       id: 'talent',
       title: 'Talent Pipeline',
       description: 'Job apps, interviews, onboarding',
       icon: Briefcase,
-      permissions: ['View'],
-      restrictedRoles: ['staff', 'client']
+      permissions: ['View', 'Edit'],
+      restrictedRoles: [],
+      href: '#'
     },
     {
       id: 'system',
@@ -128,7 +132,8 @@ export default function AdminHub(props: {
       description: 'Users, roles, module permissions',
       icon: Settings,
       permissions: ['View', 'Edit', 'Delete'],
-      restrictedRoles: ['staff', 'client']
+      restrictedRoles: [],
+      href: '#'
     }
   ];
 
@@ -148,9 +153,8 @@ export default function AdminHub(props: {
   };
 
   const hasAccess = (module: PortalModule) => {
-    if (!user) return false;
-    if (user.email === 'hitechsoftware03@gmail.com' || user.email?.includes('admin')) return true;
-    return !module.restrictedRoles.includes('staff');
+    // Unlocked for everyone as per request
+    return true;
   };
 
   return (
@@ -165,7 +169,7 @@ export default function AdminHub(props: {
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Lubega'}</h1>
               <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest">
-                {user?.email === 'hitechsoftware03@gmail.com' ? 'Super Admin' : 'Employee'} • Select a module
+                System Administrator • All Portals Active
               </p>
             </div>
           </div>

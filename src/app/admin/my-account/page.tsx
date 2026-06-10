@@ -30,7 +30,10 @@ import {
   Key,
   Camera,
   Upload,
-  AlertTriangle
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +50,13 @@ export default function MyAccountPage() {
   const { user } = useUser();
   const db = useFirestore();
   const [activeTab, setActiveTab] = useState('Overview');
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Daily Code Query
   const dailyCodeQuery = useMemo(() => {
@@ -125,7 +135,7 @@ export default function MyAccountPage() {
             </div>
             <p className="text-sm font-medium text-zinc-400">Working day today</p>
           </div>
-          <button className="text-xs font-bold text-zinc-400 hover:text-foreground flex items-center gap-1.5 transition-colors">
+          <button onClick={() => setActiveTab('Attendance')} className="text-xs font-bold text-zinc-400 hover:text-foreground flex items-center gap-1.5 transition-colors">
             Go to Attendance <ChevronRight className="w-3 h-3" />
           </button>
         </div>
@@ -341,6 +351,131 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderAttendance = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+    >
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">My Attendance</h1>
+        <p className="text-sm text-zinc-400">Punch in at the start of your working day and punch out when you finish.</p>
+      </div>
+
+      {/* Current Clock Card */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 mb-8 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+          <div>
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.3em] mb-3">
+              {currentTime ? currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() : 'LOADING...'}
+            </p>
+            <h2 className="text-5xl font-headline font-bold tracking-tighter mb-4">
+              {currentTime ? currentTime.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '00:00:00 AM'}
+            </h2>
+            <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Working hours: <span className="text-foreground">08:00 - 17:30</span> · Late after 30 min · Penalty 10%</span>
+            </div>
+          </div>
+          <Button variant="outline" className="rounded-xl h-12 px-6 border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 text-xs font-bold uppercase tracking-widest">
+            Not a working day
+          </Button>
+        </div>
+      </div>
+
+      {/* Leave Requests */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm mb-8 overflow-hidden">
+        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">My Leave Requests</h3>
+          <Button size="sm" className="bg-primary text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-primary/20">+ Request Leave</Button>
+        </div>
+        <div className="p-8">
+          <div className="flex items-center gap-10 text-xs">
+            <span className="text-zinc-500 font-bold w-24">Jun 3, 2026</span>
+            <Badge className="bg-green-500/10 text-green-500 border-none rounded-lg px-3 py-1 font-bold text-[10px]">Approved</Badge>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Uganda Matrys Day</span>
+              <span className="text-[10px] text-zinc-400 font-medium opacity-60">by Rumanzi Regen</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compensation Requests */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm mb-8 overflow-hidden">
+        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
+          <div>
+            <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">My Compensation Requests</h3>
+            <p className="text-[10px] text-zinc-300 font-medium">Worked on a non-working day to make up for a working day you missed? Request compensation here.</p>
+          </div>
+          <Button size="sm" variant="outline" className="text-primary border-primary/20 bg-primary/5 font-bold rounded-xl h-10 px-6">+ Request Compensation</Button>
+        </div>
+        <div className="p-16 text-center text-zinc-400 italic text-xs font-medium opacity-60">
+          No compensation requests yet.
+        </div>
+      </div>
+
+      {/* History Table */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Recent History</h3>
+          <div className="flex gap-2 flex-wrap justify-center">
+            <Button variant="outline" size="sm" className="h-9 rounded-xl text-[10px] font-bold px-4 border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+              June 2026 <ChevronRight className="w-3 h-3 rotate-90" />
+            </Button>
+            <Button variant="outline" size="sm" className="h-9 rounded-xl text-[10px] font-bold px-4 border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+              All modes <ChevronRight className="w-3 h-3 rotate-90" />
+            </Button>
+            <Button variant="outline" size="sm" className="h-9 rounded-xl text-[10px] font-bold px-4 border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+              All statuses <ChevronRight className="w-3 h-3 rotate-90" />
+            </Button>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-zinc-50/50 dark:bg-zinc-800/20">
+              <tr className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+                <th className="px-8 py-5">Date</th>
+                <th className="px-8 py-5">Mode</th>
+                <th className="px-8 py-5">Sessions</th>
+                <th className="px-8 py-5">Total Hours</th>
+                <th className="px-8 py-5">Late</th>
+                <th className="px-8 py-5">Office Distance</th>
+                <th className="px-8 py-5">Status</th>
+                <th className="px-8 py-5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/30">
+              {[
+                { date: 'Jun 10, 2026', mode: 'PHYSICAL', sessions: 1, hours: '10h 20m', late: '13 min', distance: '23m', status: 'Worked', distColor: 'text-green-500' },
+                { date: 'Jun 8, 2026', mode: 'PHYSICAL', sessions: 1, hours: '12h 24m', late: '19 min', distance: '--', status: 'Worked', distColor: 'text-zinc-400' },
+                { date: 'Jun 5, 2026', mode: 'PHYSICAL', sessions: 1, hours: '10h 54m', late: '--', distance: '--', status: 'Worked', distColor: 'text-zinc-400' },
+                { date: 'Jun 1, 2026', mode: 'PHYSICAL', sessions: 1, hours: '12h 13m', late: '19 min', distance: '--', status: 'Worked', distColor: 'text-zinc-400' },
+              ].map((row, i) => (
+                <tr key={i} className="text-xs group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                  <td className="px-8 py-6 font-bold">{row.date}</td>
+                  <td className="px-8 py-6">
+                    <Badge className="bg-amber-500/10 text-amber-600 border-none rounded px-2 py-0.5 text-[9px] font-bold">
+                      {row.mode}
+                    </Badge>
+                  </td>
+                  <td className="px-8 py-6 text-zinc-400 font-bold">{row.sessions}</td>
+                  <td className="px-8 py-6 font-bold text-foreground">{row.hours}</td>
+                  <td className="px-8 py-6 text-zinc-400 font-medium">{row.late}</td>
+                  <td className={cn("px-8 py-6 font-bold", row.distColor)}>{row.distance}</td>
+                  <td className="px-8 py-6 text-green-500 font-bold">{row.status}</td>
+                  <td className="px-8 py-6 text-right">
+                    <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-foreground text-[10px] font-bold rounded-lg border-zinc-100">View</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -388,10 +523,18 @@ export default function MyAccountPage() {
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 ml-64 p-8 lg:p-12 overflow-y-auto">
         <AnimatePresence mode="wait">
-          {activeTab === 'Overview' ? renderOverview() : activeTab === 'Profile' ? renderProfile() : (
-            <div className="flex items-center justify-center h-[60vh] text-zinc-400 font-medium italic">
+          {activeTab === 'Overview' && renderOverview()}
+          {activeTab === 'Profile' && renderProfile()}
+          {activeTab === 'Attendance' && renderAttendance()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && (
+            <motion.div 
+              key="fallback"
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className="flex items-center justify-center h-[60vh] text-zinc-400 font-medium italic"
+            >
               {activeTab} module is initializing...
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

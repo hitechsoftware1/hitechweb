@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo, use } from 'react';
@@ -196,7 +195,7 @@ export default function AdminDashboard(props: {
               <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">Office Protocol</h4>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-[9px] uppercase tracking-widest text-foreground/40">New Daily Code</bold></Label>
+                  <Label className="text-[9px] uppercase tracking-widest text-foreground/40">New Daily Code</Label>
                   <div className="flex gap-2">
                     <Input 
                       value={newOfficeCode} 
@@ -311,9 +310,61 @@ export default function AdminDashboard(props: {
 
                   {/* Handle other tabs similarly... keeping it concise for MVP */}
                   {['inquiries', 'applications', 'messages'].includes(activeTab) && (
-                    <p className="text-center py-20 text-foreground/30 font-bold uppercase tracking-widest text-[10px]">
-                      View refined in the core admin logs. (Data tables active)
-                    </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-foreground/5">
+                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Entry</th>
+                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
+                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Ops</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-foreground/5">
+                          {activeTab === 'inquiries' && inquiries?.map((item: any) => (
+                            <tr key={item.id} className="group hover:bg-foreground/[0.02]">
+                              <td className="py-6">
+                                <p className="font-bold text-sm">{item.fullName}</p>
+                                <p className="text-[10px] text-foreground/40 uppercase tracking-widest">{item.projectType} // {item.email}</p>
+                              </td>
+                              <td className="py-6">
+                                <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary">{item.status}</span>
+                              </td>
+                              <td className="py-6 text-right">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
+                                  <DropdownMenuContent className="apple-glass p-2">
+                                    <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'reviewing')}>Reviewing</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'contacted')}>Contacted</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDelete('projectInquiries', item.id)} className="text-destructive">Purge</DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </td>
+                            </tr>
+                          ))}
+                          {activeTab === 'applications' && applications?.map((item: any) => (
+                            <tr key={item.id} className="group hover:bg-foreground/[0.02]">
+                              <td className="py-6">
+                                <p className="font-bold text-sm">{item.fullName}</p>
+                                <p className="text-[10px] text-foreground/40 uppercase tracking-widest">{item.role} // {item.email}</p>
+                              </td>
+                              <td className="py-6">
+                                <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-accent/10 text-accent">{item.status}</span>
+                              </td>
+                              <td className="py-6 text-right">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
+                                  <DropdownMenuContent className="apple-glass p-2">
+                                    <DropdownMenuItem onClick={() => handleStatusUpdate('jobApplications', item.id, 'interviewing')}>Interview</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleStatusUpdate('jobApplications', item.id, 'rejected')}>Reject</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDelete('jobApplications', item.id)} className="text-destructive">Purge</DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               </motion.div>

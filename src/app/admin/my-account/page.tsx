@@ -36,7 +36,8 @@ import {
   Info,
   XCircle,
   Undo2,
-  Check
+  Check,
+  Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -112,6 +113,15 @@ export default function MyAccountPage() {
     { label: 'MISSED', value: '88', color: 'text-red-400' },
     { label: 'RETAINER PAID', value: '0', color: 'text-green-600' },
     { label: 'ALLOWANCE', value: '13', color: 'text-amber-600' },
+  ];
+
+  const requisitions = [
+    { id: '1', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 3 earned item(s). Awaiting accounts review.', items: 3, total: '30,037.5', date: 'Jun 9, 2026', status: 'fulfilled' },
+    { id: '2', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 2 earned item(s). Awaiting accounts review.', items: 2, total: '20,025', date: 'Jun 1, 2026', status: 'fulfilled' },
+    { id: '3', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 5 earned item(s). Awaiting accounts review.', items: 5, total: '50,062.5', date: 'May 22, 2026', status: 'fulfilled' },
+    { id: '4', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 18, 2026', status: 'fulfilled' },
+    { id: '5', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 13, 2026', status: 'fulfilled' },
+    { id: '6', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 11, 2026', status: 'fulfilled' },
   ];
 
   const renderOverview = () => (
@@ -683,6 +693,76 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderRequisitions = () => (
+    <motion.div 
+      key="requisitions"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">My Requisitions</h1>
+          <p className="text-sm text-zinc-400">Request items or supplies</p>
+        </div>
+        <Button className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all">
+          <Plus className="w-4 h-4" /> New Requisition
+        </Button>
+      </div>
+
+      <div className="flex gap-2 pb-2">
+        {['All', 'Draft', 'Submitted', 'Approved', 'Rejected', 'Fulfilled'].map((filter) => (
+          <Button 
+            key={filter}
+            variant="outline" 
+            size="sm" 
+            className={cn(
+              "h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-zinc-200 dark:border-zinc-800",
+              filter === 'All' ? "bg-zinc-950 dark:bg-white text-white dark:text-black border-none" : "text-zinc-400 hover:text-foreground"
+            )}
+          >
+            {filter}
+          </Button>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        {requisitions.map((req) => (
+          <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 group hover:border-primary/20 transition-all">
+            <div className="flex justify-between items-start mb-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-bold">{req.title}</h3>
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[8px] font-bold uppercase px-2 py-0.5 rounded-md">
+                    {req.priority}
+                  </Badge>
+                </div>
+                <p className="text-xs text-zinc-400 font-medium max-w-2xl leading-relaxed">
+                  {req.desc}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Badge className="bg-green-500/10 text-green-500 border-none font-bold text-[9px] uppercase px-3 py-1 rounded-full">
+                  {req.status}
+                </Badge>
+                <Button variant="ghost" className="text-zinc-400 hover:text-foreground text-[10px] font-bold p-0 h-auto">View</Button>
+              </div>
+            </div>
+            <div className="flex gap-6 items-center pt-6 border-t border-zinc-50 dark:border-zinc-800/50">
+               <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{req.items} item(s)</span>
+               <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Total:</span>
+                  <span className="text-sm font-bold">UGX {req.total}</span>
+               </div>
+               <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest ml-auto">{req.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -738,7 +818,8 @@ export default function MyAccountPage() {
           {activeTab === 'Advance Retainer' && renderAdvanceRetainer()}
           {activeTab === 'Allowances' && renderAllowances()}
           {activeTab === 'Punch-In Allowances' && renderPunchInAllowances()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && (
+          {activeTab === 'Requisitions' && renderRequisitions()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

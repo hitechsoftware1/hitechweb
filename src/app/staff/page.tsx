@@ -32,6 +32,7 @@ import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } fro
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 export default function StaffHub() {
   const { user, loading: userLoading } = useUser();
@@ -81,7 +82,7 @@ export default function StaffHub() {
   };
 
   const modules = [
-    { id: 'account', title: 'My Account', desc: 'Profile, advance requests', icon: User, access: true },
+    { id: 'account', title: 'My Account', desc: 'Profile, advance requests', icon: User, access: true, href: '/admin/my-account' },
     { id: 'tasks', title: 'Tasks Hub', desc: 'Assigned mission directives', icon: ClipboardList, access: true },
     { id: 'engineering', title: 'Engineering', desc: 'Restricted module', icon: Globe, access: false },
     { id: 'clients', title: 'Clients', desc: 'Restricted module', icon: Layers, access: false },
@@ -114,7 +115,6 @@ export default function StaffHub() {
           </div>
         </header>
 
-        {/* Punch In Bar */}
         <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-4 shadow-sm border border-black/5 flex flex-col md:flex-row items-center justify-between transition-all">
           <div className="flex items-center gap-6 mb-4 md:mb-0">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -147,7 +147,6 @@ export default function StaffHub() {
           )}
         </div>
 
-        {/* Working Hours Bar */}
         <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex items-center gap-6">
           <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
             <Clock className="w-6 h-6 text-zinc-400" />
@@ -158,37 +157,41 @@ export default function StaffHub() {
           </div>
         </div>
 
-        {/* Portals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((mod) => (
-            <motion.div 
-              key={mod.id}
-              whileHover={mod.access ? { y: -5 } : {}}
-              className={cn(
-                "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[300px] relative transition-all",
-                !mod.access && "opacity-50"
-              )}
-            >
-              {!mod.access && <Lock className="absolute top-10 right-10 w-5 h-5 text-zinc-300" />}
-              <div>
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
-                  mod.access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-200"
-                )}>
-                  <mod.icon className="w-7 h-7" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
-                <p className="text-sm text-foreground/40 leading-relaxed">{mod.desc}</p>
-              </div>
-              <div className="mt-10 pt-8 border-t border-black/5">
-                {mod.access ? (
-                  <Button variant="ghost" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/10 p-0 h-auto">Access Portal</Button>
-                ) : (
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-200">Access Restricted</span>
+          {modules.map((mod) => {
+            const CardWrapper = mod.access && mod.href ? Link : 'div';
+            return (
+              <motion.div 
+                key={mod.id}
+                whileHover={mod.access ? { y: -5 } : {}}
+                className={cn(
+                  "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[300px] relative transition-all",
+                  !mod.access && "opacity-50"
                 )}
-              </div>
-            </motion.div>
-          ))}
+              >
+                <CardWrapper href={mod.href || '#'} className="flex flex-col justify-between h-full">
+                  {!mod.access && <Lock className="absolute top-10 right-10 w-5 h-5 text-zinc-300" />}
+                  <div>
+                    <div className={cn(
+                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
+                      mod.access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-200"
+                    )}>
+                      <mod.icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
+                    <p className="text-sm text-foreground/40 leading-relaxed">{mod.desc}</p>
+                  </div>
+                  <div className="mt-10 pt-8 border-t border-black/5">
+                    {mod.access ? (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/10 p-0 h-auto">Access Portal</span>
+                    ) : (
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-200">Access Restricted</span>
+                    )}
+                  </div>
+                </CardWrapper>
+              </motion.div>
+            );
+          })}
         </div>
 
       </div>

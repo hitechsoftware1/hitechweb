@@ -46,6 +46,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 type PortalModule = {
   id: string;
@@ -54,6 +55,7 @@ type PortalModule = {
   icon: any;
   permissions: string[];
   restrictedRoles: string[];
+  href?: string;
 };
 
 export default function AdminHub(props: {
@@ -85,7 +87,8 @@ export default function AdminHub(props: {
       description: 'Profile, advance requests, requisitions',
       icon: User,
       permissions: ['View', 'Create', 'Edit', 'Delete'],
-      restrictedRoles: []
+      restrictedRoles: [],
+      href: '/admin/my-account'
     },
     {
       id: 'engineering',
@@ -146,16 +149,14 @@ export default function AdminHub(props: {
 
   const hasAccess = (module: PortalModule) => {
     if (!user) return false;
-    // Assuming 'admin' is the super role
     if (user.email === 'hitechsoftware03@gmail.com' || user.email?.includes('admin')) return true;
-    return !module.restrictedRoles.includes('staff'); // Simplified for MVP
+    return !module.restrictedRoles.includes('staff');
   };
 
   return (
     <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body">
       <div className="container mx-auto px-6 max-w-6xl">
         
-        {/* Hub Header */}
         <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
           <div className="flex items-center gap-5">
             <Avatar className="w-14 h-14 border-2 border-white shadow-sm">
@@ -179,7 +180,6 @@ export default function AdminHub(props: {
           </div>
         </header>
 
-        {/* Office Code Bar */}
         <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-4 shadow-sm border border-black/5 flex flex-col md:flex-row items-center justify-between group transition-all hover:shadow-md">
           <div className="flex items-center gap-6 mb-4 md:mb-0">
             <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
@@ -204,7 +204,6 @@ export default function AdminHub(props: {
           </div>
         </div>
 
-        {/* Working Status Bar */}
         <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex items-center gap-6 group transition-all hover:shadow-md">
           <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
             <Clock className="w-6 h-6 text-zinc-400" />
@@ -215,51 +214,53 @@ export default function AdminHub(props: {
           </div>
         </div>
 
-        {/* Portals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {modules.map((mod) => {
             const access = hasAccess(mod);
+            const CardWrapper = access && mod.href ? Link : 'div';
             return (
               <motion.div 
                 key={mod.id}
-                whileHover={{ y: -5 }}
+                whileHover={access ? { y: -5 } : {}}
                 className={cn(
                   "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all",
                   !access && "opacity-60 bg-zinc-50/50"
                 )}
               >
-                {!access && (
-                  <div className="absolute top-8 right-8">
-                    <Lock className="w-5 h-5 text-zinc-300" />
-                  </div>
-                )}
-                
-                <div>
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
-                    access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-300"
-                  )}>
-                    <mod.icon className="w-7 h-7" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
-                  <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
-                </div>
-
-                <div className="mt-10 pt-8 border-t border-black/5">
-                  {access ? (
-                    <div className="flex flex-wrap gap-2">
-                      {mod.permissions.map((perm) => (
-                        <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
-                          {perm}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300">
-                      No Access
+                <CardWrapper href={mod.href || '#'} className="flex flex-col justify-between h-full">
+                  {!access && (
+                    <div className="absolute top-8 right-8">
+                      <Lock className="w-5 h-5 text-zinc-300" />
                     </div>
                   )}
-                </div>
+                  
+                  <div>
+                    <div className={cn(
+                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
+                      access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-300"
+                    )}>
+                      <mod.icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
+                    <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
+                  </div>
+
+                  <div className="mt-10 pt-8 border-t border-black/5">
+                    {access ? (
+                      <div className="flex flex-wrap gap-2">
+                        {mod.permissions.map((perm) => (
+                          <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                            {perm}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300">
+                        No Access
+                      </div>
+                    )}
+                  </div>
+                </CardWrapper>
               </motion.div>
             );
           })}

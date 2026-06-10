@@ -58,6 +58,7 @@ export default function MyAccountPage() {
   const db = useFirestore();
   const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [projectSubTab, setProjectSubTab] = useState<'Project Based' | 'Standalone'>('Project Based');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -763,6 +764,76 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderProjectsAndTasks = () => (
+    <motion.div 
+      key="projects-tasks"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Projects & Tasks</h1>
+        <p className="text-sm text-zinc-400">Projects you're a member of plus any standalone tasks assigned to you.</p>
+      </div>
+
+      <div className="flex gap-10 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+        <button 
+          onClick={() => setProjectSubTab('Project Based')}
+          className={cn(
+            "text-xs font-bold uppercase tracking-widest pb-3 relative transition-all",
+            projectSubTab === 'Project Based' ? "text-foreground" : "text-zinc-400 hover:text-zinc-500"
+          )}
+        >
+          Project Based
+          {projectSubTab === 'Project Based' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-black dark:bg-white" />}
+        </button>
+        <button 
+          onClick={() => setProjectSubTab('Standalone')}
+          className={cn(
+            "text-xs font-bold uppercase tracking-widest pb-3 relative transition-all",
+            projectSubTab === 'Standalone' ? "text-foreground" : "text-zinc-400 hover:text-zinc-500"
+          )}
+        >
+          Stand Alone Tasks (7)
+          {projectSubTab === 'Standalone' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-black dark:bg-white" />}
+        </button>
+      </div>
+
+      {projectSubTab === 'Project Based' ? (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 group hover:border-primary/20 transition-all flex justify-between items-start">
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">Bilar - Property Manager Platform</h3>
+              <p className="text-xs text-zinc-400 font-medium max-w-3xl leading-relaxed">
+                Uganda Property Rental & Management Platform Direct Landlord & PMC - per-building management - category-driven listings - commission & owner payouts
+              </p>
+              <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">9 tasks</p>
+            </div>
+            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mt-1">draft</span>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {tasks.map((task, idx) => (
+             <div key={idx} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 flex justify-between items-center group hover:border-primary/20 transition-all">
+                <div className="space-y-2">
+                   <h4 className="text-sm font-bold">{task.title}</h4>
+                   <div className="flex gap-4 items-center">
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded">{task.type}</span>
+                      <span className="text-[10px] font-medium text-red-400">{task.date}</span>
+                   </div>
+                </div>
+                <Badge className={cn("text-[9px] font-bold uppercase tracking-wider", task.color)}>
+                   {task.status}
+                </Badge>
+             </div>
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -819,7 +890,8 @@ export default function MyAccountPage() {
           {activeTab === 'Allowances' && renderAllowances()}
           {activeTab === 'Punch-In Allowances' && renderPunchInAllowances()}
           {activeTab === 'Requisitions' && renderRequisitions()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && (
+          {activeTab === 'Projects & Tasks' && renderProjectsAndTasks()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

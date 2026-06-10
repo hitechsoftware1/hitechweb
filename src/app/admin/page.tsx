@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo, use } from 'react';
@@ -24,28 +25,38 @@ import {
   Plus,
   UserCheck,
   XCircle,
-  Clock
+  Clock,
+  LogOut,
+  ExternalLink,
+  Moon,
+  LayoutGrid,
+  Lock,
+  Globe,
+  Briefcase,
+  Settings,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-type AdminTab = 'inquiries' | 'applications' | 'messages' | 'tasks' | 'attendance' | 'staff';
+type PortalModule = {
+  id: string;
+  title: string;
+  description: string;
+  icon: any;
+  permissions: string[];
+  restrictedRoles: string[];
+};
 
-export default function AdminDashboard(props: {
+export default function AdminHub(props: {
   params: Promise<any>;
   searchParams: Promise<any>;
 }) {
@@ -53,50 +64,72 @@ export default function AdminDashboard(props: {
   use(props.searchParams);
 
   const db = useFirestore();
+  const { user } = useUser();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<AdminTab>('inquiries');
   const [newOfficeCode, setNewOfficeCode] = useState('');
 
   // Queries
-  const inquiriesQuery = useMemo(() => db ? query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc'), limit(100)) : null, [db]);
-  const applicationsQuery = useMemo(() => db ? query(collection(db, 'jobApplications'), orderBy('createdAt', 'desc'), limit(100)) : null, [db]);
-  const messagesQuery = useMemo(() => db ? query(collection(db, 'contactMessages'), orderBy('createdAt', 'desc'), limit(100)) : null, [db]);
-  const tasksQuery = useMemo(() => db ? query(collection(db, 'tasks'), orderBy('createdAt', 'desc')) : null, [db]);
-  const attendanceQuery = useMemo(() => db ? query(collection(db, 'attendance'), orderBy('date', 'desc'), limit(50)) : null, [db]);
-  const staffQuery = useMemo(() => db ? query(collection(db, 'users'), where('role', 'in', ['staff', 'admin'])) : null, [db]);
   const dailyCodeQuery = useMemo(() => {
     if (!db) return null;
     const today = new Date().toISOString().split('T')[0];
     return query(collection(db, 'officeCodes'), where('date', '==', today));
   }, [db]);
 
-  const { data: inquiries, loading: inquiriesLoading } = useCollection(inquiriesQuery);
-  const { data: applications, loading: applicationsLoading } = useCollection(applicationsQuery);
-  const { data: messages, loading: messagesLoading } = useCollection(messagesQuery);
-  const { data: tasks, loading: tasksLoading } = useCollection(tasksQuery);
-  const { data: attendance, loading: attendanceLoading } = useCollection(attendanceQuery);
-  const { data: staff, loading: staffLoading } = useCollection(staffQuery);
   const { data: activeCodes } = useCollection(dailyCodeQuery);
-
   const currentDailyCode = activeCodes?.[0]?.code || 'NOT SET';
 
-  const handleStatusUpdate = (type: string, id: string, newStatus: string) => {
-    if (!db) return;
-    const docRef = doc(db, type, id);
-    updateDoc(docRef, { status: newStatus })
-      .then(() => toast({ title: "Neural Sync", description: `Status updated to ${newStatus.toUpperCase()}` }))
-      .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: { status: newStatus } })));
-  };
+  const modules: PortalModule[] = [
+    {
+      id: 'account',
+      title: 'My Account',
+      description: 'Profile, advance requests, requisitions',
+      icon: User,
+      permissions: ['View', 'Create', 'Edit', 'Delete'],
+      restrictedRoles: []
+    },
+    {
+      id: 'engineering',
+      title: 'Engineering Hub',
+      description: 'Project tasks, code reviews, SRE oversight',
+      icon: Globe,
+      permissions: ['View', 'Edit'],
+      restrictedRoles: ['client']
+    },
+    {
+      id: 'clients',
+      title: 'Client Ecosystem',
+      description: 'LPOs, quotations, invoices, inquiries',
+      icon: Layers,
+      permissions: ['View', 'Edit'],
+      restrictedRoles: ['staff', 'client']
+    },
+    {
+      id: 'communications',
+      title: 'Communications',
+      description: 'Marketing, mail, internal newsletters',
+      icon: MessageSquare,
+      permissions: ['View'],
+      restrictedRoles: ['staff', 'client']
+    },
+    {
+      id: 'talent',
+      title: 'Talent Pipeline',
+      description: 'Job apps, interviews, onboarding',
+      icon: Briefcase,
+      permissions: ['View'],
+      restrictedRoles: ['staff', 'client']
+    },
+    {
+      id: 'system',
+      title: 'System Architecture',
+      description: 'Users, roles, module permissions',
+      icon: Settings,
+      permissions: ['View', 'Edit', 'Delete'],
+      restrictedRoles: ['staff', 'client']
+    }
+  ];
 
-  const handleDelete = (type: string, id: string) => {
-    if (!db || !confirm("Confirm record purge?")) return;
-    const docRef = doc(db, type, id);
-    deleteDoc(docRef)
-      .then(() => toast({ title: "Neural Purge", description: "Record removed." }))
-      .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' })));
-  };
-
-  const generateOfficeCode = () => {
+  const handleGenerateOfficeCode = () => {
     if (!db || !newOfficeCode) return;
     const today = new Date().toISOString().split('T')[0];
     const codeId = `code_${today}`;
@@ -106,274 +139,137 @@ export default function AdminDashboard(props: {
       active: true,
       createdAt: serverTimestamp()
     }).then(() => {
-      toast({ title: "Office Code Active", description: `Punch-in code for today: ${newOfficeCode}` });
+      toast({ title: "Neural Code Broadcast", description: `Code ${newOfficeCode} is now active for all workers.` });
       setNewOfficeCode('');
     });
   };
 
-  const currentLoading = inquiriesLoading || applicationsLoading || messagesLoading || tasksLoading || attendanceLoading || staffLoading;
+  const hasAccess = (module: PortalModule) => {
+    if (!user) return false;
+    // Assuming 'admin' is the super role
+    if (user.email === 'hitechsoftware03@gmail.com' || user.email?.includes('admin')) return true;
+    return !module.restrictedRoles.includes('staff'); // Simplified for MVP
+  };
 
   return (
-    <main className="min-h-screen bg-background pt-32 pb-24">
-      <Navbar />
-      
-      <section className="container mx-auto px-6 mb-12">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em]">Super Admin v6.0</span>
+    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body">
+      <div className="container mx-auto px-6 max-w-6xl">
+        
+        {/* Hub Header */}
+        <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+          <div className="flex items-center gap-5">
+            <Avatar className="w-14 h-14 border-2 border-white shadow-sm">
+              <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || 'L'}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Lubega'}</h1>
+              <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest">
+                {user?.email === 'hitechsoftware03@gmail.com' ? 'Super Admin' : 'Employee'} • Select a module
+              </p>
             </div>
-            <h1 className="text-4xl lg:text-7xl font-headline font-bold tracking-tight">Enterprise <br /> Command.</h1>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="apple-glass p-6 rounded-3xl min-w-[160px]">
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Staff Online</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{staff?.length || 0}</span>
-                <Users className="w-4 h-4 text-primary" />
-              </div>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"><Moon className="w-4 h-4" /></Button>
+            <Button variant="ghost" size="sm" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm px-4 flex items-center gap-2">
+              <ExternalLink className="w-4 h-4" /> Site
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-xl bg-red-50 text-red-500 hover:bg-red-100 px-4 font-bold border border-red-100 flex items-center gap-2">
+              <LogOut className="w-4 h-4" /> Logout
+            </Button>
+          </div>
+        </header>
+
+        {/* Office Code Bar */}
+        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-4 shadow-sm border border-black/5 flex flex-col md:flex-row items-center justify-between group transition-all hover:shadow-md">
+          <div className="flex items-center gap-6 mb-4 md:mb-0">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
+              <Key className="w-6 h-6 text-amber-500" />
             </div>
-            <div className="apple-glass p-6 rounded-3xl min-w-[160px]">
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Daily Code</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xl font-mono font-bold text-primary">{currentDailyCode}</span>
-                <Key className="w-4 h-4 text-accent" />
-              </div>
+            <div>
+              <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em] mb-1">Today's Office Code</h4>
+              <p className="text-xs text-foreground/50 font-medium">Every employee must enter this when punching in today.</p>
             </div>
-            <div className="apple-glass p-6 rounded-3xl min-w-[160px]">
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Pending Attendance</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{attendance?.filter((a: any) => a.status === 'pending').length || 0}</span>
-                <Clock className="w-4 h-4 text-amber-500" />
-              </div>
-            </div>
-            <div className="apple-glass p-6 rounded-3xl min-w-[160px]">
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Active Tasks</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">{tasks?.filter((t: any) => t.status !== 'completed').length || 0}</span>
-                <ClipboardList className="w-4 h-4 text-emerald-500" />
-              </div>
+          </div>
+          <div className="flex items-center gap-8">
+            <span className="text-5xl font-headline font-bold tracking-tighter text-zinc-800 dark:text-zinc-100">{currentDailyCode}</span>
+            <div className="flex gap-2">
+              <Input 
+                value={newOfficeCode} 
+                onChange={(e) => setNewOfficeCode(e.target.value)}
+                placeholder="New Code"
+                className="w-24 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-zinc-100 text-center font-bold"
+              />
+              <Button onClick={handleGenerateOfficeCode} className="h-12 w-12 rounded-xl bg-primary text-white"><Plus className="w-5 h-5" /></Button>
             </div>
           </div>
         </div>
-      </section>
 
-      <div className="container mx-auto px-6 mb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          {/* Navigation Sidebar */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="apple-glass p-4 rounded-[2rem] flex flex-col gap-2">
-              <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-[0.3em] px-6 py-4">Channels</p>
-              {[
-                { id: 'inquiries', icon: MessageSquare, label: 'Inquiries' },
-                { id: 'tasks', icon: ClipboardList, label: 'Workforce Tasks' },
-                { id: 'attendance', icon: CalendarCheck, label: 'Attendance' },
-                { id: 'staff', icon: Users, label: 'Staff Roster' },
-                { id: 'applications', icon: ShieldCheck, label: 'Hiring' },
-                { id: 'messages', icon: Mail, label: 'Mail' },
-              ].map((tab) => (
-                <button 
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as AdminTab)}
-                  className={cn(
-                    "w-full flex items-center justify-between px-6 py-5 rounded-2xl transition-all duration-500 group",
-                    activeTab === tab.id ? "bg-primary text-white shadow-xl shadow-primary/20" : "hover:bg-foreground/5 text-foreground/50"
-                  )}
-                >
-                  <div className="flex items-center gap-4">
-                    <tab.icon className={cn("w-5 h-5", activeTab === tab.id ? "text-white" : "text-primary")} />
-                    <span className="text-xs font-bold uppercase tracking-widest">{tab.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="apple-card p-8 bg-primary/5 border-primary/10">
-              <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">Office Protocol</h4>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-[9px] uppercase tracking-widest text-foreground/40">New Daily Code</Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      value={newOfficeCode} 
-                      onChange={(e) => setNewOfficeCode(e.target.value)}
-                      placeholder="e.g. HT-99" 
-                      className="h-10 rounded-xl text-xs"
-                    />
-                    <Button onClick={generateOfficeCode} size="icon" className="h-10 w-10 rounded-xl bg-primary text-white shrink-0">
-                      <Zap className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Working Status Bar */}
+        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex items-center gap-6 group transition-all hover:shadow-md">
+          <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
+            <Clock className="w-6 h-6 text-zinc-400" />
           </div>
+          <div>
+            <h4 className="font-bold text-lg">Working day today</h4>
+            <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest mt-0.5">Working hours 08:00 - 17:30</p>
+          </div>
+        </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-9">
-            <AnimatePresence mode="wait">
+        {/* Portals Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {modules.map((mod) => {
+            const access = hasAccess(mod);
+            return (
               <motion.div 
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="apple-card p-1 overflow-hidden"
+                key={mod.id}
+                whileHover={{ y: -5 }}
+                className={cn(
+                  "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all",
+                  !access && "opacity-60 bg-zinc-50/50"
+                )}
               >
-                <div className="bg-card/40 p-8 lg:p-12 rounded-[1.5rem]">
-                  <div className="flex items-center justify-between mb-12">
-                    <h3 className="text-2xl font-headline font-bold uppercase tracking-tight">{activeTab}</h3>
-                    {currentLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
+                {!access && (
+                  <div className="absolute top-8 right-8">
+                    <Lock className="w-5 h-5 text-zinc-300" />
                   </div>
+                )}
+                
+                <div>
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
+                    access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-300"
+                  )}>
+                    <mod.icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
+                  <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
+                </div>
 
-                  {activeTab === 'attendance' && (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-foreground/5">
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Worker</th>
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Date</th>
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Ops</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-foreground/5">
-                          {attendance?.map((item: any) => (
-                            <tr key={item.id} className="group hover:bg-foreground/[0.02]">
-                              <td className="py-6">
-                                <p className="font-bold text-sm">{item.userName}</p>
-                                <p className="text-[10px] text-foreground/30">{item.userId}</p>
-                              </td>
-                              <td className="py-6"><span className="text-xs font-medium">{item.date}</span></td>
-                              <td className="py-6">
-                                <span className={cn(
-                                  "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest",
-                                  item.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 
-                                  item.status === 'approved' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
-                                )}>{item.status}</span>
-                              </td>
-                              <td className="py-6 text-right">
-                                <div className="flex justify-end gap-2">
-                                  <Button onClick={() => handleStatusUpdate('attendance', item.id, 'approved')} size="icon" variant="ghost" className="h-8 w-8 text-green-500 hover:bg-green-500/10 rounded-full">
-                                    <UserCheck className="w-4 h-4" />
-                                  </Button>
-                                  <Button onClick={() => handleStatusUpdate('attendance', item.id, 'rejected')} size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:bg-red-500/10 rounded-full">
-                                    <XCircle className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                <div className="mt-10 pt-8 border-t border-black/5">
+                  {access ? (
+                    <div className="flex flex-wrap gap-2">
+                      {mod.permissions.map((perm) => (
+                        <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                          {perm}
+                        </button>
+                      ))}
                     </div>
-                  )}
-
-                  {activeTab === 'tasks' && (
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center bg-primary/5 p-6 rounded-2xl border border-primary/10">
-                        <div>
-                          <h4 className="font-bold text-sm">Deploy New Directive</h4>
-                          <p className="text-[10px] text-foreground/40 uppercase tracking-widest">Assign task to neural workforce</p>
-                        </div>
-                        <Button className="rounded-full bg-primary text-white"><Plus className="w-4 h-4 mr-2" /> New Task</Button>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {tasks?.map((task: any) => (
-                          <div key={task.id} className="apple-glass p-6 rounded-2xl border-foreground/5">
-                            <div className="flex justify-between items-start mb-4">
-                              <span className={cn(
-                                "px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest",
-                                task.priority === 'critical' ? 'bg-red-500 text-white' : 'bg-primary/10 text-primary'
-                              )}>{task.priority}</span>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-6 w-6"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                                <DropdownMenuContent className="apple-glass p-2 rounded-xl">
-                                  <DropdownMenuItem onClick={() => handleStatusUpdate('tasks', task.id, 'completed')} className="text-xs font-bold uppercase tracking-widest rounded-lg">Mark Verified</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDelete('tasks', task.id)} className="text-xs font-bold uppercase tracking-widest text-destructive rounded-lg">Delete</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                            <h4 className="font-bold mb-2">{task.title}</h4>
-                            <p className="text-xs text-foreground/50 line-clamp-2 mb-4">{task.description}</p>
-                            <div className="flex items-center justify-between pt-4 border-t border-foreground/5">
-                              <span className="text-[10px] font-bold text-foreground/30">Assigned: {task.assignedTo}</span>
-                              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{task.status}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Handle other tabs similarly... keeping it concise for MVP */}
-                  {['inquiries', 'applications', 'messages'].includes(activeTab) && (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-foreground/5">
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Entry</th>
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                            <th className="pb-6 text-[10px] font-bold text-foreground/30 uppercase tracking-widest text-right">Ops</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-foreground/5">
-                          {activeTab === 'inquiries' && inquiries?.map((item: any) => (
-                            <tr key={item.id} className="group hover:bg-foreground/[0.02]">
-                              <td className="py-6">
-                                <p className="font-bold text-sm">{item.fullName}</p>
-                                <p className="text-[10px] text-foreground/40 uppercase tracking-widest">{item.projectType} // {item.email}</p>
-                              </td>
-                              <td className="py-6">
-                                <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary">{item.status}</span>
-                              </td>
-                              <td className="py-6 text-right">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                                  <DropdownMenuContent className="apple-glass p-2">
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'reviewing')}>Reviewing</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('projectInquiries', item.id, 'contacted')}>Contacted</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleDelete('projectInquiries', item.id)} className="text-destructive">Purge</DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </td>
-                            </tr>
-                          ))}
-                          {activeTab === 'applications' && applications?.map((item: any) => (
-                            <tr key={item.id} className="group hover:bg-foreground/[0.02]">
-                              <td className="py-6">
-                                <p className="font-bold text-sm">{item.fullName}</p>
-                                <p className="text-[10px] text-foreground/40 uppercase tracking-widest">{item.role} // {item.email}</p>
-                              </td>
-                              <td className="py-6">
-                                <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-accent/10 text-accent">{item.status}</span>
-                              </td>
-                              <td className="py-6 text-right">
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild><Button size="icon" variant="ghost"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                                  <DropdownMenuContent className="apple-glass p-2">
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('jobApplications', item.id, 'interviewing')}>Interview</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleStatusUpdate('jobApplications', item.id, 'rejected')}>Reject</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleDelete('jobApplications', item.id)} className="text-destructive">Purge</DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  ) : (
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300">
+                      No Access
                     </div>
                   )}
                 </div>
               </motion.div>
-            </AnimatePresence>
-          </div>
+            );
+          })}
         </div>
-      </div>
 
-      <Footer />
+        <p className="text-center text-[10px] font-bold text-foreground/20 uppercase tracking-[0.4em]">
+          © {new Date().getFullYear()} HITECH SOFTWARE COMPANY
+        </p>
+
+      </div>
     </main>
   );
 }

@@ -37,7 +37,9 @@ import {
   XCircle,
   Undo2,
   Check,
-  Tag
+  Tag,
+  Users,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -97,12 +99,64 @@ export default function MyAccountPage() {
     { label: 'PENDING ADVANCES', value: '0', icon: CreditCard },
   ];
 
-  const tasks = [
-    { title: 'Tmbla Rideshare Social Media Account Setup & ...', status: 'COMPLETED', type: 'STANDALONE', date: 'Due May 31', color: 'text-green-500 bg-green-500/10' },
-    { title: 'Functional Testing of the Bilar Platform', status: 'IN PROGRESS', type: 'STANDALONE', date: 'Due Jun 8', color: 'text-primary bg-primary/10' },
-    { title: 'Market Research & Competitive ...', status: 'SUBMITTED_FOR_COMPLETION', type: 'STANDALONE', date: 'Due Jun 12', color: 'text-zinc-400 bg-zinc-100 dark:bg-zinc-800' },
-    { title: 'Testing of the application', status: 'IN PROGRESS', type: 'Bilar - Property Manager Platform', date: 'Due Jun 15', color: 'text-primary bg-primary/10' },
-    { title: 'Property Manager Acquisition Campaign', status: 'IN PROGRESS', type: 'STANDALONE', date: 'Due Jun 19', color: 'text-primary bg-primary/10' },
+  const standaloneTasks = [
+    { 
+      title: 'Tmbla Rideshare Social Media Account Setup & Branding Task', 
+      status: 'completed', 
+      date: 'due May 31, 2026', 
+      color: 'bg-orange-500',
+      badges: ['GUIDELINES']
+    },
+    { 
+      title: 'Functional Testing of the Bilar Platform', 
+      status: 'in progress', 
+      date: 'due Jun 8, 2026', 
+      color: 'bg-orange-500',
+      assignees: 5,
+      badges: ['GUIDELINES']
+    },
+    { 
+      title: 'Market Research & Competitive Positioning', 
+      status: 'submitted for completion', 
+      date: 'due Jun 12, 2026', 
+      color: 'bg-red-500',
+      assignees: 4,
+      badges: ['GUIDELINES', 'AWAITING APPROVAL']
+    },
+    { 
+      title: 'Property Manager Acquisition Campaign', 
+      status: 'in progress', 
+      date: 'due Jun 19, 2026', 
+      color: 'bg-red-500',
+      assignees: 3,
+      cap: 'UGX 49,987.5',
+      badges: ['GUIDELINES']
+    },
+    { 
+      title: 'Educational Video Content Creation (YouTube & TikTok)', 
+      status: 'in progress', 
+      date: 'due Jun 19, 2026', 
+      color: 'bg-blue-500',
+      assignees: 4,
+      badges: ['GUIDELINES']
+    },
+    { 
+      title: 'Landlord Outreach Program', 
+      status: 'in progress', 
+      date: 'due Jun 30, 2026', 
+      color: 'bg-red-500',
+      assignees: 2,
+      badges: ['GUIDELINES']
+    },
+    { 
+      title: 'Tenant Demand Generation Campaign', 
+      status: 'in progress', 
+      date: 'due Jul 30, 2026', 
+      color: 'bg-blue-500',
+      assignees: 3,
+      cap: 'UGX 1,999,987.5',
+      badges: ['GUIDELINES']
+    },
   ];
 
   const attendanceMetrics = [
@@ -114,15 +168,6 @@ export default function MyAccountPage() {
     { label: 'MISSED', value: '88', color: 'text-red-400' },
     { label: 'RETAINER PAID', value: '0', color: 'text-green-600' },
     { label: 'ALLOWANCE', value: '13', color: 'text-amber-600' },
-  ];
-
-  const requisitions = [
-    { id: '1', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 3 earned item(s). Awaiting accounts review.', items: 3, total: '30,037.5', date: 'Jun 9, 2026', status: 'fulfilled' },
-    { id: '2', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 2 earned item(s). Awaiting accounts review.', items: 2, total: '20,025', date: 'Jun 1, 2026', status: 'fulfilled' },
-    { id: '3', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 5 earned item(s). Awaiting accounts review.', items: 5, total: '50,062.5', date: 'May 22, 2026', status: 'fulfilled' },
-    { id: '4', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 18, 2026', status: 'fulfilled' },
-    { id: '5', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 13, 2026', status: 'fulfilled' },
-    { id: '6', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 1 earned item(s). Awaiting accounts review.', items: 1, total: '10,012.5', date: 'May 11, 2026', status: 'fulfilled' },
   ];
 
   const renderOverview = () => (
@@ -185,16 +230,16 @@ export default function MyAccountPage() {
           <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col h-full">
             <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
               <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Upcoming Tasks</h3>
-              <button className="text-xs font-bold text-zinc-400 hover:text-foreground flex items-center gap-1">
+              <button onClick={() => setActiveTab('Projects & Tasks')} className="text-xs font-bold text-zinc-400 hover:text-foreground flex items-center gap-1">
                 View all <ChevronRight className="w-3 h-3" />
               </button>
             </div>
             <div className="p-8 space-y-8 overflow-y-auto max-h-[600px]">
-              {tasks.map((task, idx) => (
+              {standaloneTasks.slice(0, 5).map((task, idx) => (
                 <div key={idx} className="flex gap-6 group relative">
                   <div className="flex flex-col items-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700 z-10" />
-                    {idx !== tasks.length - 1 && <div className="w-[1px] h-[calc(100%+2rem)] bg-zinc-100 dark:bg-zinc-800 absolute top-1.5" />}
+                    <div className={cn("w-2 h-2 rounded-full mt-1.5 z-10", task.color)} />
+                    {idx !== 4 && <div className="w-[1px] h-[calc(100%+2rem)] bg-zinc-100 dark:bg-zinc-800 absolute top-1.5" />}
                   </div>
                   <div className="flex-1 pb-2">
                     <div className="flex justify-between items-start mb-1.5">
@@ -203,16 +248,13 @@ export default function MyAccountPage() {
                       </h4>
                       <span className={cn(
                         "text-[8px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider",
-                        task.color
+                        task.status === 'completed' ? 'text-green-500 bg-green-500/10' : 'text-primary bg-primary/10'
                       )}>
                         {task.status}
                       </span>
                     </div>
                     <div className="flex gap-4 items-center">
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded">
-                        {task.type}
-                      </span>
-                      <span className="text-[10px] font-medium text-red-400">{task.date}</span>
+                      <span className="text-[10px] font-medium text-zinc-400">{task.date}</span>
                     </div>
                   </div>
                 </div>
@@ -729,7 +771,11 @@ export default function MyAccountPage() {
       </div>
 
       <div className="space-y-4">
-        {requisitions.map((req) => (
+        {[
+          { id: '1', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 3 earned item(s). Awaiting accounts review.', items: 3, total: '30,037.5', date: 'Jun 9, 2026', status: 'fulfilled' },
+          { id: '2', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 2 earned item(s). Awaiting accounts review.', items: 2, total: '20,025', date: 'Jun 1, 2026', status: 'fulfilled' },
+          { id: '3', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 5 earned item(s). Awaiting accounts review.', items: 5, total: '50,062.5', date: 'May 22, 2026', status: 'fulfilled' },
+        ].map((req) => (
           <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 group hover:border-primary/20 transition-all">
             <div className="flex justify-between items-start mb-6">
               <div className="space-y-4">
@@ -814,19 +860,51 @@ export default function MyAccountPage() {
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          {tasks.map((task, idx) => (
-             <div key={idx} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 flex justify-between items-center group hover:border-primary/20 transition-all">
-                <div className="space-y-2">
-                   <h4 className="text-sm font-bold">{task.title}</h4>
-                   <div className="flex gap-4 items-center">
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded">{task.type}</span>
-                      <span className="text-[10px] font-medium text-red-400">{task.date}</span>
+        <div className="space-y-3">
+          {standaloneTasks.map((task, idx) => (
+             <div key={idx} className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 group hover:border-primary/20 transition-all">
+                <div className="flex items-start gap-5">
+                   <div className={cn("w-2 h-2 rounded-full mt-2.5", task.color)} />
+                   <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-3 mb-2">
+                         <h4 className="text-sm font-bold tracking-tight">{task.title}</h4>
+                         <Badge className={cn(
+                            "text-[9px] font-bold uppercase px-2 py-0.5 rounded-md",
+                            task.status === 'completed' ? "bg-green-500/10 text-green-500" : 
+                            task.status === 'submitted for completion' ? "bg-amber-500/10 text-amber-500" :
+                            "bg-primary/10 text-primary"
+                         )}>
+                            {task.status}
+                         </Badge>
+                         {task.badges.map(b => (
+                            <Badge key={b} className={cn(
+                               "text-[9px] font-bold uppercase px-2 py-0.5 rounded-md",
+                               b === 'GUIDELINES' ? "bg-purple-500/10 text-purple-500" : "bg-amber-500/10 text-amber-600"
+                            )}>
+                               {b}
+                            </Badge>
+                         ))}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-6 text-[10px] font-bold text-zinc-400">
+                         <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {task.date}
+                         </div>
+                         {task.assignees && (
+                            <div className="flex items-center gap-1.5">
+                               <Users className="w-3.5 h-3.5" />
+                               {task.assignees} assignees
+                            </div>
+                         )}
+                         {task.cap && (
+                            <div className="flex items-center gap-1.5 text-amber-600">
+                               <Zap className="w-3.5 h-3.5 fill-current" />
+                               cap {task.cap}
+                            </div>
+                         )}
+                      </div>
                    </div>
                 </div>
-                <Badge className={cn("text-[9px] font-bold uppercase tracking-wider", task.color)}>
-                   {task.status}
-                </Badge>
              </div>
           ))}
         </div>

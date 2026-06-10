@@ -33,7 +33,9 @@ import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
-  Info
+  Info,
+  XCircle,
+  Undo2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,10 +48,12 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
+type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
+
 export default function MyAccountPage() {
   const { user } = useUser();
   const db = useFirestore();
-  const [activeTab, setActiveTab] = useState('Overview');
+  const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -110,6 +114,7 @@ export default function MyAccountPage() {
 
   const renderOverview = () => (
     <motion.div 
+      key="overview"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -163,7 +168,6 @@ export default function MyAccountPage() {
 
       {/* CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* UPCOMING TASKS */}
         <div className="lg:col-span-7">
           <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col h-full">
             <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
@@ -204,7 +208,6 @@ export default function MyAccountPage() {
           </div>
         </div>
 
-        {/* ATTENDANCE CALENDAR */}
         <div className="lg:col-span-5">
           <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 flex flex-col h-full">
             <div className="flex justify-between items-center mb-10">
@@ -250,14 +253,13 @@ export default function MyAccountPage() {
 
   const renderProfile = () => (
     <motion.div 
+      key="profile"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="max-w-4xl"
     >
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 space-y-10">
-        
-        {/* Profile Header */}
         <div className="flex items-center gap-6 pb-8 border-b border-zinc-100 dark:border-zinc-800">
           <Avatar className="w-20 h-20 border-4 border-zinc-50 dark:border-zinc-800">
             <AvatarImage src={user?.photoURL || ''} />
@@ -272,7 +274,6 @@ export default function MyAccountPage() {
           </div>
         </div>
 
-        {/* Form Fields */}
         <div className="space-y-8">
           <div className="space-y-3">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Full Name</Label>
@@ -307,7 +308,6 @@ export default function MyAccountPage() {
           </div>
         </div>
 
-        {/* Password Section */}
         <div className="pt-10 border-t border-zinc-100 dark:border-zinc-800">
           <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-6">Change Password (Leave blank to keep current)</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -322,7 +322,6 @@ export default function MyAccountPage() {
           </div>
         </div>
 
-        {/* Signature Section */}
         <div className="pt-10 border-t border-zinc-100 dark:border-zinc-800">
           <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-6">Signature</h4>
           <div className="bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-2xl p-6 mb-8 flex gap-4 items-start">
@@ -342,7 +341,6 @@ export default function MyAccountPage() {
           </div>
         </div>
 
-        {/* Notifications Section */}
         <div className="pt-10 border-t border-zinc-100 dark:border-zinc-800">
           <h4 className="text-sm font-bold mb-1">Push notifications</h4>
           <p className="text-xs text-zinc-400 font-medium">Get alerts on this device even when the app is closed. Install the app to your home screen first for the best experience.</p>
@@ -353,6 +351,7 @@ export default function MyAccountPage() {
 
   const renderAttendance = () => (
     <motion.div 
+      key="attendance"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -362,7 +361,6 @@ export default function MyAccountPage() {
         <p className="text-sm text-zinc-400">Punch in at the start of your working day and punch out when you finish.</p>
       </div>
 
-      {/* Current Clock Card */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 mb-8 relative overflow-hidden">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div>
@@ -383,7 +381,6 @@ export default function MyAccountPage() {
         </div>
       </div>
 
-      {/* Leave Requests */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm mb-8 overflow-hidden">
         <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">My Leave Requests</h3>
@@ -401,7 +398,6 @@ export default function MyAccountPage() {
         </div>
       </div>
 
-      {/* Compensation Requests */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm mb-8 overflow-hidden">
         <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
           <div>
@@ -415,7 +411,6 @@ export default function MyAccountPage() {
         </div>
       </div>
 
-      {/* History Table */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Recent History</h3>
@@ -476,6 +471,73 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderAdvanceRetainer = () => (
+    <motion.div 
+      key="advance-retainer"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Advance Retainer</h1>
+          <p className="text-sm text-zinc-400">Request a pro-rated salary advance based on days worked</p>
+        </div>
+        <Button className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all">
+          <Plus className="w-4 h-4" /> New Request
+        </Button>
+      </div>
+
+      {/* RETAINER SUMMARY CARD */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800 p-8 bg-zinc-50/30 dark:bg-zinc-900/50">
+          <div className="pb-6 md:pb-0 md:pr-8">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Monthly Salary</p>
+            <p className="text-xl font-headline font-bold">UGX 150,000</p>
+          </div>
+          <div className="py-6 md:py-0 md:px-8">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Est. Daily Rate</p>
+            <p className="text-xl font-headline font-bold">UGX 11,538.46</p>
+          </div>
+          <div className="py-6 md:py-0 md:px-8">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Contract Period</p>
+            <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">10 May 2026 - 30 Dec 2026</p>
+          </div>
+          <div className="pt-6 md:pt-0 md:pl-8">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Contract Status</p>
+            <Badge className="bg-green-500/10 text-green-600 border-none font-bold rounded-lg px-3 py-1">203 days remaining</Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* REQUEST ITEM */}
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 relative group hover:border-primary/20 transition-all">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <h3 className="text-2xl font-headline font-bold">UGX 135,000</h3>
+              <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[10px] font-bold px-3 py-0.5">Submitted</Badge>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-bold text-zinc-500">10 May 2026 - 9 Jun 2026</p>
+              <p className="text-xs text-zinc-400">12 days · Daily: UGX 11,538.46</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-end gap-3 self-stretch justify-center">
+            <button className="text-[10px] font-bold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Undo2 className="w-3 h-3" /> Revert to pending
+            </button>
+            <button className="text-[10px] font-bold text-red-400 flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <XCircle className="w-3 h-3" /> Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -492,16 +554,18 @@ export default function MyAccountPage() {
             {sidebarItems.map((item) => (
               <button
                 key={item.label}
-                onClick={() => setActiveTab(item.label)}
+                onClick={() => setActiveTab(item.label as TabType)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
+                  "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
                   activeTab === item.label 
                     ? "bg-zinc-100 dark:bg-zinc-800 text-foreground" 
                     : "text-zinc-400 hover:text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                 )}
               >
-                <item.icon className={cn("w-4 h-4", activeTab === item.label ? "text-primary" : "text-zinc-400 group-hover:text-zinc-500")} />
-                {item.label}
+                <div className="flex items-center gap-3">
+                  <item.icon className={cn("w-4 h-4", activeTab === item.label ? "text-primary" : "text-zinc-400 group-hover:text-zinc-500")} />
+                  {item.label}
+                </div>
               </button>
             ))}
           </nav>
@@ -526,7 +590,8 @@ export default function MyAccountPage() {
           {activeTab === 'Overview' && renderOverview()}
           {activeTab === 'Profile' && renderProfile()}
           {activeTab === 'Attendance' && renderAttendance()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && (
+          {activeTab === 'Advance Retainer' && renderAdvanceRetainer()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

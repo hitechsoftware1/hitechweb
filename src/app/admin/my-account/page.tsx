@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   LayoutGrid, 
@@ -34,7 +34,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -50,8 +50,27 @@ export default function MyAccountPage() {
     const today = new Date().toISOString().split('T')[0];
     return query(collection(db, 'officeCodes'), where('date', '==', today));
   }, [db]);
+  
   const { data: activeCodes } = useCollection(dailyCodeQuery);
-  const currentDailyCode = activeCodes?.[0]?.code || '71'; // Fallback to reference 71
+  const currentDailyCode = activeCodes?.[0]?.code || '--';
+
+  // Automated Code Generation Logic (Safety for staff if admin hasn't generated)
+  useEffect(() => {
+    if (!db || !activeCodes) return;
+    
+    if (activeCodes.length === 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const generatedCode = Math.floor(10 + Math.random() * 90).toString();
+      const codeId = `code_${today}`;
+      
+      setDoc(doc(db, 'officeCodes', codeId), {
+        code: generatedCode,
+        date: today,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+    }
+  }, [db, activeCodes]);
 
   const sidebarItems = [
     { label: 'Overview', icon: LayoutGrid },
@@ -159,7 +178,7 @@ export default function MyAccountPage() {
               <div className="w-10 h-10 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
                 <Clock className="w-5 h-5 text-zinc-400" />
               </div>
-              <p className="text-sm font-medium text-zinc-400">Not a working day today</p>
+              <p className="text-sm font-medium text-zinc-400">Working day today</p>
             </div>
             <button className="text-xs font-bold text-zinc-400 hover:text-foreground flex items-center gap-1.5 transition-colors">
               Go to Attendance <ChevronRight className="w-3 h-3" />

@@ -1,9 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, use } from 'react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import React, { useState, useMemo, use, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -41,10 +39,7 @@ import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 
@@ -54,7 +49,6 @@ type PortalModule = {
   description: string;
   icon: any;
   permissions: string[];
-  restrictedRoles: string[];
   href?: string;
 };
 
@@ -78,7 +72,31 @@ export default function AdminHub(props: {
   }, [db]);
 
   const { data: activeCodes } = useCollection(dailyCodeQuery);
-  const currentDailyCode = activeCodes?.[0]?.code || '71';
+  const currentDailyCode = activeCodes?.[0]?.code || '--';
+
+  // Automated Code Generation Logic
+  useEffect(() => {
+    if (!db || !activeCodes) return;
+    
+    // Only generate if no code exists for today
+    if (activeCodes.length === 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const generatedCode = Math.floor(10 + Math.random() * 90).toString();
+      const codeId = `code_${today}`;
+      
+      setDoc(doc(db, 'officeCodes', codeId), {
+        code: generatedCode,
+        date: today,
+        active: true,
+        createdAt: serverTimestamp()
+      }).then(() => {
+        toast({ 
+          title: "Neural Sync: Active", 
+          description: `Today's validation code [${generatedCode}] has been autonomously generated.` 
+        });
+      });
+    }
+  }, [db, activeCodes, toast]);
 
   const modules: PortalModule[] = [
     {
@@ -87,7 +105,6 @@ export default function AdminHub(props: {
       description: 'Profile, advance requests, requisitions',
       icon: User,
       permissions: ['View', 'Create', 'Edit', 'Delete'],
-      restrictedRoles: [],
       href: '/admin/my-account'
     },
     {
@@ -96,7 +113,6 @@ export default function AdminHub(props: {
       description: 'Project tasks, code reviews, SRE oversight',
       icon: Globe,
       permissions: ['View', 'Edit'],
-      restrictedRoles: [],
       href: '#'
     },
     {
@@ -105,7 +121,6 @@ export default function AdminHub(props: {
       description: 'LPOs, quotations, invoices, inquiries',
       icon: Layers,
       permissions: ['View', 'Edit'],
-      restrictedRoles: [],
       href: '#'
     },
     {
@@ -114,7 +129,6 @@ export default function AdminHub(props: {
       description: 'Marketing, mail, internal newsletters',
       icon: MessageSquare,
       permissions: ['View', 'Edit'],
-      restrictedRoles: [],
       href: '#'
     },
     {
@@ -123,7 +137,6 @@ export default function AdminHub(props: {
       description: 'Job apps, interviews, onboarding',
       icon: Briefcase,
       permissions: ['View', 'Edit'],
-      restrictedRoles: [],
       href: '#'
     },
     {
@@ -132,12 +145,11 @@ export default function AdminHub(props: {
       description: 'Users, roles, module permissions',
       icon: Settings,
       permissions: ['View', 'Edit', 'Delete'],
-      restrictedRoles: [],
       href: '#'
     }
   ];
 
-  const handleGenerateOfficeCode = () => {
+  const handleManualOfficeCode = () => {
     if (!db || !newOfficeCode) return;
     const today = new Date().toISOString().split('T')[0];
     const codeId = `code_${today}`;
@@ -147,14 +159,9 @@ export default function AdminHub(props: {
       active: true,
       createdAt: serverTimestamp()
     }).then(() => {
-      toast({ title: "Neural Code Broadcast", description: `Code ${newOfficeCode} is now active for all workers.` });
+      toast({ title: "Neural Code Override", description: `Code ${newOfficeCode} is now active for all workers.` });
       setNewOfficeCode('');
     });
-  };
-
-  const hasAccess = (module: PortalModule) => {
-    // Unlocked for everyone as per request
-    return true;
   };
 
   return (
@@ -191,19 +198,21 @@ export default function AdminHub(props: {
             </div>
             <div>
               <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em] mb-1">Today's Office Code</h4>
-              <p className="text-xs text-foreground/50 font-medium">Every employee must enter this when punching in today.</p>
+              <p className="text-xs text-foreground/50 font-medium">Auto-generated daily for global workforce validation.</p>
             </div>
           </div>
           <div className="flex items-center gap-8">
-            <span className="text-5xl font-headline font-bold tracking-tighter text-zinc-800 dark:text-zinc-100">{currentDailyCode}</span>
+            <span className="text-5xl font-headline font-bold tracking-tighter text-zinc-800 dark:text-zinc-100">
+              {currentDailyCode}
+            </span>
             <div className="flex gap-2">
               <Input 
                 value={newOfficeCode} 
                 onChange={(e) => setNewOfficeCode(e.target.value)}
-                placeholder="New Code"
+                placeholder="Override"
                 className="w-24 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-zinc-100 text-center font-bold"
               />
-              <Button onClick={handleGenerateOfficeCode} className="h-12 w-12 rounded-xl bg-primary text-white"><Plus className="w-5 h-5" /></Button>
+              <Button onClick={handleManualOfficeCode} className="h-12 w-12 rounded-xl bg-primary text-white"><Plus className="w-5 h-5" /></Button>
             </div>
           </div>
         </div>
@@ -219,55 +228,33 @@ export default function AdminHub(props: {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {modules.map((mod) => {
-            const access = hasAccess(mod);
-            const CardWrapper = access && mod.href ? Link : 'div';
-            return (
-              <motion.div 
-                key={mod.id}
-                whileHover={access ? { y: -5 } : {}}
-                className={cn(
-                  "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all",
-                  !access && "opacity-60 bg-zinc-50/50"
-                )}
-              >
-                <CardWrapper href={mod.href || '#'} className="flex flex-col justify-between h-full">
-                  {!access && (
-                    <div className="absolute top-8 right-8">
-                      <Lock className="w-5 h-5 text-zinc-300" />
-                    </div>
-                  )}
-                  
-                  <div>
-                    <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center mb-8",
-                      access ? "bg-zinc-50 dark:bg-zinc-800 text-zinc-500" : "bg-zinc-100/50 text-zinc-300"
-                    )}>
-                      <mod.icon className="w-7 h-7" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
-                    <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
+          {modules.map((mod) => (
+            <motion.div 
+              key={mod.id}
+              whileHover={{ y: -5 }}
+              className="bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all"
+            >
+              <Link href={mod.href || '#'} className="flex flex-col justify-between h-full">
+                <div>
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-zinc-50 dark:bg-zinc-800 text-zinc-500">
+                    <mod.icon className="w-7 h-7" />
                   </div>
+                  <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
+                  <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
+                </div>
 
-                  <div className="mt-10 pt-8 border-t border-black/5">
-                    {access ? (
-                      <div className="flex flex-wrap gap-2">
-                        {mod.permissions.map((perm) => (
-                          <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
-                            {perm}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300">
-                        No Access
-                      </div>
-                    )}
+                <div className="mt-10 pt-8 border-t border-black/5">
+                  <div className="flex flex-wrap gap-2">
+                    {mod.permissions.map((perm) => (
+                      <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
+                        {perm}
+                      </button>
+                    ))}
                   </div>
-                </CardWrapper>
-              </motion.div>
-            );
-          })}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
         <p className="text-center text-[10px] font-bold text-foreground/20 uppercase tracking-[0.4em]">

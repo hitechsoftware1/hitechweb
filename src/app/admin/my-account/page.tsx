@@ -177,7 +177,6 @@ export default function MyAccountPage() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
     >
-      {/* TOP STATUS BAR */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
         <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -204,13 +203,11 @@ export default function MyAccountPage() {
         </div>
       </div>
 
-      {/* WELCOME SECTION */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome back, {user?.displayName?.split(' ')[0] || 'Lubega'}</h1>
         <p className="text-sm text-zinc-400">Your tasks, attendance and pending requests at a glance.</p>
       </div>
 
-      {/* STATS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((stat) => (
           <div key={stat.label} className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
@@ -224,7 +221,6 @@ export default function MyAccountPage() {
         ))}
       </div>
 
-      {/* CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-7">
           <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col h-full">
@@ -544,7 +540,6 @@ export default function MyAccountPage() {
         </Button>
       </div>
 
-      {/* RETAINER SUMMARY CARD */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800 p-8 bg-zinc-50/30 dark:bg-zinc-900/50">
           <div className="pb-6 md:pb-0 md:pr-8">
@@ -566,7 +561,6 @@ export default function MyAccountPage() {
         </div>
       </div>
 
-      {/* REQUEST ITEM */}
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 relative group hover:border-primary/20 transition-all">
         <div className="flex flex-col md:flex-row justify-between items-start gap-6">
           <div className="space-y-4">
@@ -912,6 +906,29 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderMyDocuments = () => (
+    <motion.div 
+      key="my-documents"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">My Documents</h1>
+        <p className="text-sm text-zinc-400 font-medium">Files and documents attached to your account</p>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-32 flex flex-col items-center justify-center text-center">
+        <FileText className="w-12 h-12 text-zinc-200 dark:text-zinc-800 mb-4" />
+        <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-100 mb-1">No documents yet</h3>
+        <p className="text-sm text-zinc-400 font-medium">
+          Documents uploaded by your administrator will appear here
+        </p>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -969,7 +986,8 @@ export default function MyAccountPage() {
           {activeTab === 'Punch-In Allowances' && renderPunchInAllowances()}
           {activeTab === 'Requisitions' && renderRequisitions()}
           {activeTab === 'Projects & Tasks' && renderProjectsAndTasks()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && (
+          {activeTab === 'My Documents' && renderMyDocuments()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && activeTab !== 'My Documents' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

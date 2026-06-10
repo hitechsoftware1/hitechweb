@@ -35,13 +35,15 @@ import {
   CheckCircle2,
   Info,
   XCircle,
-  Undo2
+  Undo2,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import Link from 'next/link';
@@ -571,6 +573,116 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderPunchInAllowances = () => (
+    <motion.div 
+      key="punch-in-allowances"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Punch-In Allowances</h1>
+        <p className="text-sm text-zinc-400">Request payment for daily allowances (transport, lunch, etc.) earned when you punched in.</p>
+      </div>
+
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="space-y-2">
+          <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">From</Label>
+          <div className="relative">
+            <Input defaultValue="05/11/2026" className="h-11 w-44 rounded-xl bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 pr-10" />
+            <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">To</Label>
+          <div className="relative">
+            <Input defaultValue="06/10/2026" className="h-11 w-44 rounded-xl bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 pr-10" />
+            <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 flex justify-between items-center">
+        <div>
+          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Selected</p>
+          <h3 className="text-3xl font-headline font-bold text-green-500">UGX 10,000</h3>
+          <p className="text-[10px] text-zinc-400 font-medium">1 item(s) across 1 day(s)</p>
+        </div>
+        <Button className="bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl h-12 px-8 shadow-lg shadow-green-500/20">
+          Request Payment
+        </Button>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Earned & Unpaid</h3>
+          <div className="flex gap-4">
+             <button className="text-[10px] font-bold text-primary">Select All</button>
+             <button className="text-[10px] font-bold text-primary">Deselect All</button>
+          </div>
+        </div>
+        <div className="p-8">
+           <div className="flex items-start gap-4">
+              <Checkbox checked className="mt-1" />
+              <div className="flex-1">
+                 <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                       <span className="text-sm font-bold">Wed, Jun 10, 2026</span>
+                       <span className="text-[10px] text-zinc-300 font-medium">· 10h 20m worked</span>
+                    </div>
+                    <span className="text-sm font-bold">UGX 10,000</span>
+                 </div>
+                 <div className="inline-flex items-center gap-2 bg-green-500/5 border border-green-500/20 px-3 py-1.5 rounded-lg">
+                    <Checkbox checked className="border-green-500 data-[state=checked]:bg-green-500" />
+                    <span className="text-[10px] font-bold text-green-600">Transport UGX 10,000</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-transparent">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Paid History</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-zinc-50/50 dark:bg-zinc-800/20">
+              <tr className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+                <th className="px-8 py-5">Date</th>
+                <th className="px-8 py-5">Name</th>
+                <th className="px-8 py-5">Hours</th>
+                <th className="px-8 py-5">Amount</th>
+                <th className="px-8 py-5">Paid At</th>
+                <th className="px-8 py-5">Requisition</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/30">
+              {[
+                { date: 'Mon, Jun 1, 2026', name: 'Transport', hours: '12h 13m / 9h 30m', amount: 'UGX 10,000', paidAt: 'Jun 10, 2026, 03:24 PM', req: 'Punch-In Allowances Payout' },
+                { date: 'Fri, Jun 5, 2026', name: 'Transport', hours: '10h 54m / 9h 30m', amount: 'UGX 10,000', paidAt: 'Jun 10, 2026, 03:24 PM', req: 'Punch-In Allowances Payout' },
+                { date: 'Mon, Jun 8, 2026', name: 'Transport', hours: '12h 24m / 9h 30m', amount: 'UGX 10,000', paidAt: 'Jun 10, 2026, 03:24 PM', req: 'Punch-In Allowances Payout' },
+                { date: 'Mon, May 25, 2026', name: 'Transport', hours: '10h 24m', amount: 'UGX 10,000', paidAt: 'Jun 1, 2026, 08:48 PM', req: 'Punch-In Allowances Payout' },
+                { date: 'Fri, May 29, 2026', name: 'Transport', hours: '14h 1m', amount: 'UGX 10,000', paidAt: 'Jun 1, 2026, 08:48 PM', req: 'Punch-In Allowances Payout' },
+                { date: 'Fri, May 15, 2026', name: 'Transport', hours: '12h 19m', amount: 'UGX 10,000', paidAt: 'May 26, 2026, 07:25 PM', req: 'Punch-In Allowances Payout' },
+              ].map((row, i) => (
+                <tr key={i} className="text-xs group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                  <td className="px-8 py-6 font-bold">{row.date}</td>
+                  <td className="px-8 py-6 text-zinc-400 font-medium">{row.name}</td>
+                  <td className="px-8 py-6 text-zinc-400 font-medium">{row.hours}</td>
+                  <td className="px-8 py-6 font-bold text-green-600">{row.amount}</td>
+                  <td className="px-8 py-6 text-zinc-400 font-medium">{row.paidAt}</td>
+                  <td className="px-8 py-6 text-zinc-400 font-medium">{row.req}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -625,7 +737,8 @@ export default function MyAccountPage() {
           {activeTab === 'Attendance' && renderAttendance()}
           {activeTab === 'Advance Retainer' && renderAdvanceRetainer()}
           {activeTab === 'Allowances' && renderAllowances()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && (
+          {activeTab === 'Punch-In Allowances' && renderPunchInAllowances()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

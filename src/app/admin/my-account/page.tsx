@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutGrid, 
@@ -39,7 +39,10 @@ import {
   Check,
   Tag,
   Users,
-  Zap
+  Zap,
+  Paperclip,
+  Send,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,6 +55,7 @@ import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Image from 'next/image';
 
 type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
 
@@ -62,12 +66,20 @@ export default function MyAccountPage() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [projectSubTab, setProjectSubTab] = useState<'Project Based' | 'Standalone'>('Project Based');
   const [fileSubTab, setFileSubTab] = useState<'My Files' | 'Shared With Me'>('My Files');
+  const [chatSearch, setChatSearch] = useState('');
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'Chat') {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeTab]);
 
   // Daily Code Query
   const dailyCodeQuery = useMemo(() => {
@@ -965,9 +977,9 @@ export default function MyAccountPage() {
 
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
-        <Input 
+        <input 
           placeholder="Search files..." 
-          className="h-12 pl-12 rounded-xl bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+          className="w-full h-12 pl-12 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 outline-none focus:ring-2 focus:ring-primary/50 transition-all"
         />
       </div>
 
@@ -976,6 +988,170 @@ export default function MyAccountPage() {
         <p className="text-sm text-zinc-400 font-medium">
           No files uploaded yet.
         </p>
+      </div>
+    </motion.div>
+  );
+
+  const renderChat = () => (
+    <motion.div 
+      key="chat"
+      initial={{ opacity: 0, scale: 0.99 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.99 }}
+      className="flex h-[calc(100vh-100px)] overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl"
+    >
+      {/* Inbox List Column */}
+      <div className="w-[380px] border-r border-zinc-100 dark:border-zinc-800 flex flex-col">
+        <div className="p-6 border-b border-zinc-50 dark:border-zinc-800/50">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold tracking-tight">Chat</h3>
+            <Button variant="outline" size="sm" className="h-8 rounded-lg border-zinc-100 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+              <Plus className="w-3 h-3" /> Group
+            </Button>
+          </div>
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+            <input 
+              value={chatSearch}
+              onChange={(e) => setChatSearch(e.target.value)}
+              placeholder="Search messages or people..." 
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-sm outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
+          <div className="flex gap-1 p-1 bg-zinc-50 dark:bg-zinc-950 rounded-xl">
+             <button className="flex-1 py-2 text-[10px] font-bold uppercase tracking-widest bg-white dark:bg-zinc-900 rounded-lg shadow-sm">Chats</button>
+             <button className="flex-1 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-foreground">People</button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {[
+            { id: 1, name: 'Deepcode group', last: 'Photo', date: 'Jun 1', active: true, isGroup: true },
+            { id: 2, name: 'Cole Amri Kitalikibi', last: 'deepcode12.jpg', date: 'Jun 1', initial: 'CK' },
+            { id: 3, name: 'Kabaale Micheal', last: 'Hello Graphics Team, As part of the Tm...', date: 'May 28', initial: 'KM' },
+            { id: 4, name: 'Rumanzi Regan', last: 'No messages yet', date: '', initial: 'RR' },
+          ].map((chat) => (
+            <button 
+              key={chat.id} 
+              className={cn(
+                "w-full p-4 flex gap-4 transition-all border-l-2",
+                chat.active ? "bg-zinc-50/80 dark:bg-zinc-800/30 border-primary" : "border-transparent hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10"
+              )}
+            >
+              <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0 overflow-hidden border border-zinc-200/50 dark:border-zinc-700/50">
+                {chat.isGroup ? <Users className="w-5 h-5 text-zinc-400" /> : <span className="text-xs font-bold text-zinc-500">{chat.initial}</span>}
+              </div>
+              <div className="flex-1 text-left">
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100 truncate max-w-[150px]">{chat.name}</h4>
+                  <span className="text-[10px] font-medium text-zinc-300">{chat.date}</span>
+                </div>
+                <p className="text-xs text-zinc-400 truncate flex items-center gap-1.5">
+                  {chat.last === 'Photo' && <Files className="w-3 h-3" />}
+                  {chat.last}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Chat Content Column */}
+      <div className="flex-1 flex flex-col bg-zinc-50/30 dark:bg-[#0C0C0E]">
+        {/* Chat Header */}
+        <div className="h-20 px-8 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900/50">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
+               <Users className="w-5 h-5 text-zinc-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                 <h3 className="font-bold text-sm">Deepcode group</h3>
+                 <button className="text-[10px] font-bold text-primary hover:underline">Details</button>
+              </div>
+              <p className="text-[10px] font-medium text-zinc-400">7 members</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+             <Button variant="ghost" size="icon" className="rounded-xl text-zinc-400"><Search className="w-4 h-4" /></Button>
+             <Button variant="ghost" size="icon" className="rounded-xl text-zinc-400"><MoreVertical className="w-4 h-4" /></Button>
+          </div>
+        </div>
+
+        {/* Message Area */}
+        <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+          {/* Incoming Message Block */}
+          <div className="flex flex-col items-start max-w-[85%]">
+            <div className="bg-primary text-white p-5 rounded-[1.5rem] rounded-tl-none shadow-lg shadow-primary/5 text-sm font-light leading-relaxed">
+              Cover/banner variations if available
+            </div>
+            <div className="bg-primary text-white p-5 mt-2 rounded-[1.5rem] rounded-tl-none shadow-lg shadow-primary/5 text-sm font-light leading-relaxed">
+              Thank you.
+            </div>
+            <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest mt-2 px-2">03:03 PM</span>
+          </div>
+
+          {/* Image Grid Block (From Rumanzi Regan) */}
+          <div className="flex flex-col items-start max-w-[85%]">
+            <span className="text-[10px] font-bold text-zinc-400 mb-3 px-2">Rumanzi Regan</span>
+            <div className="bg-white dark:bg-zinc-900 p-2 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 shadow-sm">
+              <div className="grid grid-cols-2 gap-2 w-[320px]">
+                <div className="aspect-square bg-zinc-50 dark:bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-100 dark:border-zinc-800 relative overflow-hidden">
+                   <Image src="https://i.pinimg.com/736x/c3/e3/30/c3e3308157323082520d57055e4434c7.jpg" alt="Logo 1" fill className="object-cover opacity-80" />
+                </div>
+                <div className="aspect-square bg-zinc-50 dark:bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-100 dark:border-zinc-800 relative overflow-hidden">
+                   <Image src="https://i.pinimg.com/736x/c3/e3/30/c3e3308157323082520d57055e4434c7.jpg" alt="Logo 2" fill className="object-cover opacity-80" />
+                </div>
+                <div className="aspect-square bg-zinc-50 dark:bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-100 dark:border-zinc-800 relative overflow-hidden">
+                   <Image src="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" alt="Logo 3" fill className="object-cover opacity-80" />
+                </div>
+                <div className="aspect-square bg-zinc-950 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-pointer">
+                   <Image src="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" alt="Logo 4" fill className="object-cover opacity-40 blur-[1px]" />
+                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <span className="text-xl font-bold text-white font-headline">+1</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+            <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest mt-2 px-2">12:14 PM</span>
+          </div>
+
+          {/* Outgoing Message Block */}
+          <div className="flex flex-col items-end ml-auto max-w-[85%]">
+            <div className="bg-primary text-white p-4 rounded-[1.5rem] rounded-tr-none shadow-lg shadow-primary/10 text-sm font-bold">
+               Hey team
+            </div>
+            <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest mt-2 px-2">05:43 PM</span>
+          </div>
+
+          <div className="flex flex-col items-end ml-auto max-w-[85%]">
+            <div className="bg-primary text-white p-6 rounded-[1.5rem] rounded-tr-none shadow-lg shadow-primary/10 text-sm font-medium leading-relaxed">
+               Since we have not got any assets for Bilar unless the logos, I have come up with a temporally cover BANNER to be used on our social accounts setup as we wait from the graphics department .let me post here you share a comment about it .thank you
+            </div>
+            <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest mt-2 px-2">05:46 PM - edited</span>
+          </div>
+
+          {/* Target for scrolling */}
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Input Bar */}
+        <div className="p-8 bg-white dark:bg-zinc-900/80 backdrop-blur-xl border-t border-zinc-100 dark:border-zinc-800">
+           <form className="flex gap-4 items-center">
+              <div className="flex-1 relative">
+                 <input 
+                    placeholder="Type a message..." 
+                    className="w-full h-14 pl-6 pr-12 rounded-[1.2rem] bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800/50 outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all"
+                 />
+                 <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-primary transition-colors">
+                    <Paperclip className="w-5 h-5" />
+                 </button>
+              </div>
+              <Button type="submit" className="h-14 px-8 rounded-[1.2rem] bg-zinc-500 dark:bg-zinc-400 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-primary transition-all shadow-md">
+                 Send
+              </Button>
+           </form>
+        </div>
       </div>
     </motion.div>
   );
@@ -1039,7 +1215,8 @@ export default function MyAccountPage() {
           {activeTab === 'Projects & Tasks' && renderProjectsAndTasks()}
           {activeTab === 'My Documents' && renderMyDocuments()}
           {activeTab === 'Files' && renderFiles()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && activeTab !== 'My Documents' && activeTab !== 'Files' && (
+          {activeTab === 'Chat' && renderChat()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && activeTab !== 'My Documents' && activeTab !== 'Files' && activeTab !== 'Chat' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

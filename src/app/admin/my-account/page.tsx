@@ -61,6 +61,7 @@ export default function MyAccountPage() {
   const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [projectSubTab, setProjectSubTab] = useState<'Project Based' | 'Standalone'>('Project Based');
+  const [fileSubTab, setFileSubTab] = useState<'My Files' | 'Shared With Me'>('My Files');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -929,6 +930,56 @@ export default function MyAccountPage() {
     </motion.div>
   );
 
+  const renderFiles = () => (
+    <motion.div 
+      key="files"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-10"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Files</h1>
+          <p className="text-sm text-zinc-400 font-medium">Upload, manage and share your files.</p>
+        </div>
+        <Button className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all">
+          <Upload className="w-4 h-4" /> Upload
+        </Button>
+      </div>
+
+      <div className="flex gap-4">
+        {['My Files', 'Shared With Me'].map((tab) => (
+          <button 
+            key={tab}
+            onClick={() => setFileSubTab(tab as any)}
+            className={cn(
+              "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
+              fileSubTab === tab ? "bg-zinc-950 dark:bg-white text-white dark:text-black" : "text-zinc-400 hover:text-foreground"
+            )}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+        <Input 
+          placeholder="Search files..." 
+          className="h-12 pl-12 rounded-xl bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+        />
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-32 flex flex-col items-center justify-center text-center">
+        <Folder className="w-12 h-12 text-zinc-100 dark:text-zinc-800 mb-4" />
+        <p className="text-sm text-zinc-400 font-medium">
+          No files uploaded yet.
+        </p>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -987,7 +1038,8 @@ export default function MyAccountPage() {
           {activeTab === 'Requisitions' && renderRequisitions()}
           {activeTab === 'Projects & Tasks' && renderProjectsAndTasks()}
           {activeTab === 'My Documents' && renderMyDocuments()}
-          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && activeTab !== 'My Documents' && (
+          {activeTab === 'Files' && renderFiles()}
+          {activeTab !== 'Overview' && activeTab !== 'Profile' && activeTab !== 'Attendance' && activeTab !== 'Advance Retainer' && activeTab !== 'Allowances' && activeTab !== 'Punch-In Allowances' && activeTab !== 'Requisitions' && activeTab !== 'Projects & Tasks' && activeTab !== 'My Documents' && activeTab !== 'Files' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

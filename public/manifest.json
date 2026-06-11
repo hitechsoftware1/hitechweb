@@ -1,0 +1,23 @@
+
+{
+  "name": "HITECH | Intelligent Software Systems",
+  "short_name": "HITECH",
+  "description": "Clean, futuristic digital solutions for the next generation of enterprises.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#00A3FF",
+  "icons": [
+    {
+      "src": "https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

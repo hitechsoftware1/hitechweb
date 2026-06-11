@@ -329,7 +329,3 @@ export default function MobileAppsPage() {
     </main>
   );
 }
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
-}

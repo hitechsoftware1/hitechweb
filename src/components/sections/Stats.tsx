@@ -101,7 +101,7 @@ export function Stats() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="apple-card p-3 sm:p-6 lg:p-10 h-full flex flex-col bg-card/60"
+              className="apple-card p-3 sm:p-6 lg:p-10 h-full flex flex-col"
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 lg:mb-10 gap-3">
                 <div>

@@ -162,7 +162,7 @@ export function AIConsultant() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="apple-card p-6 lg:p-12 overflow-hidden bg-card/60 border-primary/10 shadow-2xl"
+              className="apple-card p-6 lg:p-12 overflow-hidden border-primary/10 shadow-2xl"
             >
               <div className="flex items-center gap-3 mb-8">
                 <div className={cn(

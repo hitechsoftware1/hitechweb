@@ -73,15 +73,15 @@
 
 .apple-glass {
   @apply backdrop-blur-[12px] md:backdrop-blur-[32px] border transition-all duration-500;
-  @apply bg-white/60 border-black/[0.04] shadow-[0_8px_32px_0_rgba(0,0,0,0.03)];
+  @apply bg-black/[0.04] border-black/[0.06] shadow-[0_8px_32px_0_rgba(0,0,0,0.03)];
   @apply dark:bg-black/40 dark:border-white/[0.08] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
 }
 
 .apple-card {
   @apply relative overflow-hidden backdrop-blur-md md:backdrop-blur-xl border transition-all duration-700;
-  @apply bg-white/40 border-black/[0.03] shadow-sm;
+  @apply bg-black/[0.02] border-black/[0.05] shadow-sm;
   @apply dark:bg-[#1C1C1E]/40 dark:border-white/[0.05] dark:shadow-none;
-  @apply hover:bg-white/60 dark:hover:bg-[#1C1C1E]/60;
+  @apply hover:bg-black/[0.05] dark:hover:bg-[#1C1C1E]/60;
 }
 
 .text-gradient-apple {

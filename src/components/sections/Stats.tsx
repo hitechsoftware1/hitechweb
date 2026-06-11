@@ -93,34 +93,34 @@ export function Stats() {
           </div>
         </div>
 
-        {/* Bento Grid Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        {/* Bento Grid Stats - SIDE BY SIDE ON MOBILE */}
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-6 mb-6">
           
           {/* Main Throughput Chart */}
-          <div className="lg:col-span-8">
+          <div className="col-span-1 lg:col-span-8">
             <motion.div 
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="apple-card p-6 lg:p-10 h-full flex flex-col bg-card/60"
+              className="apple-card p-3 sm:p-6 lg:p-10 h-full flex flex-col bg-card/60"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 lg:mb-10 gap-3">
                 <div>
-                  <h3 className="text-lg font-bold">Computing Velocity</h3>
-                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Real-time ecosystem load across nodes</p>
+                  <h3 className="text-[10px] sm:text-lg font-bold">Computing Velocity</h3>
+                  <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest line-clamp-1">Real-time load across nodes</p>
                 </div>
-                <div className="flex gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-[10px] font-bold text-foreground/40 uppercase">Total Hub</span>
+                <div className="flex gap-2 sm:gap-4">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Hub</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-primary/20" />
-                    <span className="text-[10px] font-bold text-foreground/40 uppercase">Neural Load</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Load</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-grow h-[300px]">
+              <div className="flex-grow h-[120px] sm:h-[300px]">
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={throughputData}>
@@ -134,7 +134,7 @@ export function Stats() {
                         dataKey="time" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fontSize: 10, opacity: 0.3 }}
+                        tick={{ fontSize: 8, opacity: 0.3 }}
                         dy={10}
                       />
                       <Tooltip content={<ChartTooltipContent />} />
@@ -142,7 +142,7 @@ export function Stats() {
                         type="monotone" 
                         dataKey="value" 
                         stroke="hsl(var(--primary))" 
-                        strokeWidth={3}
+                        strokeWidth={2}
                         fillOpacity={1} 
                         fill="url(#colorValue)" 
                       />
@@ -163,25 +163,25 @@ export function Stats() {
           </div>
 
           {/* Regional Pie Module */}
-          <div className="lg:col-span-4">
+          <div className="col-span-1 lg:col-span-4">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="apple-card p-8 h-full flex flex-col justify-between"
+              className="apple-card p-3 sm:p-8 h-full flex flex-col justify-between"
             >
               <div>
-                <h3 className="text-lg font-bold mb-1">Edge Performance</h3>
-                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-10">Regional Node Efficiency</p>
+                <h3 className="text-[10px] sm:text-lg font-bold mb-0.5 lg:mb-1">Edge Performance</h3>
+                <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-4 lg:mb-10">Regional Node Efficiency</p>
                 
-                <div className="h-48 flex items-center justify-center relative">
+                <div className="h-24 sm:h-48 flex items-center justify-center relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={regionalData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
+                        innerRadius="60%"
+                        outerRadius="80%"
                         paddingAngle={10}
                         dataKey="value"
                         stroke="none"
@@ -193,17 +193,17 @@ export function Stats() {
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <p className="text-3xl font-headline font-bold">96%</p>
-                    <p className="text-[8px] font-bold text-foreground/30 uppercase tracking-widest">Global Avg</p>
+                    <p className="text-sm sm:text-3xl font-headline font-bold">96%</p>
+                    <p className="text-[5px] sm:text-[8px] font-bold text-foreground/30 uppercase tracking-widest">Global</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-foreground/5">
+              <div className="space-y-2 lg:space-y-4 pt-4 lg:pt-6 border-t border-foreground/5">
                 {regionalData.map((node) => (
-                  <div key={node.name} className="flex justify-between items-center text-xs">
-                    <div className="flex items-center gap-2 font-bold text-foreground/60">
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: node.color }} />
+                  <div key={node.name} className="flex justify-between items-center text-[7px] sm:text-xs">
+                    <div className="flex items-center gap-1.5 font-bold text-foreground/60">
+                      <div className="w-1 h-1 rounded-full" style={{ backgroundColor: node.color }} />
                       {node.name}
                     </div>
                     <span className="font-bold">{node.value}%</span>

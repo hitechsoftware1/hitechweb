@@ -4,173 +4,266 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  Bar,
-  XAxis,
+  Area,
+  AreaChart,
   ResponsiveContainer,
-  ComposedChart,
+  XAxis,
+  YAxis,
   Tooltip,
+  Bar,
+  BarChart,
+  Cell,
+  PieChart,
+  Pie
 } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { cn } from '@/lib/utils';
+import { Activity, Globe, ShieldCheck, Zap, Cpu, Server, TrendingUp, ArrowUpRight } from 'lucide-react';
 
 const stats = [
-  { label: 'Enterprises', value: '150+', color: 'text-primary' },
-  { label: 'System Uptime', value: '99.99%', color: 'text-foreground' },
-  { label: 'Security Audits', value: '500+', color: 'text-foreground' },
-  { label: 'Launches', value: '1.2k', color: 'text-foreground' },
+  { label: 'Enterprises', value: '150+', color: 'text-primary', change: '+12%', spark: [30, 45, 32, 60, 55, 90] },
+  { label: 'System Uptime', value: '99.99%', color: 'text-foreground', change: 'Stable', spark: [99, 99, 100, 99, 100, 99.9] },
+  { label: 'Security Audits', value: '500+', color: 'text-foreground', change: '+84', spark: [10, 20, 40, 80, 150, 500] },
+  { label: 'Launches', value: '1.2k', color: 'text-foreground', change: '+24%', spark: [100, 300, 450, 700, 900, 1200] },
 ];
 
-const chartData = [
-  { month: "Jan", open: 2000, close: 2400, high: 2600, low: 1800 },
-  { month: "Feb", open: 2400, close: 3600, high: 3800, low: 2200 },
-  { month: "Mar", open: 3600, close: 3200, high: 3700, low: 3000 },
-  { month: "Apr", open: 3200, close: 5400, high: 5600, low: 3000 },
-  { month: "May", open: 5400, close: 4800, high: 5500, low: 4600 },
-  { month: "Jun", open: 4800, close: 7200, high: 7500, low: 4500 },
+const throughputData = [
+  { time: "00:00", value: 4500, load: 3200 },
+  { time: "04:00", value: 5200, load: 3800 },
+  { time: "08:00", value: 7800, load: 6100 },
+  { time: "12:00", value: 9400, load: 8500 },
+  { time: "16:00", value: 8200, load: 7400 },
+  { time: "20:00", value: 6100, load: 4900 },
+  { time: "23:59", value: 5400, load: 4200 },
 ];
 
-const CandlestickShape = (props: any) => {
-  const { x, y, width, height, payload } = props;
-  const { open, close, high, low } = payload;
-  const isGrowing = close >= open;
-  const fill = isGrowing ? 'hsl(var(--primary))' : 'hsl(var(--accent))';
-  
-  const xCenter = x + width / 2;
-  const maxValue = 8000;
-  const chartHeight = 300;
-  
-  const getY = (val: number) => chartHeight - (val / maxValue) * chartHeight;
-
-  return (
-    <g className="transition-all duration-500">
-      <line
-        x1={xCenter}
-        y1={getY(high)}
-        x2={xCenter}
-        y2={getY(low)}
-        stroke={fill}
-        strokeWidth={1}
-        strokeDasharray="2 2"
-        opacity={0.5}
-      />
-      <rect
-        x={x}
-        y={getY(Math.max(open, close))}
-        width={width}
-        height={Math.max(Math.abs(getY(open) - getY(close)), 4)}
-        fill={fill}
-        rx={4}
-        className="drop-shadow-sm"
-      />
-    </g>
-  );
-};
+const regionalData = [
+  { name: 'Kampala', value: 85, color: 'hsl(var(--primary))' },
+  { name: 'London', value: 92, color: 'hsl(var(--accent))' },
+  { name: 'S.F.', value: 98, color: 'hsl(var(--foreground))' },
+];
 
 export function Stats() {
   return (
-    <section className="py-12 lg:py-32 relative bg-background overflow-hidden">
+    <section className="py-12 lg:py-32 relative bg-background overflow-hidden border-y border-foreground/5">
       
-      {/* Background Video & Overlays */}
+      {/* Background Decor */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          className="w-full h-full object-cover opacity-10 dark:opacity-20"
-        >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-data-computing-animation-in-a-server-room-22001-large.mp4" type="video/mp4" />
-        </video>
         <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
         <div className="absolute inset-0 neural-grid opacity-30" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 lg:px-6 relative z-10">
         
-        {/* Statistics Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20 lg:mb-32">
+        {/* Header Protocol */}
+        <div className="mb-16 lg:mb-24 flex flex-col md:flex-row justify-between items-end gap-8">
+          <div className="max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="inline-flex items-center gap-2 mb-4 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em]"
+            >
+              <Activity className="w-3 h-3" /> System Metrics // HITECH CORE v5.0
+            </motion.div>
+            <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-none">
+              Engineering <br /> Throughput.
+            </h2>
+          </div>
+          <div className="apple-glass px-8 py-5 rounded-2xl flex items-center gap-10">
+            <div className="text-center">
+              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Global Health</p>
+              <p className="text-xl font-bold text-green-500">EXCELLENT</p>
+            </div>
+            <div className="w-[1px] h-10 bg-foreground/10" />
+            <div className="text-center text-primary font-bold">
+               <p className="text-[10px] uppercase tracking-widest opacity-30 mb-1">Compute Power</p>
+               <p className="text-xl">42.4 TFLOPS</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Bento Grid Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+          
+          {/* Main Throughput Chart */}
+          <div className="lg:col-span-8">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="apple-card p-6 lg:p-10 h-full flex flex-col bg-card/60"
+            >
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                  <h3 className="text-lg font-bold">Computing Velocity</h3>
+                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Real-time ecosystem load across nodes</p>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="text-[10px] font-bold text-foreground/40 uppercase">Total Hub</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-primary/20" />
+                    <span className="text-[10px] font-bold text-foreground/40 uppercase">Neural Load</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-grow h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={throughputData}>
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis 
+                      dataKey="time" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, opacity: 0.3 }}
+                      dy={10}
+                    />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorValue)" 
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="load" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={1}
+                      strokeDasharray="4 4"
+                      fill="transparent" 
+                      opacity={0.3}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Regional Pie Module */}
+          <div className="lg:col-span-4">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="apple-card p-8 h-full flex flex-col justify-between"
+            >
+              <div>
+                <h3 className="text-lg font-bold mb-1">Edge Performance</h3>
+                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-10">Regional Node Efficiency</p>
+                
+                <div className="h-48 flex items-center justify-center relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={regionalData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={10}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {regionalData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} opacity={0.8} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <p className="text-3xl font-headline font-bold">96%</p>
+                    <p className="text-[8px] font-bold text-foreground/30 uppercase tracking-widest">Global Avg</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-foreground/5">
+                {regionalData.map((node) => (
+                  <div key={node.name} className="flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-2 font-bold text-foreground/60">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: node.color }} />
+                      {node.name}
+                    </div>
+                    <span className="font-bold">{node.value}%</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Metric Strips Row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="flex flex-col items-center text-center group"
+              className="apple-card p-6 flex flex-col justify-between group hover:border-primary/30"
             >
-              <h3 className={`text-4xl lg:text-8xl font-bold font-headline mb-2 lg:mb-4 tracking-tighter ${stat.color} transition-all duration-500 group-hover:scale-105`}>
-                {stat.value}
-              </h3>
-              <p className="text-foreground/30 font-bold uppercase text-[8px] lg:text-[10px] tracking-[0.3em] lg:tracking-[0.5em]">
-                {stat.label}
-              </p>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-1">{stat.label}</p>
+                  <h4 className={cn("text-3xl font-headline font-bold tracking-tight", stat.color)}>{stat.value}</h4>
+                </div>
+                <span className={cn(
+                  "text-[8px] font-bold px-2 py-0.5 rounded-full",
+                  stat.change.startsWith('+') ? "bg-green-500/10 text-green-500" : "bg-foreground/5 text-foreground/40"
+                )}>
+                  {stat.change}
+                </span>
+              </div>
+              
+              <div className="h-10 w-full opacity-30 group-hover:opacity-100 transition-opacity">
+                 <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={stat.spark.map((v, i) => ({ i, v }))}>
+                       <Area 
+                         type="monotone" 
+                         dataKey="v" 
+                         stroke="currentColor" 
+                         className={stat.color} 
+                         fill="transparent" 
+                         strokeWidth={2}
+                       />
+                    </AreaChart>
+                 </ResponsiveContainer>
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Interactive Performance Chart */}
-        <div className="max-w-5xl mx-auto">
-          <div className="apple-card p-6 lg:p-12 border-primary/10 bg-card/40">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-              <div>
-                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-2 block">Engineering Velocity</span>
-                <h2 className="text-2xl lg:text-4xl font-headline font-bold">Scaling Indicators.</h2>
-              </div>
-              <div className="flex gap-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Growth Cycle</span>
+        {/* Global Node Summary Strip */}
+        <div className="mt-12 py-8 border-t border-foreground/5 flex flex-wrap gap-12 justify-center lg:justify-start">
+           {[
+             { label: 'Compute Stability', value: 'High', icon: ShieldCheck, color: 'text-green-500' },
+             { label: 'Standard Deviation', value: '± 4.2%', icon: TrendingUp, color: 'text-primary' },
+             { label: 'Peak Throughput', value: '7.5k ops/s', icon: Zap, color: 'text-primary' },
+             { label: 'Cluster Connectivity', value: '100%', icon: Globe, color: 'text-primary' }
+           ].map((node, i) => (
+             <div key={i} className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-foreground/[0.03] flex items-center justify-center">
+                   <node.icon className="w-5 h-5 text-foreground/20" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-accent" />
-                  <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Consolidation</span>
+                <div>
+                   <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">{node.label}</p>
+                   <p className={cn("text-sm font-bold", node.color)}>{node.value}</p>
                 </div>
-              </div>
-            </div>
-
-            <div className="h-[300px] w-full">
-              <ChartContainer config={{ 
-                throughput: { label: "Throughput", color: "hsl(var(--primary))" }
-              }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={chartData} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
-                    <XAxis 
-                      dataKey="month" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, fill: 'hsl(var(--foreground))', opacity: 0.2 }}
-                      dy={10}
-                    />
-                    <Tooltip 
-                      cursor={{ fill: 'hsl(var(--foreground))', opacity: 0.03 }} 
-                      content={<ChartTooltipContent hideLabel />} 
-                    />
-                    <Bar 
-                      dataKey="close" 
-                      shape={<CandlestickShape />} 
-                      barSize={40}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-            
-            <div className="mt-12 pt-8 border-t border-foreground/5 flex flex-wrap gap-12">
-              <div>
-                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-widest mb-1">Standard Deviation</p>
-                <p className="text-sm font-bold">± 4.2%</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-widest mb-1">Compute Stability</p>
-                <p className="text-sm font-bold text-green-500">High</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-widest mb-1">Peak Throughput</p>
-                <p className="text-sm font-bold">7.5k ops/s</p>
-              </div>
-            </div>
-          </div>
+             </div>
+           ))}
         </div>
 
       </div>
     </section>
   );
 }
+

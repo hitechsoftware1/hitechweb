@@ -154,7 +154,7 @@ export default function AdminHub(props: {
       description: 'Marketing, mail, internal newsletters',
       icon: MessageSquare,
       permissions: ['View', 'Edit'],
-      href: '#'
+      href: '/admin/communications'
     },
     {
       id: 'talent',

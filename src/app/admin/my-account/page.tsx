@@ -45,7 +45,8 @@ import {
   Send,
   UserPlus,
   Loader2,
-  X
+  X,
+  Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,6 +73,13 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
 
@@ -106,6 +114,16 @@ export default function MyAccountPage() {
   const [retainerEndDate, setRetainerEndDate] = useState('2026-06-11');
   const [submittingRetainer, setSubmittingRetainer] = useState(false);
   const dailyRate = 11538.46;
+
+  // Requisitions Form State
+  const [isNewRequisitionOpen, setIsNewRequisitionOpen] = useState(false);
+  const [submittingReq, setSubmittingReq] = useState(false);
+  const [reqItems, setReqItems] = useState([{ name: '', qty: 1, unit: '', cost: '' }]);
+  const [reqTitle, setReqTitle] = useState('');
+  const [reqDesc, setReqDesc] = useState('');
+  const [reqPriority, setReqPriority] = useState('Medium');
+  const [reqDept, setReqDept] = useState('');
+  const [reqSupplier, setReqSupplier] = useState('');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -232,6 +250,61 @@ export default function MyAccountPage() {
         });
       })
       .finally(() => setSubmittingRetainer(false));
+  };
+
+  const handleAddReqItem = () => {
+    setReqItems([...reqItems, { name: '', qty: 1, unit: '', cost: '' }]);
+  };
+
+  const handleRemoveReqItem = (idx: number) => {
+    if (reqItems.length === 1) return;
+    setReqItems(reqItems.filter((_, i) => i !== idx));
+  };
+
+  const handleUpdateReqItem = (idx: number, field: string, value: any) => {
+    const updated = [...reqItems];
+    (updated[idx] as any)[field] = value;
+    setReqItems(updated);
+  };
+
+  const handleReqSubmit = async () => {
+    if (!db || !user) return;
+    setSubmittingReq(true);
+
+    const totalCost = reqItems.reduce((acc, item) => acc + (parseFloat(item.cost) || 0), 0);
+    const reqData = {
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      title: reqTitle,
+      description: reqDesc,
+      priority: reqPriority,
+      department: reqDept,
+      supplier: reqSupplier,
+      items: reqItems,
+      totalAmount: totalCost,
+      status: 'submitted',
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(collection(db, 'requisitions'), reqData)
+      .then(() => {
+        toast({
+          title: "Requisition Transmitted",
+          description: "Your item request has been logged for institutional review.",
+        });
+        setIsNewRequisitionOpen(false);
+        setReqItems([{ name: '', qty: 1, unit: '', cost: '' }]);
+        setReqTitle('');
+        setReqDesc('');
+      })
+      .catch(() => {
+        toast({
+          variant: "destructive",
+          title: "Link Error",
+          description: "Failed to transmit requisition. Check neural throughput.",
+        });
+      })
+      .finally(() => setSubmittingReq(false));
   };
 
   useEffect(() => {
@@ -1087,64 +1160,225 @@ export default function MyAccountPage() {
           <h1 className="text-3xl font-bold tracking-tight mb-2">My Requisitions</h1>
           <p className="text-sm text-zinc-400">Request items or supplies</p>
         </div>
-        <Button className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all">
-          <Plus className="w-4 h-4" /> New Requisition
-        </Button>
-      </div>
-
-      <div className="flex gap-2 pb-2">
-        {['All', 'Draft', 'Submitted', 'Approved', 'Rejected', 'Fulfilled'].map((filter) => (
+        {!isNewRequisitionOpen && (
           <Button 
-            key={filter}
-            variant="outline" 
-            size="sm" 
-            className={cn(
-              "h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-zinc-200 dark:border-zinc-800",
-              filter === 'All' ? "bg-zinc-950 dark:bg-white text-white dark:text-black border-none" : "text-zinc-400 hover:text-foreground"
-            )}
+            onClick={() => setIsNewRequisitionOpen(true)}
+            className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all"
           >
-            {filter}
+            <Plus className="w-4 h-4" /> New Requisition
           </Button>
-        ))}
+        )}
       </div>
 
-      <div className="space-y-4">
-        {[
-          { id: '1', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 3 earned item(s). Awaiting accounts review.', items: 3, total: '30,037.5', date: 'Jun 9, 2026', status: 'fulfilled' },
-          { id: '2', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 2 earned item(s). Awaiting accounts review.', items: 2, total: '20,025', date: 'Jun 1, 2026', status: 'fulfilled' },
-          { id: '3', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 5 earned item(s). Awaiting accounts review.', items: 5, total: '50,062.5', date: 'May 22, 2026', status: 'fulfilled' },
-        ].map((req) => (
-          <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 group hover:border-primary/20 transition-all">
-            <div className="flex justify-between items-start mb-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-bold">{req.title}</h3>
-                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[8px] font-bold uppercase px-2 py-0.5 rounded-md">
-                    {req.priority}
-                  </Badge>
+      <AnimatePresence mode="wait">
+        {isNewRequisitionOpen ? (
+          <motion.div
+            key="new-req-form"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 space-y-10"
+          >
+            <div>
+              <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-8">New Requisition</h4>
+              
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Title <span className="text-red-400">*</span></Label>
+                  <Input 
+                    value={reqTitle}
+                    onChange={(e) => setReqTitle(e.target.value)}
+                    className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+                  />
                 </div>
-                <p className="text-xs text-zinc-400 font-medium max-w-2xl leading-relaxed">
-                  {req.desc}
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <Badge className="bg-green-500/10 text-green-500 border-none font-bold text-[9px] uppercase px-3 py-1 rounded-full">
-                  {req.status}
-                </Badge>
-                <Button variant="ghost" className="text-zinc-400 hover:text-foreground text-[10px] font-bold p-0 h-auto">View</Button>
+
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Description <span className="text-red-400">*</span></Label>
+                  <Textarea 
+                    value={reqDesc}
+                    onChange={(e) => setReqDesc(e.target.value)}
+                    className="min-h-[120px] rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Priority</Label>
+                    <Select value={reqPriority} onValueChange={setReqPriority}>
+                      <SelectTrigger className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-zinc-200 dark:border-zinc-800">
+                        <SelectItem value="Low">Low</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="High">High</SelectItem>
+                        <SelectItem value="Critical">Critical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Department</Label>
+                    <Select value={reqDept} onValueChange={setReqDept}>
+                      <SelectTrigger className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-400">
+                        <SelectValue placeholder="- select -" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-zinc-200 dark:border-zinc-800">
+                        <SelectItem value="Engineering">Engineering</SelectItem>
+                        <SelectItem value="Design">Design</SelectItem>
+                        <SelectItem value="Accounts">Accounts</SelectItem>
+                        <SelectItem value="HR">HR</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Supplier — <span className="lowercase font-medium">optional</span></Label>
+                  <Select value={reqSupplier} onValueChange={setReqSupplier}>
+                    <SelectTrigger className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-400">
+                      <SelectValue placeholder="- No supplier -" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-zinc-200 dark:border-zinc-800">
+                      <SelectItem value="Internal">Internal Inventory</SelectItem>
+                      <SelectItem value="Amazon">Amazon Business</SelectItem>
+                      <SelectItem value="Local">Local Tech Vendor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[10px] text-zinc-400 italic">If selected, an LPO is auto-generated on approval and marked paid on disbursement.</p>
+                </div>
+
+                <div className="pt-10 border-t border-zinc-100 dark:border-zinc-800">
+                  <div className="flex justify-between items-center mb-8">
+                    <h5 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Items — <span className="lowercase font-medium">amounts in UGX</span></h5>
+                    <button 
+                      onClick={handleAddReqItem}
+                      className="text-[10px] font-bold text-primary flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+                    >
+                      <Plus className="w-3 h-3" /> Add Item
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {reqItems.map((item, idx) => (
+                      <div key={idx} className="flex gap-4 items-center animate-in fade-in slide-in-from-top-1">
+                        <Input 
+                          placeholder="Item name"
+                          value={item.name}
+                          onChange={(e) => handleUpdateReqItem(idx, 'name', e.target.value)}
+                          className="h-12 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 flex-[3]"
+                        />
+                        <Input 
+                          type="number"
+                          value={item.qty}
+                          onChange={(e) => handleUpdateReqItem(idx, 'qty', parseInt(e.target.value) || 1)}
+                          className="h-12 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 w-24 text-center"
+                        />
+                        <Input 
+                          placeholder="Unit"
+                          value={item.unit}
+                          onChange={(e) => handleUpdateReqItem(idx, 'unit', e.target.value)}
+                          className="h-12 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 flex-1"
+                        />
+                        <Input 
+                          placeholder="Cost (UGX)"
+                          value={item.cost}
+                          onChange={(e) => handleUpdateReqItem(idx, 'cost', e.target.value)}
+                          className="h-12 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 flex-[1.5]"
+                        />
+                        <button 
+                          onClick={() => handleRemoveReqItem(idx)}
+                          className="w-10 h-10 flex items-center justify-center text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-10 flex gap-4">
+                  <Button 
+                    onClick={handleReqSubmit}
+                    disabled={submittingReq || !reqTitle}
+                    className="h-14 px-10 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold shadow-xl"
+                  >
+                    {submittingReq ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Requisition"}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsNewRequisitionOpen(false)}
+                    className="h-14 px-10 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="flex gap-6 items-center pt-6 border-t border-zinc-50 dark:border-zinc-800/50">
-               <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{req.items} item(s)</span>
-               <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Total:</span>
-                  <span className="text-sm font-bold">UGX {req.total}</span>
-               </div>
-               <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest ml-auto">{req.date}</span>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="req-list"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-10"
+          >
+            <div className="flex gap-2 pb-2">
+              {['All', 'Draft', 'Submitted', 'Approved', 'Rejected', 'Fulfilled'].map((filter) => (
+                <Button 
+                  key={filter}
+                  variant="outline" 
+                  size="sm" 
+                  className={cn(
+                    "h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-zinc-200 dark:border-zinc-800",
+                    filter === 'All' ? "bg-zinc-950 dark:bg-white text-white dark:text-black border-none" : "text-zinc-400 hover:text-foreground"
+                  )}
+                >
+                  {filter}
+                </Button>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
+
+            <div className="space-y-4">
+              {[
+                { id: '1', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 3 earned item(s). Awaiting accounts review.', items: 3, total: '30,037.5', date: 'Jun 9, 2026', status: 'fulfilled' },
+                { id: '2', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 2 earned item(s). Awaiting accounts review.', items: 2, total: '20,025', date: 'Jun 1, 2026', status: 'fulfilled' },
+                { id: '3', title: 'Punch-In Allowances Payout', priority: 'medium', desc: 'Punch-in allowance payout request for 5 earned item(s). Awaiting accounts review.', items: 5, total: '50,062.5', date: 'May 22, 2026', status: 'fulfilled' },
+              ].map((req) => (
+                <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 group hover:border-primary/20 transition-all">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-bold">{req.title}</h3>
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[8px] font-bold uppercase px-2 py-0.5 rounded-md">
+                          {req.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-zinc-400 font-medium max-w-2xl leading-relaxed">
+                        {req.desc}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge className="bg-green-500/10 text-green-500 border-none font-bold text-[9px] uppercase px-3 py-1 rounded-full">
+                        {req.status}
+                      </Badge>
+                      <Button variant="ghost" className="text-zinc-400 hover:text-foreground text-[10px] font-bold p-0 h-auto">View</Button>
+                    </div>
+                  </div>
+                  <div className="flex gap-6 items-center pt-6 border-t border-zinc-50 dark:border-zinc-800/50">
+                     <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{req.items} item(s)</span>
+                     <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Total:</span>
+                        <span className="text-sm font-bold">UGX {req.total}</span>
+                     </div>
+                     <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest ml-auto">{req.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 
@@ -1436,7 +1670,7 @@ export default function MyAccountPage() {
                 <div className="aspect-square bg-zinc-50 dark:bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-100 dark:border-zinc-800 relative overflow-hidden">
                    <Image src="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" alt="Logo 3" fill className="object-cover opacity-80" />
                 </div>
-                <div className="aspect-square bg-zinc-950 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-pointer">
+                <div className="aspect-square bg-zinc-50 dark:bg-zinc-950 rounded-2xl flex items-center justify-center relative overflow-hidden group cursor-pointer">
                    <Image src="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" alt="Logo 4" fill className="object-cover opacity-40 blur-[1px]" />
                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                       <span className="text-xl font-bold text-white font-headline">+1</span>

@@ -1,10 +1,10 @@
-
 import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+import { MobileNav } from '@/components/layout/MobileNav';
 import Script from 'next/script';
 
 const inter = Inter({
@@ -51,10 +51,11 @@ export default function RootLayout({
         <link rel="icon" href="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" />
         <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" />
       </head>
-      <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground">
+      <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground pb-24 md:pb-0">
         <FirebaseClientProvider>
           <FirebaseErrorListener />
           {children}
+          <MobileNav />
           <Toaster />
         </FirebaseClientProvider>
         

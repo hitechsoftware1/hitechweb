@@ -16,7 +16,7 @@ import {
   PieChart,
   Pie
 } from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { cn } from '@/lib/utils';
 import { Activity, Globe, ShieldCheck, Zap, Cpu, Server, TrendingUp, ArrowUpRight } from 'lucide-react';
 
@@ -42,6 +42,17 @@ const regionalData = [
   { name: 'London', value: 92, color: 'hsl(var(--accent))' },
   { name: 'S.F.', value: 98, color: 'hsl(var(--foreground))' },
 ];
+
+const chartConfig = {
+  value: {
+    label: "Total Hub",
+    color: "hsl(var(--primary))",
+  },
+  load: {
+    label: "Neural Load",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
 
 export function Stats() {
   return (
@@ -110,41 +121,43 @@ export function Stats() {
               </div>
 
               <div className="flex-grow h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={throughputData}>
-                    <defs>
-                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis 
-                      dataKey="time" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 10, opacity: 0.3 }}
-                      dy={10}
-                    />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      fillOpacity={1} 
-                      fill="url(#colorValue)" 
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="load" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={1}
-                      strokeDasharray="4 4"
-                      fill="transparent" 
-                      opacity={0.3}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={throughputData}>
+                      <defs>
+                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis 
+                        dataKey="time" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fontSize: 10, opacity: 0.3 }}
+                        dy={10}
+                      />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Area 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={3}
+                        fillOpacity={1} 
+                        fill="url(#colorValue)" 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="load" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={1}
+                        strokeDasharray="4 4"
+                        fill="transparent" 
+                        opacity={0.3}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
               </div>
             </motion.div>
           </div>
@@ -266,4 +279,3 @@ export function Stats() {
     </section>
   );
 }
-

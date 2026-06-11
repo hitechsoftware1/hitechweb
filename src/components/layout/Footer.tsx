@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -64,7 +63,7 @@ export function Footer() {
                 <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
                 <li><Link href="/team" className="hover:text-primary transition-colors">Engineering Team</Link></li>
                 <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
-                <li><Link href="/#ai-consultant" className="hover:text-primary transition-colors">AI Studio</Link></li>
+                <li><Link href="/ai-studio" className="hover:text-primary transition-colors">AI Studio</Link></li>
               </ul>
             </div>
           </div>

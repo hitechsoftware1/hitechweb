@@ -43,7 +43,8 @@ import {
   Zap,
   Paperclip,
   Send,
-  UserPlus
+  UserPlus,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,14 +52,25 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
-import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
 
@@ -66,6 +78,7 @@ export default function MyAccountPage() {
   const { user } = useUser();
   const db = useFirestore();
   const auth = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [projectSubTab, setProjectSubTab] = useState<'Project Based' | 'Standalone'>('Project Based');
@@ -74,6 +87,12 @@ export default function MyAccountPage() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  // Leave Form State
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [leaveDate, setLeaveDate] = useState('');
+  const [leaveReason, setLeaveReason] = useState('');
+  const [submittingLeave, setSubmittingLeave] = useState(false);
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -100,6 +119,41 @@ export default function MyAccountPage() {
     signOut(auth).then(() => {
       window.location.href = '/';
     });
+  };
+
+  const handleRequestLeave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!db || !user || !leaveDate || !leaveReason) return;
+    setSubmittingLeave(true);
+
+    const leaveData = {
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      date: leaveDate,
+      reason: leaveReason,
+      type: 'paid_leave',
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(collection(db, 'attendance'), leaveData)
+      .then(() => {
+        toast({
+          title: "Leave Request Transmitted",
+          description: `Your paid leave request for ${leaveDate} has been logged for review.`,
+        });
+        setIsLeaveDialogOpen(false);
+        setLeaveDate('');
+        setLeaveReason('');
+      })
+      .catch((err) => {
+        toast({
+          variant: "destructive",
+          title: "Transmission Failed",
+          description: "Could not log leave request. Verify neural connection.",
+        });
+      })
+      .finally(() => setSubmittingLeave(false));
   };
 
   useEffect(() => {
@@ -475,7 +529,50 @@ export default function MyAccountPage() {
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm mb-8 overflow-hidden">
         <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-transparent">
           <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">My Leave Requests</h3>
-          <Button size="sm" className="bg-primary text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-primary/20">+ Request Leave</Button>
+          <Dialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="bg-primary text-white font-bold rounded-xl h-10 px-6 shadow-lg shadow-primary/20">+ Request Leave</Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Request Paid Leave</DialogTitle>
+                <DialogDescription className="text-zinc-400">
+                  Transmit your request to the neural cluster for administrative approval.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleRequestLeave} className="space-y-6 pt-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Leave Date</Label>
+                  <Input 
+                    type="date" 
+                    required 
+                    value={leaveDate}
+                    onChange={(e) => setLeaveDate(e.target.value)}
+                    className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Reason / Justification</Label>
+                  <Textarea 
+                    required 
+                    value={leaveReason}
+                    onChange={(e) => setLeaveReason(e.target.value)}
+                    placeholder="Brief description for HR records..."
+                    className="min-h-[100px] rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button 
+                    type="submit" 
+                    disabled={submittingLeave}
+                    className="w-full h-12 rounded-xl bg-primary text-white font-bold"
+                  >
+                    {submittingLeave ? <Loader2 className="w-4 h-4 animate-spin" /> : "Transmit Request"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="p-8">
           <div className="flex items-center gap-10 text-xs">

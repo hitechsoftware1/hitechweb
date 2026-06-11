@@ -21,14 +21,36 @@ import {
   Share2,
   Terminal,
   ShieldCheck,
-  BrainCircuit
+  BrainCircuit,
+  Sliders,
+  Database,
+  Waves
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { zainabChat } from '@/ai/flows/zainab';
 import { textToSpeech } from '@/ai/flows/tts-flow';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 interface Message {
   role: 'user' | 'model';
@@ -49,6 +71,11 @@ export default function AIStudioPage() {
     "Security Audit Protocol",
     "Fintech Integration Specs"
   ]);
+
+  // Settings State
+  const [voiceName, setVoiceName] = useState('Algenib');
+  const [engineMode, setEngineMode] = useState('technical');
+  const [neuralDepth, setNeuralDepth] = useState(70);
   
   const chatEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -177,9 +204,87 @@ export default function AIStudioPage() {
               >
                 {isSpeechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
               </Button>
-              <Button variant="ghost" size="icon" className="rounded-xl text-foreground/20">
-                <Settings className="w-4 h-4" />
-              </Button>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-xl text-foreground/20 hover:text-primary transition-all">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="rounded-[2.5rem] border-foreground/10 bg-background/95 backdrop-blur-xl max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-headline font-bold">Neural Configuration</DialogTitle>
+                    <DialogDescription className="text-foreground/40 text-xs">Calibrate the synthesis parameters for the HITECH AI Concierge.</DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-8 py-6">
+                    <div className="space-y-3">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 flex items-center gap-2">
+                        <Cpu className="w-3 h-3 text-primary" /> Engine Mode
+                      </Label>
+                      <Select value={engineMode} onValueChange={setEngineMode}>
+                        <SelectTrigger className="h-12 rounded-xl bg-foreground/5 border-foreground/10">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="technical">HITECH Technical (v5.0)</SelectItem>
+                          <SelectItem value="creative">Creative Architect</SelectItem>
+                          <SelectItem value="minimal">Minimalist Summary</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 flex items-center gap-2">
+                        <Waves className="w-3 h-3 text-primary" /> Voice Synthesis
+                      </Label>
+                      <Select value={voiceName} onValueChange={setVoiceName}>
+                        <SelectTrigger className="h-12 rounded-xl bg-foreground/5 border-foreground/10">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="Algenib">Algenib (Standard)</SelectItem>
+                          <SelectItem value="Achernar">Achernar (Authoritative)</SelectItem>
+                          <SelectItem value="ZainabCustom">Zainab Neural Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 flex items-center gap-2">
+                          <Sliders className="w-3 h-3 text-primary" /> Neural Depth
+                        </Label>
+                        <span className="text-[10px] font-bold text-primary">{neuralDepth}%</span>
+                      </div>
+                      <Slider 
+                        defaultValue={[neuralDepth]} 
+                        max={100} 
+                        step={1} 
+                        onValueChange={(v) => setNeuralDepth(v[0])}
+                        className="py-2"
+                      />
+                    </div>
+
+                    <div className="pt-4 border-t border-foreground/5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label className="text-sm font-bold">Auto-Briefing</Label>
+                          <p className="text-[10px] text-foreground/40">Synthesize audio automatically on response.</p>
+                        </div>
+                        <Switch checked={isSpeechEnabled} onCheckedChange={setIsSpeechEnabled} />
+                      </div>
+                      <Button variant="outline" onClick={startNewChat} className="w-full h-12 rounded-xl border-red-500/20 text-red-500 hover:bg-red-500/5 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                        <Trash2 className="w-4 h-4" /> Purge Memory Buffer
+                      </Button>
+                    </div>
+                  </div>
+
+                  <DialogFooter>
+                    <p className="text-[8px] text-center w-full text-foreground/20 uppercase tracking-[0.4em]">Configuration persists in neural cache</p>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 

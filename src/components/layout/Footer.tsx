@@ -62,7 +62,7 @@ export function Footer() {
               <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em] mb-6 lg:mb-8">Company</h4>
               <ul className="space-y-3 lg:space-y-4 text-xs lg:text-sm text-foreground/50 font-light">
                 <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-                <li><Link href="/about" className="hover:text-primary transition-colors">Engineering Team</Link></li>
+                <li><Link href="/team" className="hover:text-primary transition-colors">Engineering Team</Link></li>
                 <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
                 <li><Link href="/#ai-consultant" className="hover:text-primary transition-colors">AI Studio</Link></li>
               </ul>

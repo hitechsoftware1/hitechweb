@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -57,6 +57,7 @@ export function Navbar() {
   ];
 
   const resourceLinks = [
+    { name: 'Engineering Team', href: '/team', icon: Users },
     { name: 'Testimonials', href: '/testimonials', icon: Star },
     { name: 'Insights', href: '/blog', icon: Newspaper },
     { name: 'Careers', href: '/careers', icon: Briefcase },

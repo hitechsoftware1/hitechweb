@@ -76,17 +76,17 @@ export function Services() {
   return (
     <section id="services" className="pt-12 pb-24 lg:pt-16 lg:pb-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
-        <div className="max-w-3xl mb-12 lg:mb-20">
+        <div className="max-w-3xl mb-12 lg:mb-20 text-center md:text-left mx-auto md:mx-0">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em]"
+            className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
           >
             <div className="w-6 lg:w-8 h-[1px] bg-primary" />
             Capabilities
           </motion.div>
           <h2 className="text-3xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
-            Designed for <br />
+            Designed for <br className="hidden md:block" />
             Performance.
           </h2>
         </div>

@@ -109,20 +109,20 @@ export default function MobileAppsPage() {
 
       {/* Capabilities Grid */}
       <section className="container mx-auto px-6 mb-32 pt-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-4 lg:gap-8">
           {capabilities.map((cap, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.1 }}
-              className="apple-card p-10 group hover:border-primary/30"
+              className="apple-card p-6 lg:p-12 group hover:border-primary/30"
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8 group-hover:bg-primary group-hover:text-white transition-all">
-                <cap.icon className="w-7 h-7" />
+              <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-lg lg:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 lg:mb-8 group-hover:bg-primary group-hover:text-white transition-all">
+                <cap.icon className="w-5 h-5 lg:w-7 lg:h-7" />
               </div>
-              <h3 className="text-2xl font-headline font-bold mb-4">{cap.title}</h3>
-              <p className="text-foreground/50 leading-relaxed font-light">{cap.description}</p>
+              <h3 className="text-sm lg:text-3xl font-headline font-bold mb-2 lg:mb-4">{cap.title}</h3>
+              <p className="text-[10px] lg:text-lg text-foreground/50 leading-relaxed font-light line-clamp-3 lg:line-clamp-none">{cap.description}</p>
             </motion.div>
           ))}
         </div>

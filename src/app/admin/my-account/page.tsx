@@ -44,7 +44,8 @@ import {
   Paperclip,
   Send,
   UserPlus,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -98,6 +99,13 @@ export default function MyAccountPage() {
   const [isCompDialogOpen, setIsCompDialogOpen] = useState(false);
   const [missedDate, setMissedDate] = useState('');
   const [submittingComp, setSubmittingComp] = useState(false);
+
+  // Retainer Form State
+  const [isNewRetainerOpen, setIsNewRetainerOpen] = useState(false);
+  const [retainerStartDate, setRetainerStartDate] = useState('2026-06-10');
+  const [retainerEndDate, setRetainerEndDate] = useState('2026-06-11');
+  const [submittingRetainer, setSubmittingRetainer] = useState(false);
+  const dailyRate = 11538.46;
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -192,6 +200,38 @@ export default function MyAccountPage() {
         });
       })
       .finally(() => setSubmittingComp(false));
+  };
+
+  const handleRetainerSubmit = async () => {
+    if (!db || !user) return;
+    setSubmittingRetainer(true);
+
+    const retainerData = {
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      startDate: retainerStartDate,
+      endDate: retainerEndDate,
+      amount: dailyRate,
+      status: 'submitted',
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(collection(db, 'retainerRequests'), retainerData)
+      .then(() => {
+        toast({
+          title: "Retainer Transmitted",
+          description: `Advance request for UGX ${dailyRate.toLocaleString()} logged for review.`,
+        });
+        setIsNewRetainerOpen(false);
+      })
+      .catch(() => {
+        toast({
+          variant: "destructive",
+          title: "Transmission Error",
+          description: "Could not process retainer request. Neural sync failure.",
+        });
+      })
+      .finally(() => setSubmittingRetainer(false));
   };
 
   useEffect(() => {
@@ -743,7 +783,10 @@ export default function MyAccountPage() {
           <h1 className="text-3xl font-bold tracking-tight mb-2">Advance Retainer</h1>
           <p className="text-sm text-zinc-400">Request a pro-rated salary advance based on days worked</p>
         </div>
-        <Button className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all">
+        <Button 
+          onClick={() => setIsNewRetainerOpen(true)}
+          className="bg-black dark:bg-white dark:text-black text-white font-bold rounded-xl h-11 px-6 flex items-center gap-2 hover:scale-[1.02] transition-all"
+        >
           <Plus className="w-4 h-4" /> New Request
         </Button>
       </div>
@@ -768,6 +811,99 @@ export default function MyAccountPage() {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isNewRetainerOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 space-y-8">
+              <div className="flex justify-between items-center border-b border-zinc-50 dark:border-zinc-800/50 pb-6">
+                <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">New Advance Retainer Request</h3>
+                <button onClick={() => setIsNewRetainerOpen(false)} className="text-zinc-300 hover:text-foreground transition-colors"><X className="w-5 h-5" /></button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">Start Date <span className="text-red-400">*</span></Label>
+                  <Input 
+                    type="date" 
+                    value={retainerStartDate}
+                    onChange={(e) => setRetainerStartDate(e.target.value)}
+                    className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800" 
+                  />
+                  <p className="text-[10px] text-zinc-300 font-medium">Earliest: 10 Jun 2026</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-1.5">End Date <span className="text-red-400">*</span></Label>
+                  <Input 
+                    type="date" 
+                    value={retainerEndDate}
+                    onChange={(e) => setRetainerEndDate(e.target.value)}
+                    className="h-14 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800" 
+                  />
+                  <p className="text-[10px] text-zinc-300 font-medium">Max: 2026-06-11</p>
+                </div>
+              </div>
+
+              <div className="flex gap-10 text-xs font-bold uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-800/50 pb-6">
+                 <div className="space-y-1">
+                    <p className="text-zinc-300">Period</p>
+                    <p className="text-zinc-800 dark:text-zinc-100">1 days</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-zinc-300">Paid Days</p>
+                    <p className="text-green-500">1</p>
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-2">
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Gross (All Days)</p>
+                    <p className="text-xl font-bold font-headline">UGX 11,538.46</p>
+                 </div>
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Deductions</p>
+                    <p className="text-xl font-bold font-headline text-red-400">- UGX 0</p>
+                 </div>
+                 <div className="bg-green-500/5 border border-green-500/10 rounded-2xl p-6 space-y-2">
+                    <p className="text-[10px] font-bold text-green-600/60 uppercase tracking-widest">Net Payable</p>
+                    <p className="text-2xl font-bold font-headline text-green-500">UGX 11,538.46</p>
+                 </div>
+              </div>
+
+              <div className="bg-zinc-50/50 dark:bg-zinc-950/50 rounded-2xl p-6 flex justify-between items-center border border-zinc-100 dark:border-zinc-800/50">
+                 <div className="flex items-center gap-6">
+                    <span className="text-xs font-bold">10 Jun 2026</span>
+                    <Badge className="bg-green-500/10 text-green-500 border-none rounded-md px-2 py-0.5 text-[9px] font-bold">Worked</Badge>
+                    <span className="text-xs text-zinc-400 font-medium">Full day worked</span>
+                 </div>
+                 <span className="text-sm font-bold text-zinc-800 dark:text-zinc-100">UGX 11,538.46</span>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                 <Button 
+                   onClick={handleRetainerSubmit}
+                   disabled={submittingRetainer}
+                   className="bg-black dark:bg-white dark:text-black text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-black/10"
+                 >
+                    {submittingRetainer ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit for UGX 11,538.46"}
+                 </Button>
+                 <Button 
+                   variant="outline" 
+                   onClick={() => setIsNewRetainerOpen(false)}
+                   className="h-12 px-8 rounded-xl border-zinc-200 dark:border-zinc-800 font-bold"
+                 >
+                    Cancel
+                 </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-10 relative group hover:border-primary/20 transition-all">
         <div className="flex flex-col md:flex-row justify-between items-start gap-6">

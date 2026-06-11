@@ -20,7 +20,12 @@ import {
   LogOut,
   ChevronRight,
   Headset,
-  ClipboardList
+  ClipboardList,
+  Search,
+  Plus,
+  Lock,
+  ChevronDown,
+  Filter
 } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -29,6 +34,8 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 type CommTab = 'Overview' | 'Messages' | 'Quote Requests' | 'Contacts' | 'Subscribers' | 'Clients' | 'Quotations' | 'Internal Contacts' | 'Files';
 
@@ -162,6 +169,100 @@ export default function CommunicationsPortal() {
     </motion.div>
   );
 
+  const renderMessages = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Messages</h1>
+          <p className="text-sm text-zinc-400">Outbound email communications to subscribers, contacts, and one-off recipients.</p>
+        </div>
+        <Button className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 flex items-center gap-2">
+          New communication
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[
+          { label: 'TOTAL', value: '1' },
+          { label: 'DRAFTS', value: '0', color: 'text-blue-500' },
+          { label: 'SENT', value: '1', color: 'text-green-500' },
+          { label: 'FAILED / PARTIAL', value: '0', color: 'text-red-400' },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-3">{stat.label}</p>
+            <p className={cn("text-3xl font-headline font-bold", stat.color)}>{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-zinc-50 dark:border-zinc-800/50 flex flex-col md:flex-row gap-4 items-center justify-between">
+           <div className="relative w-full md:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+              <input 
+                placeholder="Search by subject..." 
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-xs outline-none focus:ring-1 focus:ring-primary/40"
+              />
+           </div>
+           <div className="flex gap-2 w-full md:w-auto">
+              <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All statuses <ChevronDown className="w-3 h-3" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All types <ChevronDown className="w-3 h-3" />
+              </Button>
+           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+           <table className="w-full text-left">
+              <thead className="bg-zinc-50/50 dark:bg-zinc-800/20">
+                 <tr className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-800">
+                    <th className="px-6 py-4">SUBJECT</th>
+                    <th className="px-6 py-4">TYPE</th>
+                    <th className="px-6 py-4">STATUS</th>
+                    <th className="px-6 py-4">RECIPIENTS</th>
+                    <th className="px-6 py-4">SENT / FAILED</th>
+                    <th className="px-6 py-4">LAST SENT</th>
+                    <th className="px-6 py-4">SENDER</th>
+                    <th className="px-6 py-4 text-right"></th>
+                 </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                 <tr className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                    <td className="px-6 py-5">
+                       <div className="space-y-1">
+                          <p className="text-xs font-bold text-zinc-800 dark:text-zinc-100">Please Receive this email</p>
+                          <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-tight line-clamp-1 opacity-70">
+                            GOVERNMENT TO STOP IMPORTING LOCALLY AVAILABLE ICT SOLUTIONS
+                          </p>
+                       </div>
+                    </td>
+                    <td className="px-6 py-5">
+                       <Badge variant="outline" className="bg-blue-500/5 text-blue-500 border-blue-500/20 text-[9px] font-bold px-2 rounded-md">Articles</Badge>
+                    </td>
+                    <td className="px-6 py-5">
+                       <Badge variant="outline" className="bg-green-500/5 text-green-500 border-green-500/20 text-[9px] font-bold px-2 rounded-md">Sent</Badge>
+                    </td>
+                    <td className="px-6 py-5 text-xs font-medium text-zinc-500">1</td>
+                    <td className="px-6 py-5 text-xs font-medium text-zinc-500">1 / 0</td>
+                    <td className="px-6 py-5 text-[10px] font-bold text-zinc-400">May 25, 11:08 AM</td>
+                    <td className="px-6 py-5 text-xs font-bold text-zinc-600 dark:text-zinc-400">Cole Amri Kitalikibi</td>
+                    <td className="px-6 py-5 text-right">
+                       <Lock className="w-3.5 h-3.5 text-zinc-200 dark:text-zinc-700 ml-auto" />
+                    </td>
+                 </tr>
+              </tbody>
+           </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -222,7 +323,9 @@ export default function CommunicationsPortal() {
       {/* CONTENT */}
       <main className="flex-1 ml-64 p-8 lg:p-12 overflow-y-auto">
         <AnimatePresence mode="wait">
-          {activeTab === 'Overview' ? renderOverview() : (
+          {activeTab === 'Overview' && renderOverview()}
+          {activeTab === 'Messages' && renderMessages()}
+          {activeTab !== 'Overview' && activeTab !== 'Messages' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

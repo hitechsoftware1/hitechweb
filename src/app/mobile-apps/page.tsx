@@ -1,14 +1,33 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
-import { Smartphone, Zap, Shield, SmartphoneNfc, Layout, Cpu, CheckCircle2, ArrowRight } from 'lucide-react';
+import { 
+  Smartphone, 
+  Zap, 
+  Shield, 
+  SmartphoneNfc, 
+  Layout, 
+  Cpu, 
+  CheckCircle2, 
+  ArrowRight,
+  ArrowUpRight 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Autoplay from 'embla-carousel-autoplay';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { cn } from '@/lib/utils';
 
 const capabilities = [
   {
@@ -33,6 +52,27 @@ const capabilities = [
   }
 ];
 
+const recentProjects = [
+  {
+    title: "Quantum Mobile",
+    category: "Fintech",
+    image: PlaceHolderImages.find(i => i.id === 'project-1')?.imageUrl,
+    metrics: "4.2ms Latency"
+  },
+  {
+    title: "Lumina Health",
+    category: "HealthTech",
+    image: PlaceHolderImages.find(i => i.id === 'project-2')?.imageUrl,
+    metrics: "AI-Integrated"
+  },
+  {
+    title: "Nexus Logistics",
+    category: "Industrial",
+    image: PlaceHolderImages.find(i => i.id === 'project-3')?.imageUrl,
+    metrics: "IoT Real-time"
+  }
+];
+
 function AppleIcon(props: any) {
   return (
     <svg
@@ -51,6 +91,17 @@ function AppleIcon(props: any) {
 }
 
 export default function MobileAppsPage() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   const showcaseImages = [
     PlaceHolderImages.find(i => i.id === 'mobile-1'),
     PlaceHolderImages.find(i => i.id === 'mobile-2'),
@@ -64,12 +115,8 @@ export default function MobileAppsPage() {
       
       {/* Hero Section with Banner Background */}
       <section className="relative min-h-[50vh] flex items-center pt-32 pb-20 overflow-hidden">
-        {/* Background Banner */}
         <div className="absolute inset-0 z-0">
-          {/* Overlay for readability */}
           <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10" />
-          
-          {/* Grid of mobile app showcase images */}
           <div className="absolute inset-0 z-0 opacity-15 dark:opacity-25 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 rotate-12 scale-125 -translate-y-20">
             {Array.from({ length: 18 }).map((_, i) => (
               <div key={i} className="aspect-[9/19] relative rounded-[2rem] overflow-hidden border border-foreground/10 shadow-2xl bg-zinc-800">
@@ -83,7 +130,6 @@ export default function MobileAppsPage() {
               </div>
             ))}
           </div>
-          
           <div className="absolute inset-0 neural-grid opacity-30 z-20" />
         </div>
 
@@ -195,7 +241,95 @@ export default function MobileAppsPage() {
         </div>
       </section>
 
+      {/* Recent App Projects Slide */}
+      <section className="container mx-auto px-6 mb-32">
+        <div className="mb-12 text-center">
+          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-4 block">Proven Performance</span>
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold">Recent App Deployments.</h2>
+        </div>
+
+        <div className="perspective-1000">
+          <Carousel 
+            setApi={setApi}
+            plugins={[
+              Autoplay({
+                delay: 4000,
+                stopOnInteraction: false,
+              }),
+            ]}
+            opts={{ 
+              align: "center", 
+              loop: true,
+            }} 
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {recentProjects.map((project, idx) => (
+                <CarouselItem key={idx} className="pl-4 basis-[85%] md:basis-[45%] lg:basis-[33.33%]">
+                  <motion.div
+                    animate={{
+                      scale: current === idx ? 1.02 : 0.9,
+                      opacity: current === idx ? 1 : 0.5,
+                      y: current === idx ? [0, -10, 0] : 0,
+                    }}
+                    transition={{ 
+                      scale: { duration: 0.5 },
+                      y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
+                    }}
+                    className={cn(
+                      "transition-all duration-700 h-full",
+                      current === idx && "drop-shadow-[0_20px_50px_rgba(var(--primary),0.15)]"
+                    )}
+                  >
+                    <div className="apple-card group overflow-hidden h-full flex flex-col">
+                      <div className="aspect-[16/10] relative overflow-hidden">
+                        <Image 
+                          src={project.image || ""} 
+                          alt={project.title}
+                          fill
+                          className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-background/20 group-hover:bg-background/0 transition-all" />
+                      </div>
+
+                      <div className="flex-grow flex flex-col justify-between p-6 lg:p-8">
+                        <div>
+                          <div className="flex justify-between items-center mb-4">
+                            <Badge variant="outline" className="text-[8px] lg:text-[10px] font-bold text-primary border-primary/20 uppercase tracking-widest">{project.category}</Badge>
+                            <span className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{project.metrics}</span>
+                          </div>
+                          <h3 className="font-headline font-bold text-foreground text-xl lg:text-2xl">{project.title}</h3>
+                        </div>
+                        <div className="flex items-center gap-2 text-foreground/40 font-light mt-6 text-xs">
+                          Launch Deployment <ArrowUpRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+          
+          <div className="flex justify-center gap-2 mt-12">
+            {recentProjects.map((_, idx) => (
+              <div 
+                key={idx} 
+                className={cn(
+                  "h-1 rounded-full transition-all duration-500",
+                  current === idx ? "w-8 bg-primary" : "w-2 bg-foreground/10"
+                )} 
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
+}
+
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
 }

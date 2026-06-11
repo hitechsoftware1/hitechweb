@@ -94,6 +94,11 @@ export default function MyAccountPage() {
   const [leaveReason, setLeaveReason] = useState('');
   const [submittingLeave, setSubmittingLeave] = useState(false);
 
+  // Compensation Form State
+  const [isCompDialogOpen, setIsCompDialogOpen] = useState(false);
+  const [missedDate, setMissedDate] = useState('');
+  const [submittingComp, setSubmittingComp] = useState(false);
+
   useEffect(() => {
     setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -154,6 +159,39 @@ export default function MyAccountPage() {
         });
       })
       .finally(() => setSubmittingLeave(false));
+  };
+
+  const handleRequestCompensation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!db || !user || !missedDate) return;
+    setSubmittingComp(true);
+
+    const compData = {
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      date: missedDate,
+      type: 'compensation',
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(collection(db, 'attendance'), compData)
+      .then(() => {
+        toast({
+          title: "Compensation Transmitted",
+          description: `Your request to compensate for missed day ${missedDate} has been logged.`,
+        });
+        setIsCompDialogOpen(false);
+        setMissedDate('');
+      })
+      .catch((err) => {
+        toast({
+          variant: "destructive",
+          title: "Transmission Failed",
+          description: "Could not log compensation request. Check network uplink.",
+        });
+      })
+      .finally(() => setSubmittingComp(false));
   };
 
   useEffect(() => {
@@ -592,7 +630,40 @@ export default function MyAccountPage() {
             <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">My Compensation Requests</h3>
             <p className="text-[10px] text-zinc-300 font-medium">Worked on a non-working day to make up for a working day you missed? Request compensation here.</p>
           </div>
-          <Button size="sm" variant="outline" className="text-primary border-primary/20 bg-primary/5 font-bold rounded-xl h-10 px-6">+ Request Compensation</Button>
+          <Dialog open={isCompDialogOpen} onOpenChange={setIsCompDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="text-primary border-primary/20 bg-primary/5 font-bold rounded-xl h-10 px-6">+ Request Compensation</Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Request Compensation</DialogTitle>
+                <DialogDescription className="text-zinc-400">
+                  Log a request to compensate for a missed working day.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleRequestCompensation} className="space-y-6 pt-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Date Missed</Label>
+                  <Input 
+                    type="date" 
+                    required 
+                    value={missedDate}
+                    onChange={(e) => setMissedDate(e.target.value)}
+                    className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button 
+                    type="submit" 
+                    disabled={submittingComp}
+                    className="w-full h-12 rounded-xl bg-primary text-white font-bold"
+                  >
+                    {submittingComp ? <Loader2 className="w-4 h-4 animate-spin" /> : "Transmit Request"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="p-16 text-center text-zinc-400 italic text-xs font-medium opacity-60">
           No compensation requests yet.

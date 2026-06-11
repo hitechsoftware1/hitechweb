@@ -56,6 +56,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
 
@@ -68,6 +69,7 @@ export default function MyAccountPage() {
   const [fileSubTab, setFileSubTab] = useState<'My Files' | 'Shared With Me'>('My Files');
   const [chatSearch, setChatSearch] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -341,26 +343,26 @@ export default function MyAccountPage() {
         <div className="space-y-8">
           <div className="space-y-3">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Full Name</Label>
-            <Input 
+            <input 
               defaultValue={user?.displayName || 'Lubega Joel'}
-              className="h-12 rounded-xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+              className="h-12 w-full px-4 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-primary/40 outline-none transition-all"
             />
           </div>
 
           <div className="space-y-3">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Email</Label>
-            <Input 
+            <input 
               defaultValue={user?.email || 'hitechsoftware03@gmail.com'}
               disabled
-              className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 text-zinc-400"
+              className="h-12 w-full px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 text-zinc-400 cursor-not-allowed"
             />
           </div>
 
           <div className="space-y-3">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Phone</Label>
-            <Input 
+            <input 
               defaultValue="+256757038058"
-              className="h-12 rounded-xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+              className="h-12 w-full px-4 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-primary/40 outline-none transition-all"
             />
           </div>
 
@@ -377,11 +379,11 @@ export default function MyAccountPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">New Password</Label>
-              <Input type="password" placeholder="••••••••" className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800" />
+              <input type="password" placeholder="••••••••" className="h-12 w-full px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-primary/40 outline-none transition-all" />
             </div>
             <div className="space-y-3">
               <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Confirm</Label>
-              <Input type="password" placeholder="••••••••" className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 bg-primary/5 border-primary/10" />
+              <input type="password" placeholder="••••••••" className="h-12 w-full px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-primary/5 border-primary/10 focus:ring-2 focus:ring-primary/40 outline-none transition-all" />
             </div>
           </div>
         </div>
@@ -1163,7 +1165,19 @@ export default function MyAccountPage() {
       <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex flex-col fixed h-full z-20">
         <div className="p-6">
           <Link href="/" className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">H</div>
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden border border-black/5">
+              {logo ? (
+                <Image 
+                  src={logo.imageUrl} 
+                  alt="HITECH Logo" 
+                  width={32} 
+                  height={32} 
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-primary flex items-center justify-center text-white font-bold text-xs">H</div>
+              )}
+            </div>
             <span className="font-headline font-bold text-lg tracking-tight uppercase">Hitech</span>
           </Link>
           

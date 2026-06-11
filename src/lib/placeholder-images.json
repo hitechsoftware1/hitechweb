@@ -29,6 +29,24 @@
       "description": "HITECH Custom Logo",
       "imageUrl": "https://i.pinimg.com/736x/c3/e3/30/c3e3308157323082520d57055e4434c7.jpg",
       "imageHint": "tech logo"
+    },
+    {
+      "id": "mobile-1",
+      "description": "Mobile App UI 1",
+      "imageUrl": "https://picsum.photos/seed/mob1/400/800",
+      "imageHint": "mobile app"
+    },
+    {
+      "id": "mobile-2",
+      "description": "Mobile App UI 2",
+      "imageUrl": "https://picsum.photos/seed/mob2/400/800",
+      "imageHint": "mobile app"
+    },
+    {
+      "id": "mobile-3",
+      "description": "Mobile App UI 3",
+      "imageUrl": "https://picsum.photos/seed/mob3/400/800",
+      "imageHint": "mobile app"
     }
   ]
 }

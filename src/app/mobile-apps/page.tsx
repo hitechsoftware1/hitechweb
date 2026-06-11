@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -8,7 +7,8 @@ import { motion } from 'framer-motion';
 import { Smartphone, Zap, Shield, SmartphoneNfc, Layout, Cpu, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const capabilities = [
   {
@@ -51,32 +51,64 @@ function AppleIcon(props: any) {
 }
 
 export default function MobileAppsPage() {
+  const showcaseImages = [
+    PlaceHolderImages.find(i => i.id === 'mobile-1'),
+    PlaceHolderImages.find(i => i.id === 'mobile-2'),
+    PlaceHolderImages.find(i => i.id === 'mobile-3'),
+    PlaceHolderImages.find(i => i.id === 'project-1'),
+  ].filter(Boolean);
+
   return (
-    <main className="min-h-screen bg-background pt-32">
+    <main className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="container mx-auto px-6 mb-24">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl"
-        >
-          <div className="flex items-center gap-3 mb-6 text-primary">
-            <Smartphone className="w-6 h-6" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Engineering Vertical</span>
+      {/* Hero Section with Banner Background */}
+      <section className="relative min-h-[70vh] flex items-center pt-32 pb-24 overflow-hidden">
+        {/* Background Banner */}
+        <div className="absolute inset-0 z-0">
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10" />
+          
+          {/* Grid of mobile app showcase images */}
+          <div className="absolute inset-0 z-0 opacity-15 dark:opacity-25 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 rotate-12 scale-125 -translate-y-20">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div key={i} className="aspect-[9/19] relative rounded-[2rem] overflow-hidden border border-foreground/10 shadow-2xl bg-zinc-800">
+                <Image 
+                  src={showcaseImages[i % showcaseImages.length]?.imageUrl || ""} 
+                  alt="HITECH Mobile Showcase"
+                  fill
+                  className="object-cover"
+                  data-ai-hint="mobile showcase"
+                />
+              </div>
+            ))}
           </div>
-          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            Mobile <br /> Intelligence.
-          </h1>
-          <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            We architect refined mobile ecosystems that define how users interact with the digital world. High-performance native and cross-platform systems for the modern era.
-          </p>
-        </motion.div>
+          
+          <div className="absolute inset-0 neural-grid opacity-30 z-20" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-30">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl"
+          >
+            <div className="flex items-center gap-3 mb-6 text-primary">
+              <Smartphone className="w-6 h-6" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Engineering Vertical</span>
+            </div>
+            <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+              Mobile <br /> Intelligence.
+            </h1>
+            <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
+              We architect refined mobile ecosystems that define how users interact with the digital world. High-performance native and cross-platform systems for the modern era.
+            </p>
+          </motion.div>
+        </div>
       </section>
 
       {/* Capabilities Grid */}
-      <section className="container mx-auto px-6 mb-32">
+      <section className="container mx-auto px-6 mb-32 pt-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {capabilities.map((cap, idx) => (
             <motion.div 

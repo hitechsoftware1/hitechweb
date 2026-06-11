@@ -11,7 +11,6 @@ import {
   Bell, 
   Briefcase, 
   CreditCard, 
-  Contact, 
   Mail, 
   Files, 
   Sun, 
@@ -25,7 +24,10 @@ import {
   Plus,
   Lock,
   ChevronDown,
-  Filter
+  Filter,
+  Inbox,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -36,6 +38,14 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import {
+  Bar,
+  XAxis,
+  ResponsiveContainer,
+  ComposedChart,
+  Tooltip,
+} from "recharts";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
 type CommTab = 'Overview' | 'Messages' | 'Quote Requests' | 'Contacts' | 'Subscribers' | 'Clients' | 'Quotations' | 'Internal Contacts' | 'Files';
 
@@ -263,6 +273,107 @@ export default function CommunicationsPortal() {
     </motion.div>
   );
 
+  const renderQuoteRequests = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Quote & Demo Requests</h1>
+          <p className="text-sm text-zinc-400">Leads from the Services pages — visitors asking for a quote, demo, audit, or info.</p>
+        </div>
+        <div className="flex gap-4">
+          {[
+            { label: 'NEW', value: '0', color: 'text-blue-500' },
+            { label: 'CONTACTED', value: '0', color: 'text-amber-500' },
+            { label: 'CLOSED', value: '0', color: 'text-zinc-400' },
+            { label: 'TOTAL', value: '0', color: 'text-foreground' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center px-4">
+              <p className={cn("text-xl font-headline font-bold", stat.color)}>{stat.value}</p>
+              <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-1 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden divide-x divide-zinc-100 dark:divide-zinc-800">
+        {[
+          { label: 'TODAY', value: '0', desc: 'new today' },
+          { label: 'THIS WEEK', value: '0', desc: 'since Monday' },
+          { label: 'THIS MONTH', value: '0', desc: 'since the 1st' },
+          { label: 'LAST 30 DAYS', value: '0', desc: 'rolling window' },
+        ].map((stat) => (
+          <div key={stat.label} className="p-8">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">{stat.label}</p>
+            <p className="text-4xl font-headline font-bold mb-1">{stat.value}</p>
+            <p className="text-[10px] text-zinc-300 font-medium">{stat.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 h-full">
+            <div className="flex justify-between items-center mb-10">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-100">Quote requests — last 30 days</h3>
+              <span className="text-[10px] font-bold text-zinc-400">0 new</span>
+            </div>
+            <div className="h-[240px] flex items-center justify-center text-zinc-200 dark:text-zinc-800">
+               {/* Visual Placeholder for Bar Chart */}
+               <div className="w-full h-full flex items-end gap-3 px-4">
+                  {Array.from({ length: 15 }).map((_, i) => (
+                    <div key={i} className="flex-1 bg-zinc-50 dark:bg-zinc-950 rounded-t-lg h-4" />
+                  ))}
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 h-full">
+             <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-100 mb-8">Most-requested services</h3>
+             <div className="space-y-4">
+                <p className="text-xs text-zinc-400 font-medium italic opacity-60">No data yet.</p>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden min-h-[400px] flex flex-col">
+        <div className="p-4 border-b border-zinc-50 dark:border-zinc-800/50 flex flex-col md:flex-row gap-4 items-center justify-between">
+           <div className="relative w-full md:w-96">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+              <input 
+                placeholder="Search by name or email..." 
+                className="w-full h-12 pl-12 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-xs outline-none focus:ring-1 focus:ring-primary/40"
+              />
+           </div>
+           <div className="flex gap-2 w-full md:w-auto">
+              <Button variant="outline" size="sm" className="h-11 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All Status <ChevronDown className="w-3 h-3" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-11 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All Types <ChevronDown className="w-3 h-3" />
+              </Button>
+           </div>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-4">
+           <div className="w-16 h-16 rounded-3xl bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center text-zinc-100 dark:text-zinc-800">
+              <Inbox className="w-8 h-8" />
+           </div>
+           <div>
+              <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100">No quote requests found</h4>
+              <p className="text-xs text-zinc-400 font-medium mt-1">No quote requests yet</p>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -325,7 +436,8 @@ export default function CommunicationsPortal() {
         <AnimatePresence mode="wait">
           {activeTab === 'Overview' && renderOverview()}
           {activeTab === 'Messages' && renderMessages()}
-          {activeTab !== 'Overview' && activeTab !== 'Messages' && (
+          {activeTab === 'Quote Requests' && renderQuoteRequests()}
+          {activeTab !== 'Overview' && activeTab !== 'Messages' && activeTab !== 'Quote Requests' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

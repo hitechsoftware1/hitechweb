@@ -109,7 +109,7 @@ export default function StaffHub() {
   const modules = [
     { id: 'account', title: 'My Account', desc: 'Profile, advance requests', icon: User, access: true, href: '/admin/my-account' },
     { id: 'tasks', title: 'Tasks Hub', desc: 'Assigned mission directives', icon: ClipboardList, access: true },
-    { id: 'engineering', title: 'Engineering', desc: 'Restricted module', icon: Globe, access: false },
+    { id: 'web-management', title: 'Web Management', desc: 'Restricted module', icon: Globe, access: false },
     { id: 'clients', title: 'Clients', desc: 'Restricted module', icon: Layers, access: false },
     { id: 'comms', title: 'Communications', desc: 'Internal network', icon: MessageSquare, access: false },
     { id: 'system', title: 'Settings', desc: 'Security protocols', icon: Settings, access: false }

@@ -133,12 +133,12 @@ export default function AdminHub(props: {
       href: '/admin/my-account'
     },
     {
-      id: 'engineering',
-      title: 'Engineering Hub',
-      description: 'Project tasks, code reviews, SRE oversight',
+      id: 'web-management',
+      title: 'Web Management',
+      description: 'Platform oversight, SEO management, domain monitoring',
       icon: Globe,
       permissions: ['View', 'Edit'],
-      href: '#'
+      href: '/admin/web-management'
     },
     {
       id: 'clients',

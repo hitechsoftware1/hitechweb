@@ -101,6 +101,20 @@
         "active": { "type": "boolean" }
       },
       "required": ["code", "date"]
+    },
+    "SitePage": {
+      "title": "Site Page",
+      "description": "A website page configuration and content for the CMS.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "path": { "type": "string" },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "author": { "type": "string" },
+        "lastModified": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "path", "status"]
     }
   },
   "auth": {
@@ -134,6 +148,10 @@
     "/officeCodes/{codeId}": {
       "schema": "#/backend/entities/OfficeCode",
       "description": "Daily office validation codes."
+    },
+    "/sitePages/{pageId}": {
+      "schema": "#/backend/entities/SitePage",
+      "description": "CMS page configurations."
     }
   }
 }

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Globe, 
@@ -26,33 +26,70 @@ import {
   AlertCircle,
   Eye,
   BarChart3,
-  Terminal
+  Terminal,
+  Loader2,
+  Trash2,
+  Save,
+  X
 } from 'lucide-react';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { collection, query, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import {
-  Bar,
-  XAxis,
-  ResponsiveContainer,
-  ComposedChart,
-  Tooltip,
-} from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type WebTab = 'Overview' | 'Site Pages' | 'SEO Audit' | 'Analytics' | 'Settings';
 
 export default function WebManagementPortal() {
   const { user } = useUser();
   const auth = useAuth();
+  const db = useFirestore();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<WebTab>('Overview');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [searchQuery, setSearchQuery] = useState('');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
+
+  // CMS State
+  const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
+  const [editingPage, setEditingPage] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Page Form State
+  const [pageTitle, setPageTitle] = useState('');
+  const [pagePath, setPagePath] = useState('');
+  const [pageContent, setPageContent] = useState('');
+  const [pageStatus, setPageStatus] = useState('draft');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -75,6 +112,13 @@ export default function WebManagementPortal() {
     });
   };
 
+  const pagesQuery = useMemo(() => {
+    if (!db) return null;
+    return query(collection(db, 'sitePages'), orderBy('lastModified', 'desc'));
+  }, [db]);
+
+  const { data: sitePages, loading: pagesLoading } = useCollection(pagesQuery);
+
   const sidebarItems = [
     { label: 'Overview', icon: LayoutGrid },
     { label: 'Site Pages', icon: FileEdit },
@@ -82,6 +126,69 @@ export default function WebManagementPortal() {
     { label: 'Analytics', icon: BarChart3 },
     { label: 'Settings', icon: Settings },
   ];
+
+  const handleOpenNewPage = () => {
+    setEditingPage(null);
+    setPageTitle('');
+    setPagePath('');
+    setPageContent('');
+    setPageStatus('draft');
+    setIsPageDialogOpen(true);
+  };
+
+  const handleEditPage = (page: any) => {
+    setEditingPage(page);
+    setPageTitle(page.title);
+    setPagePath(page.path);
+    setPageContent(page.content || '');
+    setPageStatus(page.status);
+    setIsPageDialogOpen(true);
+  };
+
+  const handleSavePage = async () => {
+    if (!db || !user || !pageTitle || !pagePath) return;
+    setIsSaving(true);
+
+    const pageData = {
+      title: pageTitle,
+      path: pagePath,
+      content: pageContent,
+      status: pageStatus,
+      author: user.displayName || user.email,
+      lastModified: new Date().toISOString(),
+    };
+
+    const action = editingPage 
+      ? updateDoc(doc(db, 'sitePages', editingPage.id), pageData)
+      : addDoc(collection(db, 'sitePages'), pageData);
+
+    action
+      .then(() => {
+        toast({
+          title: editingPage ? "Page Synchronized" : "Page Created",
+          description: `The ${pageTitle} endpoint has been updated across the neural cluster.`,
+        });
+        setIsPageDialogOpen(false);
+      })
+      .catch((err) => {
+        toast({
+          variant: "destructive",
+          title: "Synchronization Error",
+          description: "Could not write to the site cluster. Check node connection.",
+        });
+      })
+      .finally(() => setIsSaving(false));
+  };
+
+  const handleDeletePage = (pageId: string) => {
+    if (!db) return;
+    deleteDoc(doc(db, 'sitePages', pageId)).then(() => {
+      toast({
+        title: "Node Terminated",
+        description: "The page endpoint has been successfully purged from the cluster.",
+      });
+    });
+  };
 
   const renderOverview = () => (
     <motion.div 
@@ -98,8 +205,8 @@ export default function WebManagementPortal() {
           <Button variant="outline" className="rounded-xl border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
             <RefreshCw className="w-3 h-3" /> Purge Cache
           </Button>
-          <Button className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 shadow-lg shadow-black/10">
-            Launch Site
+          <Button className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 shadow-lg shadow-black/10" asChild>
+             <Link href="/">Launch Site</Link>
           </Button>
         </div>
       </div>
@@ -177,9 +284,84 @@ export default function WebManagementPortal() {
           <h1 className="text-3xl font-bold tracking-tight mb-2">Site Pages</h1>
           <p className="text-sm text-zinc-400">Manage structure, content and routing for the public ecosystem.</p>
         </div>
-        <Button className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 flex items-center gap-2">
-          <Plus className="w-4 h-4" /> New Page
-        </Button>
+        <Dialog open={isPageDialogOpen} onOpenChange={setIsPageDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={handleOpenNewPage} className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 flex items-center gap-2">
+              <Plus className="w-4 h-4" /> New Page
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl rounded-[2.5rem] border-zinc-200 dark:border-zinc-800">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">{editingPage ? 'Edit Page Node' : 'New Page Endpoint'}</DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Configure content and routing for the HITECH public architecture.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 pt-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Page Title</Label>
+                  <Input 
+                    value={pageTitle}
+                    onChange={(e) => setPageTitle(e.target.value)}
+                    placeholder="e.g. Neural Computing" 
+                    className="h-12 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Internal Path</Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">/</span>
+                    <Input 
+                      value={pagePath}
+                      onChange={(e) => setPagePath(e.target.value)}
+                      placeholder="neural-computing" 
+                      className="h-12 pl-7 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Page Content</Label>
+                <Textarea 
+                  value={pageContent}
+                  onChange={(e) => setPageContent(e.target.value)}
+                  placeholder="Draft your engineering narrative here..." 
+                  className="min-h-[240px] rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 resize-none"
+                />
+              </div>
+
+              <div className="flex justify-between items-center">
+                 <div className="flex gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Status</Label>
+                      <Select value={pageStatus} onValueChange={setPageStatus}>
+                        <SelectTrigger className="h-10 w-40 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                 </div>
+                 <div className="flex gap-3 pt-4">
+                    <Button variant="outline" onClick={() => setIsPageDialogOpen(false)} className="rounded-xl h-12 px-8 font-bold">Cancel</Button>
+                    <Button 
+                      onClick={handleSavePage} 
+                      disabled={isSaving || !pageTitle || !pagePath}
+                      className="rounded-xl h-12 px-10 bg-primary text-white font-bold flex items-center gap-2"
+                    >
+                      {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Synchronize Node
+                    </Button>
+                 </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
@@ -187,6 +369,8 @@ export default function WebManagementPortal() {
            <div className="relative w-full md:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
               <input 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search pages..." 
                 className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-xs outline-none focus:ring-1 focus:ring-primary/40"
               />
@@ -198,51 +382,72 @@ export default function WebManagementPortal() {
            </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-50 dark:border-zinc-800">
-               <tr className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
-                  <th className="px-8 py-5">PAGE TITLE</th>
-                  <th className="px-8 py-5">PATH</th>
-                  <th className="px-8 py-5">STATUS</th>
-                  <th className="px-8 py-5">LAST MODIFIED</th>
-                  <th className="px-8 py-5">AUTHOR</th>
-                  <th className="px-8 py-5 text-right">ACTIONS</th>
-               </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
-               {[
-                 { title: 'Home Engine', path: '/', status: 'Published', date: 'Jun 10, 2026', author: 'JoelHitech' },
-                 { title: 'Architecture Showcase', path: '/portfolio', status: 'Published', date: 'Jun 8, 2026', author: 'Regan' },
-                 { title: 'Intelligence Studio', path: '/ai-tools', status: 'Draft', date: 'Jun 5, 2026', author: 'JoelHitech' },
-                 { title: 'Case Study: Quantum', path: '/case-studies/quantum', status: 'Published', date: 'May 28, 2026', author: 'Cole' },
-               ].map((page, i) => (
-                 <tr key={i} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
-                    <td className="px-8 py-6 font-bold text-xs">{page.title}</td>
-                    <td className="px-8 py-6">
-                       <code className="text-[10px] bg-zinc-50 dark:bg-zinc-950 px-2 py-1 rounded text-primary">{page.path}</code>
-                    </td>
-                    <td className="px-8 py-6">
-                       <Badge className={cn(
-                         "text-[8px] font-bold uppercase px-2 py-0.5 rounded-md border-none",
-                         page.status === 'Published' ? "bg-green-500/10 text-green-500" : "bg-amber-500/10 text-amber-500"
-                       )}>
-                          {page.status}
-                       </Badge>
-                    </td>
-                    <td className="px-8 py-6 text-[10px] font-bold text-zinc-400">{page.date}</td>
-                    <td className="px-8 py-6 text-xs font-medium text-zinc-400">{page.author}</td>
-                    <td className="px-8 py-6 text-right">
-                       <div className="flex items-center justify-end gap-2">
-                          <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                          <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 transition-colors"><FileEdit className="w-3.5 h-3.5" /></button>
-                          <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 transition-colors"><MoreVertical className="w-3.5 h-3.5" /></button>
-                       </div>
-                    </td>
-                 </tr>
-               ))}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto min-h-[400px]">
+          {pagesLoading ? (
+            <div className="flex items-center justify-center h-64 text-zinc-400">
+               <Loader2 className="w-6 h-6 animate-spin mr-3" /> Neural scanning...
+            </div>
+          ) : (
+            <table className="w-full text-left">
+              <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-50 dark:border-zinc-800">
+                <tr className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
+                    <th className="px-8 py-5">PAGE TITLE</th>
+                    <th className="px-8 py-5">PATH</th>
+                    <th className="px-8 py-5">STATUS</th>
+                    <th className="px-8 py-5">LAST MODIFIED</th>
+                    <th className="px-8 py-5">AUTHOR</th>
+                    <th className="px-8 py-5 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                {sitePages?.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).map((page, i) => (
+                  <tr key={page.id} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                      <td className="px-8 py-6 font-bold text-xs">{page.title}</td>
+                      <td className="px-8 py-6">
+                        <code className="text-[10px] bg-zinc-50 dark:bg-zinc-950 px-2 py-1 rounded text-primary">{page.path.startsWith('/') ? page.path : `/${page.path}`}</code>
+                      </td>
+                      <td className="px-8 py-6">
+                        <Badge className={cn(
+                          "text-[8px] font-bold uppercase px-2 py-0.5 rounded-md border-none",
+                          page.status === 'published' ? "bg-green-500/10 text-green-500" : "bg-amber-500/10 text-amber-500"
+                        )}>
+                            {page.status}
+                        </Badge>
+                      </td>
+                      <td className="px-8 py-6 text-[10px] font-bold text-zinc-400">
+                        {new Date(page.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                      <td className="px-8 py-6 text-xs font-medium text-zinc-400">{page.author}</td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-zinc-400" asChild>
+                               <Link href={page.path.startsWith('/') ? page.path : `/${page.path}`} target="_blank"><Eye className="w-3.5 h-3.5" /></Link>
+                            </Button>
+                            <Button onClick={() => handleEditPage(page)} size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-zinc-400"><FileEdit className="w-3.5 h-3.5" /></Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-zinc-400"><MoreVertical className="w-3.5 h-3.5" /></Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="rounded-xl border-zinc-200 dark:border-zinc-800">
+                                <DropdownMenuItem onClick={() => handleDeletePage(page.id)} className="text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-900/10 font-bold text-xs gap-2">
+                                  <Trash2 className="w-3.5 h-3.5" /> Purge Node
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                      </td>
+                  </tr>
+                ))}
+                {sitePages?.length === 0 && (
+                   <tr>
+                      <td colSpan={6} className="py-20 text-center text-zinc-400 italic text-sm">
+                         No page nodes initialized in the cluster.
+                      </td>
+                   </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </motion.div>

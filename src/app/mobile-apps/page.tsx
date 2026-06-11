@@ -63,7 +63,7 @@ export default function MobileAppsPage() {
       <Navbar />
       
       {/* Hero Section with Banner Background */}
-      <section className="relative min-h-[70vh] flex items-center pt-32 pb-24 overflow-hidden">
+      <section className="relative min-h-[50vh] flex items-center pt-32 pb-20 overflow-hidden">
         {/* Background Banner */}
         <div className="absolute inset-0 z-0">
           {/* Overlay for readability */}

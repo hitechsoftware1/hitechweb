@@ -6,37 +6,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
   Layers, 
-  MessageSquare,
-  MoreVertical,
-  Loader2,
-  Trash2,
-  CheckCircle2,
-  Mail,
-  Archive,
-  Zap,
-  TrendingUp,
-  Inbox,
-  ClipboardList,
-  CalendarCheck,
-  ShieldCheck,
-  Key,
-  Plus,
-  UserCheck,
-  XCircle,
-  Clock,
-  LogOut,
-  ExternalLink,
-  Moon,
-  LayoutGrid,
-  Lock,
-  Globe,
-  Briefcase,
-  Settings,
-  User
+  MessageSquare, 
+  MoreVertical, 
+  Loader2, 
+  Trash2, 
+  CheckCircle2, 
+  Mail, 
+  Archive, 
+  Zap, 
+  TrendingUp, 
+  Inbox, 
+  ClipboardList, 
+  CalendarCheck, 
+  ShieldCheck, 
+  Key, 
+  Plus, 
+  UserCheck, 
+  XCircle, 
+  Clock, 
+  LogOut, 
+  ExternalLink, 
+  Moon, 
+  Sun,
+  LayoutGrid, 
+  Lock, 
+  Globe, 
+  Briefcase, 
+  Settings, 
+  User 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -60,9 +62,32 @@ export default function AdminHub(props: {
   use(props.searchParams);
 
   const db = useFirestore();
+  const auth = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
   const [newOfficeCode, setNewOfficeCode] = useState('');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      window.location.href = '/';
+    });
+  };
 
   // Queries
   const dailyCodeQuery = useMemo(() => {
@@ -181,11 +206,25 @@ export default function AdminHub(props: {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"><Moon className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm px-4 flex items-center gap-2">
-              <ExternalLink className="w-4 h-4" /> Site
+            <Button 
+              onClick={toggleTheme} 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
-            <Button variant="ghost" size="sm" className="rounded-xl bg-red-50 text-red-500 hover:bg-red-100 px-4 font-bold border border-red-100 flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm px-4 flex items-center gap-2" asChild>
+              <Link href="/">
+                <ExternalLink className="w-4 h-4" /> Site
+              </Link>
+            </Button>
+            <Button 
+              onClick={handleLogout}
+              variant="ghost" 
+              size="sm" 
+              className="rounded-xl bg-red-50 text-red-500 hover:bg-red-100 px-4 font-bold border border-red-100 flex items-center gap-2"
+            >
               <LogOut className="w-4 h-4" /> Logout
             </Button>
           </div>

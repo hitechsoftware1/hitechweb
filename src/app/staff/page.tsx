@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
@@ -23,12 +23,14 @@ import {
   Settings,
   Lock,
   ExternalLink,
-  Moon
+  Moon,
+  Sun
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -37,9 +39,32 @@ import Link from 'next/link';
 export default function StaffHub() {
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
+  const auth = useAuth();
   const { toast } = useToast();
   const [punchInCode, setPunchInCode] = useState('');
   const [punchingIn, setPunchingIn] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      window.location.href = '/';
+    });
+  };
 
   const attendanceQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -108,8 +133,25 @@ export default function StaffHub() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"><Moon className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="sm" className="rounded-xl bg-red-50 text-red-500 hover:bg-red-100 px-4 font-bold border border-red-100 flex items-center gap-2">
+            <Button 
+              onClick={toggleTheme} 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm px-4 flex items-center gap-2" asChild>
+              <Link href="/">
+                <ExternalLink className="w-4 h-4" /> Site
+              </Link>
+            </Button>
+            <Button 
+              onClick={handleLogout}
+              variant="ghost" 
+              size="sm" 
+              className="rounded-xl bg-red-50 text-red-500 hover:bg-red-100 px-4 font-bold border border-red-100 flex items-center gap-2"
+            >
               <LogOut className="w-4 h-4" /> Logout
             </Button>
           </div>

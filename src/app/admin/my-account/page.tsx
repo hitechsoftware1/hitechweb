@@ -16,6 +16,7 @@ import {
   Files, 
   MessageSquare, 
   Moon, 
+  Sun,
   LogOut, 
   ArrowLeft,
   ChevronRight,
@@ -50,8 +51,9 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
 import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -63,6 +65,7 @@ type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'All
 export default function MyAccountPage() {
   const { user } = useUser();
   const db = useFirestore();
+  const auth = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [projectSubTab, setProjectSubTab] = useState<'Project Based' | 'Standalone'>('Project Based');
@@ -70,12 +73,34 @@ export default function MyAccountPage() {
   const [chatSearch, setChatSearch] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      window.location.href = '/';
+    });
+  };
 
   useEffect(() => {
     if (activeTab === 'Chat') {
@@ -1204,13 +1229,20 @@ export default function MyAccountPage() {
         </div>
 
         <div className="mt-auto p-6 space-y-1 border-t border-zinc-100 dark:border-zinc-800">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-foreground">
-            <Moon className="w-4 h-4" /> Dark mode
+          <button 
+            onClick={toggleTheme}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-foreground"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
           </button>
           <Link href="/admin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-foreground">
             <ArrowLeft className="w-4 h-4" /> All portals
           </Link>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
+          >
             <LogOut className="w-4 h-4" /> Sign out
           </button>
         </div>

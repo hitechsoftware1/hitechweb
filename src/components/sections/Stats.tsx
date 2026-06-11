@@ -67,28 +67,28 @@ export function Stats() {
       <div className="container mx-auto px-4 lg:px-6 relative z-10">
         
         {/* Header Protocol */}
-        <div className="mb-16 lg:mb-24 flex flex-col md:flex-row justify-between items-end gap-8">
-          <div className="max-w-2xl">
+        <div className="mb-12 lg:mb-24 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+          <div className="max-w-2xl text-center md:text-left w-full md:w-auto">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 mb-4 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em]"
+              className="inline-flex items-center gap-2 mb-4 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
             >
               <Activity className="w-3 h-3" /> System Metrics // HITECH CORE v5.0
             </motion.div>
-            <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-none">
-              Engineering <br /> Throughput.
+            <h2 className="text-3xl sm:text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-tight">
+              Engineering <br className="hidden lg:block" /> Throughput.
             </h2>
           </div>
-          <div className="apple-glass px-8 py-5 rounded-2xl flex items-center gap-10">
-            <div className="text-center">
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Global Health</p>
-              <p className="text-xl font-bold text-green-500">EXCELLENT</p>
+          <div className="apple-glass w-full md:w-auto px-6 py-4 md:px-8 md:py-5 rounded-2xl flex items-center justify-between md:justify-start gap-6 md:gap-10">
+            <div className="text-center md:text-left">
+              <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Global Health</p>
+              <p className="text-lg lg:text-xl font-bold text-green-500 uppercase">Excellent</p>
             </div>
             <div className="w-[1px] h-10 bg-foreground/10" />
-            <div className="text-center text-primary font-bold">
-               <p className="text-[10px] uppercase tracking-widest opacity-30 mb-1">Compute Power</p>
-               <p className="text-xl">42.4 TFLOPS</p>
+            <div className="text-center md:text-left text-primary font-bold">
+               <p className="text-[8px] lg:text-[10px] uppercase tracking-widest opacity-30 mb-1">Compute Power</p>
+               <p className="text-lg lg:text-xl">42.4 TFLOPS</p>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@ export function Stats() {
               whileInView={{ opacity: 1, scale: 1 }}
               className="apple-card p-6 lg:p-10 h-full flex flex-col bg-card/60"
             >
-              <div className="flex justify-between items-center mb-10">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
                 <div>
                   <h3 className="text-lg font-bold">Computing Velocity</h3>
                   <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Real-time ecosystem load across nodes</p>
@@ -256,7 +256,7 @@ export function Stats() {
         </div>
 
         {/* Global Node Summary Strip */}
-        <div className="mt-12 py-8 border-t border-foreground/5 flex flex-wrap gap-12 justify-center lg:justify-start">
+        <div className="mt-12 py-8 border-t border-foreground/5 flex flex-wrap gap-8 lg:gap-12 justify-center lg:justify-start">
            {[
              { label: 'Compute Stability', value: 'High', icon: ShieldCheck, color: 'text-green-500' },
              { label: 'Standard Deviation', value: '± 4.2%', icon: TrendingUp, color: 'text-primary' },

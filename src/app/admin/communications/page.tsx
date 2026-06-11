@@ -27,7 +27,12 @@ import {
   Filter,
   Inbox,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  Download,
+  MoreVertical,
+  CheckCircle2,
+  XCircle,
+  ExternalLink
 } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -46,6 +51,7 @@ import {
   Tooltip,
 } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type CommTab = 'Overview' | 'Messages' | 'Quote Requests' | 'Contacts' | 'Subscribers' | 'Clients' | 'Quotations' | 'Internal Contacts' | 'Files';
 
@@ -473,6 +479,252 @@ export default function CommunicationsPortal() {
     </motion.div>
   );
 
+  const renderSubscribers = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Subscribers</h1>
+          <p className="text-sm text-zinc-400">Manage newsletter subscribers</p>
+        </div>
+        <div className="flex gap-8">
+          {[
+            { label: 'ACTIVE', value: '1', color: 'text-green-500' },
+            { label: 'UNSUBSCRIBED', value: '0', color: 'text-zinc-400' },
+            { label: 'BOUNCED', value: '0', color: 'text-red-400' },
+            { label: 'TOTAL', value: '1', color: 'text-foreground' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center px-4">
+              <p className={cn("text-xl font-headline font-bold", stat.color)}>{stat.value}</p>
+              <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-1 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden divide-x divide-zinc-100 dark:divide-zinc-800">
+        {[
+          { label: 'TODAY', value: '0', desc: 'new today' },
+          { label: 'THIS WEEK', value: '0', desc: 'since Monday' },
+          { label: 'THIS MONTH', value: '0', desc: 'since the 1st' },
+          { label: 'LAST 30 DAYS', value: '1', desc: 'rolling window' },
+        ].map((stat) => (
+          <div key={stat.label} className="p-8">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">{stat.label}</p>
+            <p className="text-4xl font-headline font-bold mb-1">{stat.value}</p>
+            <p className="text-[10px] text-zinc-300 font-medium">{stat.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 h-full">
+            <div className="flex justify-between items-center mb-10">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-100">Subscribers added — last 30 days</h3>
+              <span className="text-[10px] font-bold text-zinc-400">Today</span>
+            </div>
+            <div className="h-[240px] flex items-center justify-center">
+               <div className="w-full h-full flex items-end gap-3 px-4">
+                  {Array.from({ length: 30 }).map((_, i) => (
+                    <div key={i} className={cn("flex-1 rounded-t-lg transition-all", i === 25 ? "bg-zinc-200 dark:bg-zinc-800 h-[60%]" : "bg-zinc-50 dark:bg-zinc-950 h-4")} />
+                  ))}
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-8 h-full">
+             <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-100 mb-8">Where they came from</h3>
+             <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium text-zinc-400">newsletter_modal</span>
+                  <span className="text-xs font-bold">1</span>
+                </div>
+                <div className="w-full h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-full w-full bg-primary" />
+                </div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-zinc-50 dark:border-zinc-800/50 flex flex-col md:flex-row gap-4 items-center justify-between">
+           <div className="relative w-full md:w-96">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+              <input 
+                placeholder="Search by email or name..." 
+                className="w-full h-12 pl-12 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-xs outline-none focus:ring-1 focus:ring-primary/40"
+              />
+           </div>
+           <div className="flex gap-2 w-full md:w-auto">
+              <Button variant="outline" size="sm" className="h-11 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All Status <ChevronDown className="w-3 h-3" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-11 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                <Plus className="w-3 h-3" /> Add Subscriber
+              </Button>
+              <Button className="h-11 px-6 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-black font-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
+                Export CSV
+              </Button>
+           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+           <table className="w-full text-left">
+              <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-50 dark:border-zinc-800">
+                 <tr className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
+                    <th className="px-6 py-4 w-12"><Checkbox className="border-zinc-200" /></th>
+                    <th className="px-6 py-4">#</th>
+                    <th className="px-6 py-4">EMAIL</th>
+                    <th className="px-6 py-4">NAME</th>
+                    <th className="px-6 py-4">STATUS</th>
+                    <th className="px-6 py-4">COUNTRY</th>
+                    <th className="px-6 py-4">SOURCE</th>
+                    <th className="px-6 py-4">SUBSCRIBED</th>
+                    <th className="px-6 py-4 text-right">ACTIONS</th>
+                 </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                 <tr className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                    <td className="px-6 py-5 w-12"><Checkbox className="border-zinc-200" /></td>
+                    <td className="px-6 py-5 text-xs text-zinc-400">1</td>
+                    <td className="px-6 py-5">
+                       <div className="space-y-0.5">
+                          <p className="text-xs font-bold text-zinc-800 dark:text-zinc-100">kitalikibirugaju@gmail.com</p>
+                          <div className="flex items-center gap-1">
+                             <CheckCircle2 className="w-2.5 h-2.5 text-blue-400" />
+                             <span className="text-[9px] text-blue-400 font-bold uppercase tracking-tight">Verified</span>
+                          </div>
+                       </div>
+                    </td>
+                    <td className="px-6 py-5 text-xs font-medium text-zinc-600 dark:text-zinc-400">Kitalikibi Rugaju</td>
+                    <td className="px-6 py-5">
+                       <Badge className="bg-green-500/10 text-green-500 border-none text-[8px] font-bold px-2 py-0.5 rounded-md">Active</Badge>
+                    </td>
+                    <td className="px-6 py-5 text-xs text-zinc-400">--</td>
+                    <td className="px-6 py-5 text-[10px] font-medium text-zinc-400">newsletter_modal</td>
+                    <td className="px-6 py-5 text-[10px] font-bold text-zinc-400">May 26, 2026</td>
+                    <td className="px-6 py-5 text-right">
+                       <div className="flex items-center justify-end gap-2">
+                          <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400"><Inbox className="w-3.5 h-3.5" /></button>
+                          <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400"><MoreVertical className="w-3.5 h-3.5" /></button>
+                       </div>
+                    </td>
+                 </tr>
+              </tbody>
+           </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const renderClients = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Clients</h1>
+          <p className="text-sm text-zinc-400">Institutional partners and active service beneficiaries.</p>
+        </div>
+        <Button className="bg-zinc-950 dark:bg-white text-white dark:text-black font-bold rounded-xl h-11 px-6 flex items-center gap-2">
+          <Plus className="w-4 h-4" /> Add Client
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[
+          { label: 'TOTAL CLIENTS', value: '12' },
+          { label: 'ACTIVE PARTNERSHIPS', value: '8', color: 'text-green-500' },
+          { label: 'DRAFT QUOTATIONS', value: '4', color: 'text-amber-500' },
+          { label: 'RETENTION RATE', value: '98%', color: 'text-blue-500' },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
+            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-3">{stat.label}</p>
+            <p className={cn("text-3xl font-headline font-bold", stat.color)}>{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-zinc-50 dark:border-zinc-800/50 flex flex-col md:flex-row gap-4 items-center justify-between">
+           <div className="relative w-full md:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+              <input 
+                placeholder="Search by company or contact..." 
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border-none text-xs outline-none focus:ring-1 focus:ring-primary/40"
+              />
+           </div>
+           <div className="flex gap-2 w-full md:w-auto">
+              <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                All statuses <ChevronDown className="w-3 h-3" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-10 px-4 rounded-xl text-[10px] font-bold border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                <Filter className="w-3 h-3" /> Filter
+              </Button>
+           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+           <table className="w-full text-left">
+              <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-50 dark:border-zinc-800">
+                 <tr className="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">
+                    <th className="px-6 py-4">COMPANY / CLIENT</th>
+                    <th className="px-6 py-4">CONTACT PERSON</th>
+                    <th className="px-6 py-4">EMAIL</th>
+                    <th className="px-6 py-4">STATUS</th>
+                    <th className="px-6 py-4">ONBOARDED</th>
+                    <th className="px-6 py-4 text-right"></th>
+                 </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                 {[
+                   { company: 'Bilar Real Estate', contact: 'Kato Mark', email: 'kato@bilar.ug', status: 'Active', date: 'Jan 12, 2026' },
+                   { company: 'Tmbla Rideshare', contact: 'Nantale Sarah', email: 's.nantale@tmbla.com', status: 'Onboarding', date: 'Feb 28, 2026' },
+                   { company: 'Cozyllen Furniture', contact: 'Henry Kimbugwe', email: 'h.kimbugwe@cozyllen.com', status: 'Active', date: 'Mar 15, 2026' },
+                 ].map((client, i) => (
+                   <tr key={i} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                      <td className="px-6 py-5">
+                         <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-400">
+                               {client.company.charAt(0)}
+                            </div>
+                            <p className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{client.company}</p>
+                         </div>
+                      </td>
+                      <td className="px-6 py-5 text-xs font-medium text-zinc-600 dark:text-zinc-400">{client.contact}</td>
+                      <td className="px-6 py-5 text-xs text-zinc-400">{client.email}</td>
+                      <td className="px-6 py-5">
+                         <Badge className={cn(
+                           "text-[8px] font-bold px-2 py-0.5 rounded-md border-none",
+                           client.status === 'Active' ? "bg-green-500/10 text-green-500" : "bg-blue-500/10 text-blue-500"
+                         )}>
+                            {client.status}
+                         </Badge>
+                      </td>
+                      <td className="px-6 py-5 text-[10px] font-bold text-zinc-400">{client.date}</td>
+                      <td className="px-6 py-5 text-right">
+                         <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400">
+                            <ExternalLink className="w-3.5 h-3.5" />
+                         </button>
+                      </td>
+                   </tr>
+                 ))}
+              </tbody>
+           </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
       
@@ -537,7 +789,9 @@ export default function CommunicationsPortal() {
           {activeTab === 'Messages' && renderMessages()}
           {activeTab === 'Quote Requests' && renderQuoteRequests()}
           {activeTab === 'Contacts' && renderContacts()}
-          {activeTab !== 'Overview' && activeTab !== 'Messages' && activeTab !== 'Quote Requests' && activeTab !== 'Contacts' && (
+          {activeTab === 'Subscribers' && renderSubscribers()}
+          {activeTab === 'Clients' && renderClients()}
+          {activeTab !== 'Overview' && activeTab !== 'Messages' && activeTab !== 'Quote Requests' && activeTab !== 'Contacts' && activeTab !== 'Subscribers' && activeTab !== 'Clients' && (
             <motion.div 
               key="fallback"
               initial={{ opacity: 0 }} 

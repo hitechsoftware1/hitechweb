@@ -53,12 +53,12 @@ export default async function Home(props: {
 
       <Footer />
 
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button - Adjusted for Mobile Nav */}
       <a 
         href="https://wa.me/256759408917" 
         target="_blank" 
         rel="noopener noreferrer"
-        className="fixed bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl glow-primary z-50 flex items-center justify-center hover:scale-110 transition-transform bg-primary text-primary-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 active:scale-95"
+        className="fixed bottom-24 md:bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl glow-primary z-50 flex items-center justify-center hover:scale-110 transition-transform bg-primary text-primary-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-all duration-300 active:scale-95"
         aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="w-8 h-8" />

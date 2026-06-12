@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -45,10 +46,10 @@ export function Hero() {
           >
             <Badge variant="outline" className="bg-foreground/5 border-foreground/10 text-foreground/70 py-0.5 px-2 lg:py-1.5 lg:px-4 rounded-full flex items-center gap-1 lg:gap-2 mb-1 lg:mb-4 hover:border-foreground/20 transition-all cursor-default">
               <span className="w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[7px] lg:text-[10px] font-bold tracking-[0.2em] uppercase">HITECH New Version Active</span>
+              <span className="text-[7px] lg:text-[10px] font-bold tracking-[0.2em] uppercase">HITECH Active</span>
             </Badge>
             
-            <h1 className="font-headline text-xl sm:text-4xl lg:text-8xl font-bold leading-[1.1] tracking-tight text-gradient-apple">
+            <h1 className="font-headline text-xl sm:text-4xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-gradient-apple">
               Building <br />
               <TypingText 
                 texts={["Great Apps", "Smart AI", "Fast Systems"]} 
@@ -58,7 +59,7 @@ export function Hero() {
             </h1>
             
             <p className="text-[9px] sm:text-base lg:text-xl text-foreground/50 max-w-xl leading-relaxed font-light line-clamp-3 lg:line-clamp-none">
-              HITECH builds strong foundations for world-class digital tools. We write clean code for innovators and companies shaping the future.
+              HITECH builds strong foundations for world-class digital tools. We write clean code for innovators and companies.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full mt-2 lg:mt-4">
@@ -96,11 +97,11 @@ export function Hero() {
                 
                 <div className="absolute top-2 right-2 lg:top-8 lg:right-8 apple-glass p-2 lg:p-4 rounded-lg lg:rounded-2xl items-center gap-1 lg:gap-3 animate-float flex">
                   <Globe className="w-3 h-3 lg:w-5 lg:h-5 text-primary" />
-                  <span className="text-[6px] lg:text-[10px] font-bold text-foreground/80 uppercase tracking-[0.3em]">Network: Online</span>
+                  <span className="text-[6px] lg:text-[10px] font-bold text-foreground/80 uppercase tracking-[0.3em]">Online</span>
                 </div>
 
                 <div className="absolute bottom-2 left-2 lg:bottom-8 lg:left-8 apple-glass p-2 lg:p-6 rounded-lg lg:rounded-2xl flex flex-col gap-1 lg:gap-2">
-                  <span className="text-[5px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">Processing Speed</span>
+                  <span className="text-[5px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em]">Speed</span>
                   <div className="flex items-end gap-0.5 lg:gap-1.5">
                     <div className="w-0.5 h-1 lg:w-1.5 lg:h-4 bg-primary/40 rounded-full" />
                     <div className="w-0.5 h-2 lg:w-1.5 lg:h-8 bg-primary/60 rounded-full" />

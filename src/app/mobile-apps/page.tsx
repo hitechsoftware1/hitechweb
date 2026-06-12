@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -31,23 +32,23 @@ import { cn } from '@/lib/utils';
 
 const capabilities = [
   {
-    title: "iOS Native Development",
-    description: "High-performance applications built with Swift and SwiftUI for the Apple ecosystem.",
+    title: "iPhone Apps",
+    description: "High-speed apps built specifically for Apple devices.",
     icon: AppleIcon
   },
   {
-    title: "Android Ecosystem",
-    description: "Robust, scalable Android applications utilizing Kotlin and modern Jetpack Compose architecture.",
+    title: "Android Apps",
+    description: "Strong, reliable apps for all Android phones.",
     icon: Smartphone
   },
   {
-    title: "Cross-Platform Scale",
-    description: "High-fidelity Flutter and React Native systems for uniform experiences across all mobile environments.",
+    title: "Cross-Platform",
+    description: "One app that works perfectly on both iPhone and Android.",
     icon: SmartphoneNfc
   },
   {
-    title: "Mobile Security",
-    description: "Biometric authentication, zero-trust protocols, and end-to-end encrypted local storage.",
+    title: "Safe & Secure",
+    description: "Secure login, face ID, and data protection built-in.",
     icon: Shield
   }
 ];
@@ -57,19 +58,19 @@ const recentProjects = [
     title: "Quantum Mobile",
     category: "Fintech",
     image: PlaceHolderImages.find(i => i.id === 'project-1')?.imageUrl,
-    metrics: "4.2ms Latency"
+    metrics: "Very Fast"
   },
   {
     title: "Lumina Health",
-    category: "HealthTech",
+    category: "Health",
     image: PlaceHolderImages.find(i => i.id === 'project-2')?.imageUrl,
-    metrics: "AI-Integrated"
+    metrics: "Smart AI"
   },
   {
     title: "Nexus Logistics",
-    category: "Industrial",
+    category: "Logistics",
     image: PlaceHolderImages.find(i => i.id === 'project-3')?.imageUrl,
-    metrics: "IoT Real-time"
+    metrics: "Real-time"
   }
 ];
 
@@ -141,13 +142,13 @@ export default function MobileAppsPage() {
           >
             <div className="flex items-center gap-3 mb-6 text-primary">
               <Smartphone className="w-6 h-6" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Engineering Vertical</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em]">Mobile Apps</span>
             </div>
-            <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-              Mobile <br /> Intelligence.
+            <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+              Mobile <br /> Apps.
             </h1>
             <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-              We architect refined mobile ecosystems that define how users interact with the digital world. High-performance native and cross-platform systems for the modern era.
+              We build great apps that work perfectly on your phone. Fast, secure, and easy-to-use software for modern businesses.
             </p>
           </motion.div>
         </div>
@@ -167,8 +168,8 @@ export default function MobileAppsPage() {
               <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-lg lg:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 lg:mb-8 group-hover:bg-primary group-hover:text-white transition-all">
                 <cap.icon className="w-5 h-5 lg:w-7 lg:h-7" />
               </div>
-              <h3 className="text-sm lg:text-3xl font-headline font-bold mb-2 lg:mb-4">{cap.title}</h3>
-              <p className="text-[10px] lg:text-lg text-foreground/50 leading-relaxed font-light line-clamp-3 lg:line-clamp-none">{cap.description}</p>
+              <h3 className="text-sm lg:text-2xl font-headline font-bold mb-2 lg:mb-4">{cap.title}</h3>
+              <p className="text-[10px] lg:text-lg text-foreground/50 font-light line-clamp-3 lg:line-clamp-none">{cap.description}</p>
             </motion.div>
           ))}
         </div>
@@ -179,12 +180,12 @@ export default function MobileAppsPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
-              <h2 className="text-4xl font-headline font-bold mb-8">Refined <br /> Architecture.</h2>
+              <h2 className="text-3xl font-headline font-bold mb-8">Better <br /> Design.</h2>
               <div className="space-y-8">
                 {[
-                  { title: "Sub-100ms Latency", desc: "Optimized data fetching protocols for instant response times.", icon: Zap },
-                  { title: "Offline Resilience", desc: "Local-first data architecture ensures 100% operational uptime.", icon: Cpu },
-                  { title: "Sublime UI/UX", desc: "Adhering to the HITECH design standard for unmatched tactility.", icon: Layout }
+                  { title: "Very Fast", desc: "No delays. Everything works instantly.", icon: Zap },
+                  { title: "Works Offline", desc: "Our apps work even when you don't have internet.", icon: Cpu },
+                  { title: "Easy to Use", desc: "Beautiful designs that are simple for everyone.", icon: Layout }
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -201,16 +202,16 @@ export default function MobileAppsPage() {
             <div className="apple-card p-12 bg-primary/5 border-primary/20">
               <div className="flex items-center gap-3 mb-8">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">HITECH Standard Checklist</span>
+                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">HITECH Checklist</span>
               </div>
               <ul className="space-y-4">
                 {[
-                  "Biometric Auth (FaceID/TouchID)",
-                  "Multi-Layer Encryption",
-                  "Background Data Sync",
-                  "Push Notification Clusters",
-                  "Accessibility v2.0 Compliance",
-                  "Deep-Linking & Universal Links"
+                  "Biometric Login (FaceID)",
+                  "Safe Encryption",
+                  "Background Updates",
+                  "Smart Notifications",
+                  "Easy Navigation",
+                  "Secure Payments"
                 ].map((check, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-foreground/70">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -228,13 +229,13 @@ export default function MobileAppsPage() {
         <div className="apple-card p-12 lg:p-24 bg-primary text-primary-foreground text-center relative overflow-hidden">
           <div className="absolute inset-0 neural-grid opacity-20" />
           <div className="relative z-10">
-            <h2 className="text-4xl lg:text-6xl font-headline font-bold mb-6">Launch Your Ecosystem.</h2>
+            <h2 className="text-3xl lg:text-5xl font-headline font-bold mb-6">Start Your App.</h2>
             <p className="text-xl opacity-80 mb-10 max-w-2xl mx-auto font-light">
-              Our mobile engineers are ready to build your next generation application. Let's discuss your technical requirements.
+              Our engineers are ready to build your next great app. Let's talk about your idea.
             </p>
             <Button asChild size="lg" className="rounded-full bg-white text-primary font-bold hover:bg-white/90 px-10 h-14">
               <Link href="/request-project" className="flex items-center gap-2">
-                Start My Project <ArrowRight className="w-5 h-5" />
+                Get Started <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>
           </div>
@@ -244,8 +245,8 @@ export default function MobileAppsPage() {
       {/* Recent App Projects Slide */}
       <section className="container mx-auto px-6 mb-32">
         <div className="mb-12 text-center">
-          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-4 block">Proven Performance</span>
-          <h2 className="text-3xl lg:text-5xl font-headline font-bold">Recent App Deployments.</h2>
+          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-4 block">Our Work</span>
+          <h2 className="text-2xl lg:text-4xl font-headline font-bold">Recent App Launches.</h2>
         </div>
 
         <div className="perspective-1000">
@@ -301,7 +302,7 @@ export default function MobileAppsPage() {
                           <h3 className="font-headline font-bold text-foreground text-xl lg:text-2xl">{project.title}</h3>
                         </div>
                         <div className="flex items-center gap-2 text-foreground/40 font-light mt-6 text-xs">
-                          Launch Deployment <ArrowUpRight className="w-4 h-4" />
+                          View Project <ArrowUpRight className="w-4 h-4" />
                         </div>
                       </div>
                     </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -5,26 +6,26 @@ import { motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 
 const premiumFeatures = [
-  "Modern Responsive Designs",
-  "High-Speed Performance",
-  "SEO Friendly Systems",
-  "Mobile Optimized Platforms",
-  "AI-Powered Features",
+  "Modern Designs",
+  "High Speed",
+  "SEO Ready",
+  "Mobile Apps",
+  "AI Features",
   "Secure Systems",
   "Cloud Integration",
-  "Advanced Dashboards",
-  "Real-Time Analytics",
-  "Multi-Language Support",
+  "Dashboards",
+  "Real-Time Data",
+  "Multi-Language",
   "Dark/Light Mode",
-  "Smart Notifications",
-  "Interactive User Interfaces",
-  "Scalable Infrastructure",
-  "Premium User Experience",
-  "Automation Features",
-  "Professional Admin Panels",
-  "Advanced Authentication Systems",
-  "Modern API Architecture",
-  "Enterprise-Level Solutions"
+  "Smart Alerts",
+  "Clean Interface",
+  "Easy to Scale",
+  "Great User Experience",
+  "Automation",
+  "Admin Panels",
+  "Login Systems",
+  "Modern API",
+  "Business Solutions"
 ];
 
 export function Excellence() {
@@ -32,11 +33,11 @@ export function Excellence() {
     <section className="py-12 lg:py-32 relative bg-background/50 neural-grid">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center mb-10 lg:mb-24">
-          <h2 className="text-3xl lg:text-6xl font-headline font-bold text-gradient-apple mb-4 lg:mb-6 tracking-tight text-gradient-apple">
-            The HITECH Standard.
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-6 tracking-tight text-gradient-apple">
+            HITECH Standards.
           </h2>
           <p className="text-foreground/40 text-sm lg:text-lg font-light max-w-2xl mx-auto leading-relaxed">
-            Every system we build comes standard with premium features designed to elevate your enterprise.
+            Every system we build comes with features designed to help your business succeed.
           </p>
         </div>
 

@@ -9,42 +9,43 @@ import { Briefcase, MapPin, Clock, ArrowRight, Star, Heart, Rocket, Shield, Grad
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const jobs = [
   {
-    title: "Senior Full-Stack Engineer",
+    title: "Senior Software Engineer",
     type: "Full-time",
     location: "Kampala / Remote",
     department: "Engineering",
-    description: "Architecting high-performance digital ecosystems using React and Node.js."
+    description: "Building fast digital tools using React and Node.js."
   },
   {
     title: "Product Designer",
     type: "Full-time",
     location: "Remote",
     department: "Design",
-    description: "Defining the visual language of the next generation of enterprise software."
+    description: "Designing the look and feel of our next-gen software."
   },
   {
     title: "AI Engineer",
     type: "Full-time",
     location: "Remote",
-    department: "Neural Systems",
-    description: "Developing generative AI workflows and neural chat integrations."
+    department: "Smart Systems",
+    description: "Creating smart AI tools and chat systems."
   },
   {
-    title: "Frontend Engineering Intern",
+    title: "Engineering Intern",
     type: "Internship",
     location: "Kampala / Remote",
-    department: "Internship Program",
-    description: "Join our core engineering team to build sublime user experiences."
+    department: "Internship",
+    description: "Join our team to learn and build great user experiences."
   },
   {
-    title: "UI/UX Design Intern",
+    title: "Design Intern",
     type: "Internship",
     location: "Remote",
-    department: "Internship Program",
-    description: "Learn the HITECH design standard and architect visual systems."
+    department: "Internship",
+    description: "Learn our design standards and help build visual systems."
   }
 ];
 
@@ -65,11 +66,11 @@ export default function CareersPage() {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl"
         >
-          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            Build the <br /> Extraordinary.
+          <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+            Build Something <br /> Great.
           </h1>
           <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            Join a team of elite engineers and designers architecting the future of global enterprise systems. From senior roles to our high-growth internship programs.
+            Join a team of expert engineers and designers building the future of business software. We offer great roles for seniors and high-growth internships.
           </p>
         </motion.div>
       </section>
@@ -78,10 +79,10 @@ export default function CareersPage() {
       <section className="container mx-auto px-6 mb-32">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {[
-            { icon: Rocket, title: "High Velocity", text: "We ship quality code fast, iterating on real-world feedback." },
-            { icon: Heart, title: "Remote-First", text: "Global talent, local impact. Work from anywhere that inspires you." },
-            { icon: GraduationCap, title: "Mentorship", text: "Our internship tracks provide direct access to chief architects." },
-            { icon: Shield, title: "Precision", text: "We value structural integrity and clean, maintainable architecture." }
+            { icon: Rocket, title: "High Speed", text: "We ship quality code fast and learn from real feedback." },
+            { icon: Heart, title: "Work Anywhere", text: "Global talent, local impact. Work from wherever you feel inspired." },
+            { icon: GraduationCap, title: "Learning", text: "Our interns work directly with our top architects." },
+            { icon: Shield, title: "Quality", text: "We value strong foundations and clean, easy-to-read code." }
           ].map((item, idx) => (
             <motion.div 
               key={idx}
@@ -102,7 +103,7 @@ export default function CareersPage() {
       <section className="container mx-auto px-6 mb-32">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-headline font-bold">Open Positions</h2>
+            <h2 className="text-2xl font-headline font-bold">Open Positions</h2>
             <div className="flex gap-4">
               <Badge variant="outline" className="rounded-full border-primary/20 text-primary">{jobs.filter(j => j.type === 'Full-time').length} Full-time</Badge>
               <Badge variant="outline" className="rounded-full border-accent/20 text-accent">{jobs.filter(j => j.type === 'Internship').length} Internships</Badge>
@@ -144,8 +145,4 @@ export default function CareersPage() {
       <Footer />
     </main>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

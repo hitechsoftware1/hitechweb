@@ -19,34 +19,35 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 const tools = [
   {
-    title: "Neural Chat Systems",
-    description: "Industry-specific AI chatbots trained on your internal documentation for ultra-precise customer interactions.",
+    title: "Smart Chat Systems",
+    description: "Business chatbots that know your products and can help customers 24/7 with perfect accuracy.",
     icon: MessageSquare,
-    features: ["Gemini 2.5 Core", "RAG Integration", "Multi-lingual", "24/7 Ops"],
+    features: ["Easy to use", "Works in many languages", "24/7 Support", "Secure"],
     color: "text-blue-500"
   },
   {
-    title: "Process Automator",
-    description: "Intelligent workflow automation that understands context, making decisions previously requiring human oversight.",
+    title: "Process Helper",
+    description: "Automatic tools that handle daily tasks for you, saving time and reducing mistakes.",
     icon: Workflow,
-    features: ["Logic Chains", "Error Recovery", "API Orchestration", "Smart Triggers"],
+    features: ["Smart logic", "Fast work", "Easy setup", "Very reliable"],
     color: "text-purple-500"
   },
   {
-    title: "Predictive Analytics",
-    description: "Advanced ML models that forecast demand, risk, and user behavior with institutional-grade accuracy.",
+    title: "Smart Insights",
+    description: "AI that looks at your data to help you see trends and make better business decisions.",
     icon: BrainCircuit,
-    features: ["Anomaly Detection", "Trend Analysis", "Risk Scoring", "Real-time Data"],
+    features: ["Sees trends", "Risk alerts", "Real-time info", "Accurate data"],
     color: "text-emerald-500"
   },
   {
-    title: "Vision Systems",
-    description: "Computer vision for security, inventory tracking, and medical diagnostics using neural edge processing.",
+    title: "Vision Tools",
+    description: "Smart cameras and tools that can see and track inventory, security, or help with medical scans.",
     icon: Cpu,
-    features: ["Object Tracking", "Facial Identity", "OFT Scanning", "Edge Compute"],
+    features: ["Track objects", "Safe login", "Fast scans", "Smart sensors"],
     color: "text-amber-500"
   }
 ];
@@ -66,11 +67,11 @@ export default function AIToolsPage() {
             <Sparkles className="w-6 h-6 text-primary animate-pulse" />
             <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em]">Intelligence Division</span>
           </div>
-          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            Neural <br /> Infrastructure.
+          <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+            Smart AI <br /> Tools.
           </h1>
           <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            HITECH designs and deploys sophisticated AI agents that redefine how enterprises interact with data and customers.
+            HITECH builds easy-to-use AI tools that help businesses manage data and help customers better.
           </p>
         </motion.div>
       </section>
@@ -120,15 +121,15 @@ export default function AIToolsPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
-              <h2 className="text-4xl font-headline font-bold mb-8">Seamless <br /> Deployment.</h2>
+              <h2 className="text-3xl font-headline font-bold mb-8">Easy <br /> Setup.</h2>
               <div className="space-y-8">
                 <div className="flex gap-6">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <Code2 className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-2">API First</h4>
-                    <p className="text-foreground/50 font-light">Integrate neural capabilities into your existing stack with our high-performance REST and GraphQL endpoints.</p>
+                    <h4 className="font-bold text-lg mb-2">Connected Systems</h4>
+                    <p className="text-foreground/50 font-light">Add smart features to your current apps easily with our high-speed connection points.</p>
                   </div>
                 </div>
                 <div className="flex gap-6">
@@ -136,25 +137,25 @@ export default function AIToolsPage() {
                     <Database className="w-6 h-6 text-accent" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-2">Data Integrity</h4>
-                    <p className="text-foreground/50 font-light">We ensure your data stays your data. Every AI model is deployed within your secure cloud perimeter.</p>
+                    <h4 className="font-bold text-lg mb-2">Safe Data</h4>
+                    <p className="text-foreground/50 font-light">We make sure your data stays yours. Every AI tool is set up within your own secure space.</p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="apple-card p-12 bg-primary/5 border-primary/20">
               <pre className="text-xs font-code text-primary leading-loose">
-{`// HITECH Neural API Example
+{`// HITECH Smart API Example
 const hitech = require('@hitech/ai');
 
-const agent = await hitech.deployAgent({
+const helper = await hitech.addHelper({
   model: 'gemini-pro',
-  security: 'zero-trust',
-  dataUri: 's3://your-docs-vault'
+  safety: 'high',
+  vault: 'your-secure-docs'
 });
 
-const response = await agent.query(
-  "Predict Q4 revenue leakage..."
+const result = await helper.ask(
+  "How is my business doing?"
 );`}
               </pre>
             </div>
@@ -165,8 +166,4 @@ const response = await agent.query(
       <Footer />
     </main>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

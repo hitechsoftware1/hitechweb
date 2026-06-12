@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -6,26 +7,26 @@ import { Search, Layers, Cpu, Globe } from 'lucide-react';
 
 const steps = [
   {
-    title: "Understanding Your Idea",
-    description: "We dive deep into your project needs to find the best way to build it.",
+    title: "The Idea",
+    description: "We talk about your goals to find the best way to build your project.",
     icon: Search,
     color: "text-blue-500"
   },
   {
-    title: "Planning & Design",
-    description: "Our team designs the structure and look of your app for the best results.",
+    title: "Plan & Design",
+    description: "We design how your app will look and how it will work.",
     icon: Layers,
     color: "text-primary"
   },
   {
-    title: "Building & AI Features",
-    description: "We write clean code and add smart AI features that make your app powerful.",
+    title: "Build & AI",
+    description: "We write the code and add smart features to make it powerful.",
     icon: Cpu,
     color: "text-accent"
   },
   {
-    title: "Launching Everywhere",
-    description: "We launch your app on fast servers so it works smoothly worldwide.",
+    title: "Launch",
+    description: "We set up everything so your app is online and working perfectly.",
     icon: Globe,
     color: "text-green-500"
   }
@@ -50,11 +51,11 @@ export function Process() {
             <div className="w-8 h-[1px] bg-primary" />
             Our Method
           </motion.div>
-          <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
-            How We Build <br /> Your App.
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
+            How We Build <br /> Your Project.
           </h2>
           <p className="text-sm lg:text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            From the first chat to the final launch, we follow a simple process to make sure your project is a success.
+            From the first chat to launch day, we follow a clear plan to make sure your project is a success.
           </p>
         </div>
 

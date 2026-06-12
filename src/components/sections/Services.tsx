@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -8,65 +9,65 @@ import Link from 'next/link';
 const services = [
   {
     title: "Business Software",
-    description: "Custom ERP, CRM, and tools designed to make your daily work easier.",
+    description: "Custom tools that help you manage your business easily every day.",
     icon: Cpu,
-    tag: "Core Tools",
+    tag: "Software",
     href: "/services"
   },
   {
-    title: "Web Platforms",
-    description: "High-quality websites and e-commerce stores that look great on any device.",
+    title: "Websites",
+    description: "High-quality websites and stores that look great on phones and computers.",
     icon: Globe,
-    tag: "Online Presence",
+    tag: "Online",
     href: "/portfolio"
   },
   {
     title: "Mobile Apps",
-    description: "Fast and easy-to-use apps for iPhone and Android devices.",
+    description: "Fast apps for iPhone and Android that your users will love.",
     icon: Smartphone,
-    tag: "Mobile First",
+    tag: "Mobile",
     href: "/mobile-apps"
   },
   {
-    title: "Smart AI Systems",
-    description: "Intelligent chatbots and tools that help automate your business tasks.",
+    title: "Smart AI",
+    description: "Intelligent chatbots that help you work faster and answer customers.",
     icon: Brain,
-    tag: "AI Powered",
+    tag: "AI Tools",
     href: "/ai-tools"
   },
   {
-    title: "Cloud & Hosting",
-    description: "Secure and reliable hosting to make sure your app is always online.",
+    title: "Cloud Hosting",
+    description: "Safe and reliable hosting so your app is always online and ready.",
     icon: Cloud,
-    tag: "Safe & Scalable",
+    tag: "Hosting",
     href: "/services"
   },
   {
-    title: "Security & Safety",
-    description: "Advanced protection to keep your data and your users safe.",
+    title: "Security",
+    description: "Modern safety tools to keep your data and users safe from threats.",
     icon: Shield,
-    tag: "Protected",
+    tag: "Safety",
     href: "/services"
   },
   {
-    title: "Payment Systems",
-    description: "Easy integration for Mobile Money, PayPal, and credit card payments.",
+    title: "Payments",
+    description: "Easy setup for Mobile Money, PayPal, and credit card payments.",
     icon: CreditCard,
-    tag: "Easy Payments",
+    tag: "Money",
     href: "/portfolio"
   },
   {
     title: "Modern Design",
-    description: "Beautiful and simple user interfaces that people love to use.",
+    description: "Simple and beautiful designs that are easy for everyone to use.",
     icon: Layout,
-    tag: "User Friendly",
+    tag: "UI/UX",
     href: "/portfolio"
   },
   {
-    title: "Innovation Lab",
-    description: "Future-ready technology like IoT and real-time data tracking.",
+    title: "New Tech",
+    description: "Future tools like smart sensors and real-time data tracking.",
     icon: Zap,
-    tag: "New Tech",
+    tag: "Next-Gen",
     href: "/ai-studio"
   }
 ];
@@ -75,18 +76,18 @@ export function Services() {
   return (
     <section id="services" className="pt-12 pb-24 lg:pt-16 lg:pb-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
-        <div className="max-w-3xl mb-12 lg:mb-20 text-center md:text-left mx-auto md:mx-0">
+        <div className="max-w-3xl mb-12 lg:mb-20 text-center mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
+            className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center"
           >
             <div className="w-6 lg:w-8 h-[1px] bg-primary" />
             Our Services
           </motion.div>
-          <h2 className="text-3xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
-            Custom Solutions <br className="hidden md:block" />
-            for You.
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
+            Digital Solutions <br className="hidden md:block" />
+            for Business.
           </h2>
         </div>
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -7,23 +8,20 @@ import {
   AreaChart,
   ResponsiveContainer,
   XAxis,
-  YAxis,
   Tooltip,
-  Bar,
-  BarChart,
   Cell,
   PieChart,
   Pie
 } from "recharts";
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { cn } from '@/lib/utils';
-import { Activity, Globe, ShieldCheck, Zap, Cpu, Server, TrendingUp, ArrowUpRight } from 'lucide-react';
+import { Activity, Globe, ShieldCheck, Zap, TrendingUp } from 'lucide-react';
 
 const stats = [
-  { label: 'Client Projects', value: '150+', color: 'text-primary', change: '+12%', spark: [30, 45, 32, 60, 55, 90] },
-  { label: 'App Uptime', value: '99.99%', color: 'text-foreground', change: 'Stable', spark: [99, 99, 100, 99, 100, 99.9] },
-  { label: 'Security Checks', value: '500+', color: 'text-foreground', change: '+84', spark: [10, 20, 40, 80, 150, 500] },
-  { label: 'System Launches', value: '1.2k', color: 'text-foreground', change: '+24%', spark: [100, 300, 450, 700, 900, 1200] },
+  { label: 'Business Projects', value: '150+', color: 'text-primary', change: '+12%', spark: [30, 45, 32, 60, 55, 90] },
+  { label: 'Online Status', value: '99.99%', color: 'text-foreground', change: 'Stable', spark: [99, 99, 100, 99, 100, 99.9] },
+  { label: 'Safety Checks', value: '500+', color: 'text-foreground', change: '+84', spark: [10, 20, 40, 80, 150, 500] },
+  { label: 'App Launches', value: '1.2k', color: 'text-foreground', change: '+24%', spark: [100, 300, 450, 700, 900, 1200] },
 ];
 
 const throughputData = [
@@ -44,7 +42,7 @@ const regionalData = [
 
 const chartConfig = {
   value: {
-    label: "Total Hub",
+    label: "Total Work",
     color: "hsl(var(--primary))",
   },
   load: {
@@ -73,21 +71,21 @@ export function Stats() {
               whileInView={{ opacity: 1, x: 0 }}
               className="inline-flex items-center gap-2 mb-4 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
             >
-              <Activity className="w-3 h-3" /> Live Updates // HITECH CORE
+              <Activity className="w-3 h-3" /> Live Updates
             </motion.div>
-            <h2 className="text-3xl sm:text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-tight">
-              Our Performance <br className="hidden lg:block" /> in Numbers.
+            <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-tight">
+              Our Growth <br className="hidden lg:block" /> in Numbers.
             </h2>
           </div>
           <div className="apple-glass w-full md:w-auto px-6 py-4 md:px-8 md:py-5 rounded-2xl flex items-center justify-between md:justify-start gap-6 md:gap-10">
             <div className="text-center md:text-left">
-              <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">System Health</p>
+              <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Status</p>
               <p className="text-lg lg:text-xl font-bold text-green-500 uppercase">Running Great</p>
             </div>
             <div className="w-[1px] h-10 bg-foreground/10" />
             <div className="text-center md:text-left text-primary font-bold">
-               <p className="text-[8px] lg:text-[10px] uppercase tracking-widest opacity-30 mb-1">Total Speed</p>
-               <p className="text-lg lg:text-xl">42.4 TFLOPS</p>
+               <p className="text-[8px] lg:text-[10px] uppercase tracking-widest opacity-30 mb-1">System Speed</p>
+               <p className="text-lg lg:text-xl">Fast & Reliable</p>
             </div>
           </div>
         </div>
@@ -104,18 +102,8 @@ export function Stats() {
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 lg:mb-10 gap-3">
                 <div>
-                  <h3 className="text-[10px] sm:text-lg font-bold">App Speed & Reliability</h3>
-                  <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest line-clamp-1">Real-time load across regions</p>
-                </div>
-                <div className="flex gap-2 sm:gap-4">
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Total</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
-                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Load</span>
-                  </div>
+                  <h3 className="text-[10px] sm:text-lg font-bold">App Reliability</h3>
+                  <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest line-clamp-1">Performance across all systems</p>
                 </div>
               </div>
 
@@ -145,15 +133,6 @@ export function Stats() {
                         fillOpacity={1} 
                         fill="url(#colorValue)" 
                       />
-                      <Area 
-                        type="monotone" 
-                        dataKey="load" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={1}
-                        strokeDasharray="4 4"
-                        fill="transparent" 
-                        opacity={0.3}
-                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -170,7 +149,7 @@ export function Stats() {
             >
               <div>
                 <h3 className="text-[10px] sm:text-lg font-bold mb-0.5 lg:mb-1">Global Reach</h3>
-                <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-4 lg:mb-10">Network Efficiency</p>
+                <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-4 lg:mb-10">Our Network</p>
                 
                 <div className="h-24 sm:h-48 flex items-center justify-center relative">
                   <ResponsiveContainer width="100%" height="100%">
@@ -226,7 +205,7 @@ export function Stats() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <p className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest mb-1">{stat.label}</p>
-                  <h4 className={cn("text-3xl font-headline font-bold tracking-tight", stat.color)}>{stat.value}</h4>
+                  <h4 className={cn("text-2xl font-headline font-bold tracking-tight", stat.color)}>{stat.value}</h4>
                 </div>
                 <span className={cn(
                   "text-[8px] font-bold px-2 py-0.5 rounded-full",
@@ -259,7 +238,7 @@ export function Stats() {
            {[
              { label: 'System Stability', value: 'High', icon: ShieldCheck, color: 'text-green-500' },
              { label: 'Uptime Score', value: '99.9%', icon: TrendingUp, color: 'text-primary' },
-             { label: 'Peak Capacity', value: '7.5k ops/s', icon: Zap, color: 'text-primary' },
+             { label: 'Peak Capacity', value: 'High', icon: Zap, color: 'text-primary' },
              { label: 'Network Health', value: '100%', icon: Globe, color: 'text-primary' }
            ].map((node, i) => (
              <div key={i} className="flex items-center gap-3">

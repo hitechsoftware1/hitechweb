@@ -8,11 +8,11 @@ import { User, Shield, Target, Award, Milestone, Rocket, Users, Heart } from 'lu
 
 export default function AboutPage() {
   const timeline = [
-    { year: '2020', title: 'The Genesis', desc: 'JoelHitech founded the firm in Kampala with a vision to revolutionize enterprise architecture in East Africa.' },
-    { year: '2021', title: 'Neural Expansion', desc: 'Launched the first proprietary AI engine for automated triage in healthcare systems.' },
-    { year: '2022', title: 'Global Reach', desc: 'Expanded operations to London and San Francisco, supporting fintech leaders with low-latency rails.' },
-    { year: '2023', title: 'Ecosystem v3.0', desc: 'Released the HITECH Cloud Framework, a zero-trust deployment standard for scaling enterprises.' },
-    { year: '2024', title: 'Intelligence Era', desc: 'Deploying Gemini-powered neural consultants across our global client base.' }
+    { year: '2020', title: 'The Start', desc: 'JoelHitech founded the firm in Kampala with a vision to build better software for business.' },
+    { year: '2021', title: 'Smart Systems', desc: 'Launched our first AI tools for hospitals to help with patient care.' },
+    { year: '2022', title: 'Going Global', desc: 'Expanded our work to London and San Francisco, helping fintech companies with fast systems.' },
+    { year: '2023', title: 'New Standards', desc: 'Released the HITECH Cloud Framework for secure and easy scaling.' },
+    { year: '2024', title: 'AI Era', desc: 'Bringing smart AI assistants to all our clients around the world.' }
   ];
 
   return (
@@ -39,11 +39,11 @@ export default function AboutPage() {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl">
             <span className="text-primary font-bold tracking-[0.4em] uppercase text-[10px] mb-4 block">Our Origin & Vision</span>
-            <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-              Architecting the <br /> Digital Future.
+            <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+              Building the <br /> Digital Future.
             </h1>
             <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-              HITECH is a premium software engineering firm specializing in high-performance digital ecosystems. We don't just build apps; we engineer the structural integrity of tomorrow's market leaders.
+              HITECH is a top software company that builds high-speed digital tools. We don't just make apps; we build strong systems for tomorrow's market leaders.
             </p>
           </div>
         </div>
@@ -56,14 +56,14 @@ export default function AboutPage() {
             <Target className="w-12 h-12 text-primary mb-6" />
             <h3 className="text-2xl font-headline font-bold mb-4">Our Mission</h3>
             <p className="text-foreground/60 leading-relaxed font-light">
-              To empower global innovators by providing the architectural foundations for world-class digital experiences. We believe in precision code, secure infrastructure, and sublime user experiences.
+              To help innovators by building world-class digital tools. We believe in clean code, secure setups, and great user experiences.
             </p>
           </div>
           <div className="apple-card p-12 bg-accent/5 border-accent/10">
             <Shield className="w-12 h-12 text-accent mb-6" />
             <h3 className="text-2xl font-headline font-bold mb-4">Our Standard</h3>
             <p className="text-foreground/60 leading-relaxed font-light">
-              Every system we build adheres to the HITECH standard: zero-trust security, high-speed performance, and infinite scalability. We are obsessed with structural integrity.
+              Every system we build is safe, fast, and ready to grow. we are focused on making things work perfectly.
             </p>
           </div>
         </div>
@@ -74,8 +74,8 @@ export default function AboutPage() {
       {/* Timeline Section */}
       <section className="container mx-auto px-6 py-24 border-y border-foreground/5 mb-32">
         <div className="text-center mb-20">
-          <h2 className="text-4xl font-headline font-bold mb-4">The Journey.</h2>
-          <p className="text-foreground/40 font-light">From a Kampala studio to a global engineering authority.</p>
+          <h2 className="text-3xl font-headline font-bold mb-4">The Journey.</h2>
+          <p className="text-foreground/40 font-light">From a small studio to a global software firm.</p>
         </div>
         <div className="max-w-4xl mx-auto space-y-12">
           {timeline.map((item, idx) => (
@@ -105,17 +105,17 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="md:col-span-8">
-            <h2 className="text-4xl font-headline font-bold mb-2">JoelHitech</h2>
-            <p className="text-primary font-bold uppercase tracking-widest text-sm mb-6">Founder & Chief Architect</p>
+            <h2 className="text-3xl font-headline font-bold mb-2">JoelHitech</h2>
+            <p className="text-primary font-bold uppercase tracking-widest text-sm mb-6">Founder & CEO</p>
             <p className="text-xl text-foreground/70 font-light leading-relaxed italic mb-8">
-              "Technology is only as strong as the architecture it stands upon. At HITECH, we are obsessed with the structural integrity of digital systems. We are building the engines that will power the next generation of African and global enterprises."
+              "Technology is only as strong as the foundation it stands upon. At HITECH, we focus on making digital systems work perfectly. We are building the tools that will power businesses for years to come."
             </p>
             <div className="flex gap-8">
               <div className="flex items-center gap-2 text-sm font-bold text-foreground/40">
-                <Award className="w-4 h-4 text-primary" /> 10+ Years Engineering
+                <Award className="w-4 h-4 text-primary" /> 10+ Years Building
               </div>
               <div className="flex items-center gap-2 text-sm font-bold text-foreground/40">
-                <Milestone className="w-4 h-4 text-primary" /> 200+ Projects Scaled
+                <Milestone className="w-4 h-4 text-primary" /> 200+ Successful Projects
               </div>
             </div>
           </div>

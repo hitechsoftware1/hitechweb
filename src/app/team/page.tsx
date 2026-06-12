@@ -6,62 +6,52 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
 import { 
-  Code2, 
   Cpu, 
   Layers, 
-  ShieldCheck, 
-  Zap, 
-  MessageSquare, 
-  Globe, 
   Github, 
   Linkedin,
-  User,
   Star,
   Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const team = [
   {
     name: "JoelHitech Lubega",
-    role: "Founder & Chief Architect",
-    bio: "Visionary programmer and serial entrepreneur focused on high-performance digital engines and structural integrity.",
-    skills: ["Architecture", "Scalability", "Neural Systems"],
+    role: "Founder & CEO",
+    bio: "Visionary programmer focused on building strong digital tools and systems that work perfectly.",
+    skills: ["Architecture", "Fast Systems", "Smart AI"],
     initials: "JL",
     image: "https://i.pinimg.com/736x/36/7c/29/367c291780428a1bfc6ac8d4b45adc25.jpg"
   },
   {
     name: "Cole Amri Kitalikibi",
-    role: "Head of marketing",
-    bio: "Specialist in low-latency API development and cloud-native application logic.",
-    skills: ["React", "Node.js", "Cloud-Native"],
+    role: "Head of Marketing",
+    bio: "Specialist in building fast web apps and connecting with customers.",
+    skills: ["Web Apps", "Strategy", "Growth"],
     initials: "CK",
     image: "https://i.pinimg.com/736x/37/11/a8/3711a84535945caff6b76c28c5b54e50.jpg"
   },
   {
     name: "Mr Lubega Lucas",
     role: "UI/UX Designer",
-    bio: "Architecting visual systems that define the next generation of enterprise user experiences.",
-    skills: ["Design Systems", "Framer", "Product Logic"],
+    bio: "Building easy-to-use and beautiful designs for all our software.",
+    skills: ["UI Design", "Clean Look", "App Logic"],
     initials: "LL",
     image:"https://i.pinimg.com/736x/66/7e/20/667e20b408cf9b32ef62977eef31746c.jpg"
   },
   {
     name: "Asylum Ronald",
     role: "Graphics & Content",
-    bio: "Translating complex technical concepts into sublime visual narratives.",
-    skills: ["Visual Comms", "Asset Optimization"],
+    bio: "Helping tell our story through great visuals and clear messages.",
+    skills: ["Visuals", "Design", "Graphics"],
     initials: "AR",
     image:"https://i.pinimg.com/736x/a1/89/22/a1892208824db9a0574252c8fb632bb2.jpg"
-
   }
 ];
 
 export default function TeamPage() {
-  const logo = PlaceHolderImages.find(img => img.id === 'logo');
-
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -75,13 +65,13 @@ export default function TeamPage() {
         >
           <div className="flex items-center gap-3 mb-6">
             <Cpu className="w-6 h-6 text-primary" />
-            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em]">Personnel Ledger</span>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em]">Our Team</span>
           </div>
-          <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            The Neural <br /> Collective.
+          <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+            Meet the <br /> Experts.
           </h1>
           <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            Meet the architects, engineers, and designers responsible for the HITECH engineering standard.
+            Our team of engineers and designers build every system to the highest standards.
           </p>
         </motion.div>
       </section>
@@ -105,7 +95,7 @@ export default function TeamPage() {
               <Star className="w-4 h-4 text-primary fill-primary" />
               <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Chief Architect</span>
             </div>
-            <h2 className="text-4xl lg:text-6xl font-headline font-bold mb-4">{team[0].name}</h2>
+            <h2 className="text-3xl lg:text-5xl font-headline font-bold mb-4">{team[0].name}</h2>
             <p className="text-xl lg:text-2xl text-foreground/70 font-light italic mb-8 leading-relaxed">
               "{team[0].bio}"
             </p>
@@ -121,7 +111,7 @@ export default function TeamPage() {
                 <Linkedin className="w-4 h-4" /> Profile
               </Button>
               <Button variant="outline" className="rounded-xl border-foreground/10 hover:bg-foreground/5 flex items-center gap-2 h-12 px-6 font-bold">
-                <Github className="w-4 h-4" /> Architecture
+                <Github className="w-4 h-4" /> Portfolio
               </Button>
             </div>
           </div>
@@ -132,7 +122,7 @@ export default function TeamPage() {
       <section className="container mx-auto px-6 mb-32">
         <div className="mb-16">
           <h3 className="text-2xl font-headline font-bold">Engineers & Designers</h3>
-          <p className="text-foreground/40 font-light">The core contributors powering our technical throughput.</p>
+          <p className="text-foreground/40 font-light">The people who make our technology work.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {team.slice(1).map((member, idx) => (
@@ -170,15 +160,15 @@ export default function TeamPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
-              <h2 className="text-4xl font-headline font-bold mb-8">Engineering <br /> Environment.</h2>
+              <h2 className="text-3xl font-headline font-bold mb-8">How We <br /> Work.</h2>
               <div className="space-y-10">
                 <div className="flex gap-6">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <Sparkles className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-2">Neural Workspace</h4>
-                    <p className="text-foreground/50 font-light leading-relaxed">Our Kampala HQ is optimized for deep focus and collaborative architecture, powered by local culture and global connectivity.</p>
+                    <h4 className="font-bold text-lg mb-2">Our Workspace</h4>
+                    <p className="text-foreground/50 font-light leading-relaxed">Our Kampala office is designed for focus and working together to build great things.</p>
                   </div>
                 </div>
                 <div className="flex gap-6">
@@ -186,8 +176,8 @@ export default function TeamPage() {
                     <Layers className="w-6 h-6 text-accent" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-2">Zero-Trust Standard</h4>
-                    <p className="text-foreground/50 font-light leading-relaxed">Every developer adheres to the HITECH security standard: mandatory code reviews, zero-trust protocols, and encrypted CI/CD pipelines.</p>
+                    <h4 className="font-bold text-lg mb-2">High Standards</h4>
+                    <p className="text-foreground/50 font-light leading-relaxed">Every developer follows our rules for clean code and secure systems.</p>
                   </div>
                 </div>
               </div>
@@ -197,8 +187,8 @@ export default function TeamPage() {
                   <Image src="https://i.pinimg.com/736x/0c/d1/f8/0cd1f865b2be539ddf26cc161390c289.jpg" alt="Office" fill className="object-cover opacity-50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                   <div className="absolute bottom-8 left-8">
-                     <p className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2">Location: Naalya,Najeera,kira</p>
-                     <p className="text-xl font-bold font-headline">HITECH HQ // KAMPALA</p>
+                     <p className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2">Location: Naalya, Kampala</p>
+                     <p className="text-xl font-bold font-headline">HITECH HQ</p>
                   </div>
                </div>
             </div>

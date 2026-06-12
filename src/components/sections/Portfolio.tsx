@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Autoplay from 'embla-carousel-autoplay';
 import {
   Carousel,
@@ -20,19 +21,19 @@ const projects = [
     title: "Quantum Dashboard",
     category: "Fintech",
     image: PlaceHolderImages.find(i => i.id === 'project-1')?.imageUrl,
-    metrics: "4.2ms Latency"
+    metrics: "Very Fast"
   },
   {
     title: "Lumina OS",
     category: "Health",
     image: PlaceHolderImages.find(i => i.id === 'project-2')?.imageUrl,
-    metrics: "HIPAA Compliant"
+    metrics: "Secure"
   },
   {
     title: "Nexus Hub",
-    category: "Industrial",
+    category: "Logistics",
     image: PlaceHolderImages.find(i => i.id === 'project-3')?.imageUrl,
-    metrics: "25k Concurrent"
+    metrics: "Reliable"
   }
 ];
 
@@ -52,9 +53,9 @@ export function Portfolio() {
     <section id="portfolio" className="py-12 lg:py-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="mb-8 lg:mb-24 text-center md:text-left">
-          <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Showcase.</h2>
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Our Work.</h2>
           <p className="text-sm lg:text-xl text-foreground/40 max-w-2xl font-light mx-auto md:mx-0">
-            Exceptional solutions delivered for industry-leading organizations.
+            Great systems built for businesses around the world.
           </p>
         </div>
 
@@ -155,7 +156,7 @@ function ProjectCard({ project, isMobile }: { project: any, isMobile?: boolean }
           "flex items-center gap-2 text-foreground/40 font-light mt-4",
           isMobile ? "text-[10px]" : "text-[9px] lg:text-sm"
         )}>
-          View Case Study <ArrowUpRight className="w-3 h-3 lg:w-4 lg:h-4" />
+          Learn More <ArrowUpRight className="w-3 h-3 lg:w-4 lg:h-4" />
         </div>
       </div>
     </div>

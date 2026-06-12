@@ -3,7 +3,7 @@ import React from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Contact } from '@/components/sections/Contact';
-import { Mail, Phone, MapPin, MessageCircle, Clock, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 
 export default function ContactPage() {
   const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
@@ -13,11 +13,11 @@ export default function ContactPage() {
       <Navbar />
       
       <section className="container mx-auto px-6 mb-24">
-        <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-          Connect.
+        <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
+          Let's Talk.
         </h1>
         <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-          Speak with our engineering leads to discuss your project requirements or strategic goals.
+          Speak with our team to discuss your project idea or business goals.
         </p>
       </section>
 
@@ -28,7 +28,7 @@ export default function ContactPage() {
             <div>
               <h3 className="text-xl font-headline font-bold mb-2">Email</h3>
               <p className="text-foreground/60">hitechsoftware03@gmail.com</p>
-              <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">24h Response Goal</p>
+              <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">We respond within 24h</p>
             </div>
           </a>
           <a href="tel:+256742928508" className="apple-card p-10 flex flex-col gap-6 hover:border-primary/50 transition-colors cursor-pointer decoration-transparent">
@@ -44,7 +44,7 @@ export default function ContactPage() {
             <div>
               <h3 className="text-xl font-headline font-bold mb-2">Studio</h3>
               <p className="text-foreground/60">Naalya Kampala, Uganda</p>
-              <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">Engineering HQ</p>
+              <p className="text-xs text-foreground/30 mt-1 uppercase tracking-widest">Our Main Office</p>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function ContactPage() {
           <div className="inline-flex items-center gap-2 mb-8 text-primary text-[10px] font-bold uppercase tracking-[0.4em]">
             <Globe className="w-4 h-4" /> Global Reach
           </div>
-          <h2 className="text-4xl font-headline font-bold mb-12">HITECH is remote-first, <br /> global-ready.</h2>
+          <h2 className="text-3xl font-headline font-bold mb-12">HITECH works from anywhere, <br /> and we are ready to help.</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             <div>
               <p className="text-sm font-bold text-foreground/30 uppercase tracking-widest mb-2">East Africa</p>

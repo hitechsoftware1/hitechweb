@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -17,23 +18,23 @@ import { cn } from '@/lib/utils';
 
 const tiers = [
   {
-    name: "Foundation",
+    name: "Startup",
     price: "$2,499",
-    description: "Perfect for high-growth startups and validation phases.",
-    features: ["Dedicated Lead", "UX Architecture", "CI/CD Pipeline", "Weekly Syncs"]
+    description: "Great for new businesses starting their journey.",
+    features: ["Dedicated Lead", "Easy Design", "Secure Setup", "Weekly Updates"]
   },
   {
-    name: "Velocity",
+    name: "Business",
     price: "$5,999",
-    description: "The complete engineering squad for rapid scale.",
-    features: ["Full Stack Team", "SRE Support", "AI Integration", "Performance SLAs"],
+    description: "The complete team to help your business grow fast.",
+    features: ["Full Team", "24/7 Support", "AI Tools", "Guaranteed Speed"],
     popular: true
   },
   {
     name: "Enterprise",
     price: "Custom",
-    description: "Global infrastructure for the world's leading brands.",
-    features: ["Global R&D", "Compliance Suite", "Legacy Migration", "24/7 Concierge"]
+    description: "Built for large companies that need global reach.",
+    features: ["Global R&D", "Safe Storage", "Easy Migration", "Personal Support"]
   }
 ];
 
@@ -70,9 +71,9 @@ export function Pricing() {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-10 lg:mb-24">
-          <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
+          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
           <p className="text-sm lg:text-xl text-foreground/40 max-w-2xl mx-auto font-light">
-            Transparent pricing models for teams that value speed and precision.
+            Simple and clear pricing for teams that value quality and speed.
           </p>
         </div>
 
@@ -156,7 +157,7 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
       </div>
 
       <div className="mb-4 lg:mb-10">
-        <span className={cn("font-bold font-headline text-foreground", isMobile ? "text-3xl" : "text-2xl lg:text-5xl")}>{tier.price}</span>
+        <span className={cn("font-bold font-headline text-foreground", isMobile ? "text-3xl" : "text-2xl lg:text-4xl")}>{tier.price}</span>
         {tier.price !== "Custom" && <span className="text-foreground/40 text-[10px] lg:text-sm ml-1">/ mo</span>}
         <p className="text-foreground/40 mt-3 lg:mt-6 text-[10px] lg:text-sm leading-relaxed font-light">
           {tier.description}
@@ -181,7 +182,7 @@ function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: b
         )}
       >
         <Link href="#contact">
-          {tier.price === "Custom" ? "Consult Sales" : "Begin Project"}
+          {tier.price === "Custom" ? "Contact Us" : "Get Started"}
         </Link>
       </Button>
     </div>

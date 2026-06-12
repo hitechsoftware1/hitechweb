@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -7,26 +6,26 @@ import { Search, Layers, Cpu, Globe } from 'lucide-react';
 
 const steps = [
   {
-    title: "Discovery Protocol",
-    description: "Deep-dive analysis of your enterprise ecosystem and technical hurdles.",
+    title: "Understanding Your Idea",
+    description: "We dive deep into your project needs to find the best way to build it.",
     icon: Search,
     color: "text-blue-500"
   },
   {
-    title: "System Architecture",
-    description: "Engineering the structural foundations for infinite scalability.",
+    title: "Planning & Design",
+    description: "Our team designs the structure and look of your app for the best results.",
     icon: Layers,
     color: "text-primary"
   },
   {
-    title: "Neural Implementation",
-    description: "Integrating advanced AI reasoning engines and secure logic layers.",
+    title: "Building & AI Features",
+    description: "We write clean code and add smart AI features that make your app powerful.",
     icon: Cpu,
     color: "text-accent"
   },
   {
-    title: "Global Deployment",
-    description: "Launching on high-performance regional nodes with sub-10ms latency.",
+    title: "Launching Everywhere",
+    description: "We launch your app on fast servers so it works smoothly worldwide.",
     icon: Globe,
     color: "text-green-500"
   }
@@ -49,13 +48,13 @@ export function Process() {
             className="inline-flex items-center gap-2 mb-4 text-primary text-[10px] font-bold uppercase tracking-[0.4em]"
           >
             <div className="w-8 h-[1px] bg-primary" />
-            The HITECH Method
+            Our Method
           </motion.div>
           <h2 className="text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
-            Our Engineering <br /> Lifecycle.
+            How We Build <br /> Your App.
           </h2>
           <p className="text-sm lg:text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
-            From initial audit to global scale, we follow a rigorous protocol to ensure structural integrity and elite performance.
+            From the first chat to the final launch, we follow a simple process to make sure your project is a success.
           </p>
         </div>
 

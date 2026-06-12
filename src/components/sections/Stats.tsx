@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -21,10 +20,10 @@ import { cn } from '@/lib/utils';
 import { Activity, Globe, ShieldCheck, Zap, Cpu, Server, TrendingUp, ArrowUpRight } from 'lucide-react';
 
 const stats = [
-  { label: 'Enterprises', value: '150+', color: 'text-primary', change: '+12%', spark: [30, 45, 32, 60, 55, 90] },
-  { label: 'System Uptime', value: '99.99%', color: 'text-foreground', change: 'Stable', spark: [99, 99, 100, 99, 100, 99.9] },
-  { label: 'Security Audits', value: '500+', color: 'text-foreground', change: '+84', spark: [10, 20, 40, 80, 150, 500] },
-  { label: 'Launches', value: '1.2k', color: 'text-foreground', change: '+24%', spark: [100, 300, 450, 700, 900, 1200] },
+  { label: 'Client Projects', value: '150+', color: 'text-primary', change: '+12%', spark: [30, 45, 32, 60, 55, 90] },
+  { label: 'App Uptime', value: '99.99%', color: 'text-foreground', change: 'Stable', spark: [99, 99, 100, 99, 100, 99.9] },
+  { label: 'Security Checks', value: '500+', color: 'text-foreground', change: '+84', spark: [10, 20, 40, 80, 150, 500] },
+  { label: 'System Launches', value: '1.2k', color: 'text-foreground', change: '+24%', spark: [100, 300, 450, 700, 900, 1200] },
 ];
 
 const throughputData = [
@@ -49,7 +48,7 @@ const chartConfig = {
     color: "hsl(var(--primary))",
   },
   load: {
-    label: "Neural Load",
+    label: "System Load",
     color: "hsl(var(--primary))",
   },
 } satisfies ChartConfig;
@@ -60,7 +59,7 @@ export function Stats() {
       
       {/* Background Decor */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] " />
         <div className="absolute inset-0 neural-grid opacity-30" />
       </div>
 
@@ -74,26 +73,26 @@ export function Stats() {
               whileInView={{ opacity: 1, x: 0 }}
               className="inline-flex items-center gap-2 mb-4 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
             >
-              <Activity className="w-3 h-3" /> System Metrics // HITECH CORE v5.0
+              <Activity className="w-3 h-3" /> Live Updates // HITECH CORE
             </motion.div>
             <h2 className="text-3xl sm:text-4xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 tracking-tight leading-tight">
-              Engineering <br className="hidden lg:block" /> Throughput.
+              Our Performance <br className="hidden lg:block" /> in Numbers.
             </h2>
           </div>
           <div className="apple-glass w-full md:w-auto px-6 py-4 md:px-8 md:py-5 rounded-2xl flex items-center justify-between md:justify-start gap-6 md:gap-10">
             <div className="text-center md:text-left">
-              <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Global Health</p>
-              <p className="text-lg lg:text-xl font-bold text-green-500 uppercase">Excellent</p>
+              <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">System Health</p>
+              <p className="text-lg lg:text-xl font-bold text-green-500 uppercase">Running Great</p>
             </div>
             <div className="w-[1px] h-10 bg-foreground/10" />
             <div className="text-center md:text-left text-primary font-bold">
-               <p className="text-[8px] lg:text-[10px] uppercase tracking-widest opacity-30 mb-1">Compute Power</p>
+               <p className="text-[8px] lg:text-[10px] uppercase tracking-widest opacity-30 mb-1">Total Speed</p>
                <p className="text-lg lg:text-xl">42.4 TFLOPS</p>
             </div>
           </div>
         </div>
 
-        {/* Bento Grid Stats - SIDE BY SIDE ON MOBILE */}
+        {/* Bento Grid Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-3 lg:gap-6 mb-6">
           
           {/* Main Throughput Chart */}
@@ -105,13 +104,13 @@ export function Stats() {
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 lg:mb-10 gap-3">
                 <div>
-                  <h3 className="text-[10px] sm:text-lg font-bold">Computing Velocity</h3>
-                  <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest line-clamp-1">Real-time load across nodes</p>
+                  <h3 className="text-[10px] sm:text-lg font-bold">App Speed & Reliability</h3>
+                  <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest line-clamp-1">Real-time load across regions</p>
                 </div>
                 <div className="flex gap-2 sm:gap-4">
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Hub</span>
+                    <span className="text-[7px] sm:text-[10px] font-bold text-foreground/40 uppercase">Total</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
@@ -170,8 +169,8 @@ export function Stats() {
               className="apple-card p-3 sm:p-8 h-full flex flex-col justify-between"
             >
               <div>
-                <h3 className="text-[10px] sm:text-lg font-bold mb-0.5 lg:mb-1">Edge Performance</h3>
-                <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-4 lg:mb-10">Regional Node Efficiency</p>
+                <h3 className="text-[10px] sm:text-lg font-bold mb-0.5 lg:mb-1">Global Reach</h3>
+                <p className="text-[6px] sm:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-4 lg:mb-10">Network Efficiency</p>
                 
                 <div className="h-24 sm:h-48 flex items-center justify-center relative">
                   <ResponsiveContainer width="100%" height="100%">
@@ -258,10 +257,10 @@ export function Stats() {
         {/* Global Node Summary Strip */}
         <div className="mt-12 py-8 border-t border-foreground/5 flex flex-wrap gap-8 lg:gap-12 justify-center lg:justify-start">
            {[
-             { label: 'Compute Stability', value: 'High', icon: ShieldCheck, color: 'text-green-500' },
-             { label: 'Standard Deviation', value: '± 4.2%', icon: TrendingUp, color: 'text-primary' },
-             { label: 'Peak Throughput', value: '7.5k ops/s', icon: Zap, color: 'text-primary' },
-             { label: 'Cluster Connectivity', value: '100%', icon: Globe, color: 'text-primary' }
+             { label: 'System Stability', value: 'High', icon: ShieldCheck, color: 'text-green-500' },
+             { label: 'Uptime Score', value: '99.9%', icon: TrendingUp, color: 'text-primary' },
+             { label: 'Peak Capacity', value: '7.5k ops/s', icon: Zap, color: 'text-primary' },
+             { label: 'Network Health', value: '100%', icon: Globe, color: 'text-primary' }
            ].map((node, i) => (
              <div key={i} className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-foreground/[0.03] flex items-center justify-center">

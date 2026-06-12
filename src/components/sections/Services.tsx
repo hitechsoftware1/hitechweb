@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -8,66 +7,66 @@ import Link from 'next/link';
 
 const services = [
   {
-    title: "Enterprise Software",
-    description: "Custom ERP, CRM, and automation systems engineered for operational excellence.",
+    title: "Business Software",
+    description: "Custom ERP, CRM, and tools designed to make your daily work easier.",
     icon: Cpu,
-    tag: "Core Systems",
+    tag: "Core Tools",
     href: "/services"
   },
   {
-    title: "Digital Platforms",
-    description: "Premium business, e-commerce, and portfolio ecosystems with global reach.",
+    title: "Web Platforms",
+    description: "High-quality websites and e-commerce stores that look great on any device.",
     icon: Globe,
-    tag: "Presence",
+    tag: "Online Presence",
     href: "/portfolio"
   },
   {
-    title: "Mobile Mobility",
-    description: "Native iOS and Android experiences refined for the palm of your hand.",
+    title: "Mobile Apps",
+    description: "Fast and easy-to-use apps for iPhone and Android devices.",
     icon: Smartphone,
-    tag: "Refined",
+    tag: "Mobile First",
     href: "/mobile-apps"
   },
   {
-    title: "Artificial Intelligence",
-    description: "Neural chatbots and predictive analytics that automate complex enterprise logic.",
+    title: "Smart AI Systems",
+    description: "Intelligent chatbots and tools that help automate your business tasks.",
     icon: Brain,
-    tag: "Intelligence",
+    tag: "AI Powered",
     href: "/ai-tools"
   },
   {
-    title: "Cloud Infrastructure",
-    description: "Elastic, high-availability architecture and VPS management for global scale.",
+    title: "Cloud & Hosting",
+    description: "Secure and reliable hosting to make sure your app is always online.",
     icon: Cloud,
-    tag: "Scale",
+    tag: "Safe & Scalable",
     href: "/services"
   },
   {
-    title: "Cybersecurity Core",
-    description: "Zero-trust protocols and secure authentication to protect critical assets.",
+    title: "Security & Safety",
+    description: "Advanced protection to keep your data and your users safe.",
     icon: Shield,
     tag: "Protected",
     href: "/services"
   },
   {
-    title: "Financial Systems",
-    description: "Seamless Mobile Money, PayPal, and Stripe integrations for global commerce.",
+    title: "Payment Systems",
+    description: "Easy integration for Mobile Money, PayPal, and credit card payments.",
     icon: CreditCard,
-    tag: "Commerce",
+    tag: "Easy Payments",
     href: "/portfolio"
   },
   {
-    title: "Experience Design",
-    description: "Modern UI/UX and brand identity systems built for the next generation.",
+    title: "Modern Design",
+    description: "Beautiful and simple user interfaces that people love to use.",
     icon: Layout,
-    tag: "Aesthetic",
+    tag: "User Friendly",
     href: "/portfolio"
   },
   {
-    title: "Strategic R&D",
-    description: "Future-proofing stacks with IoT, Blockchain, and real-time API systems.",
+    title: "Innovation Lab",
+    description: "Future-ready technology like IoT and real-time data tracking.",
     icon: Zap,
-    tag: "Innovation",
+    tag: "New Tech",
     href: "/ai-studio"
   }
 ];
@@ -83,11 +82,11 @@ export function Services() {
             className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center md:justify-start"
           >
             <div className="w-6 lg:w-8 h-[1px] bg-primary" />
-            Capabilities
+            Our Services
           </motion.div>
           <h2 className="text-3xl lg:text-7xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">
-            Designed for <br className="hidden md:block" />
-            Performance.
+            Custom Solutions <br className="hidden md:block" />
+            for You.
           </h2>
         </div>
 
@@ -117,7 +116,7 @@ export function Services() {
                 </div>
                 
                 <div className="flex items-center gap-2 text-[8px] md:text-[10px] font-bold text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                  Discover Protocol <ArrowUpRight className="w-3 h-3" />
+                  Learn More <ArrowUpRight className="w-3 h-3" />
                 </div>
               </Link>
             </motion.div>

@@ -21,9 +21,8 @@ const testimonials = [
     role: "Director, YUNI.COM",
     text: "The eccomerceApp was and is outsanding with its fast loading uis,easy to use and fully manageable.",
     stars: 6,
-    project: https://yuni-eccomerce-platform.vercel.app/,
-  }
-
+    project:"yuni.com"
+  },
   {
     name: "Dr.Kitiibwa Cole",
     role: "Director, HealthNet Systems",

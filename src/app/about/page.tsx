@@ -30,7 +30,7 @@ export default function AboutPage() {
             playsInline 
             className="w-full h-full object-cover opacity-10 dark:opacity-20"
           >
-            <source src="https://assets.mixkit.co/ztlezxr73bgv1spkgnz6iv0ptc8s" type="video/mp4" />
+            <source src="https://assets.mixkit.co/videos/99786/99786-720.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
           <div className="absolute inset-0 neural-grid opacity-30" />

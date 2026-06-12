@@ -30,28 +30,32 @@ const team = [
     bio: "Visionary programmer and serial entrepreneur focused on high-performance digital engines and structural integrity.",
     skills: ["Architecture", "Scalability", "Neural Systems"],
     initials: "JL",
-    image: "https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg"
+    image: "https://i.pinimg.com/736x/36/7c/29/367c291780428a1bfc6ac8d4b45adc25.jpg"
   },
   {
     name: "Cole Amri Kitalikibi",
-    role: "Full Stack Engineer",
+    role: "Head of marketing",
     bio: "Specialist in low-latency API development and cloud-native application logic.",
     skills: ["React", "Node.js", "Cloud-Native"],
-    initials: "CK"
+    initials: "CK",
+    image: "https://i.pinimg.com/736x/37/11/a8/3711a84535945caff6b76c28c5b54e50.jpg"
   },
   {
-    name: "Rumanzi Regan",
+    name: "Mr Lubega Lucas",
     role: "UI/UX Designer",
     bio: "Architecting visual systems that define the next generation of enterprise user experiences.",
     skills: ["Design Systems", "Framer", "Product Logic"],
-    initials: "RR"
+    initials: "LL",
+    image:"https://i.pinimg.com/736x/66/7e/20/667e20b408cf9b32ef62977eef31746c.jpg"
   },
   {
-    name: "Kabaale Micheal",
+    name: "Asylum Ronald",
     role: "Graphics & Content",
     bio: "Translating complex technical concepts into sublime visual narratives.",
     skills: ["Visual Comms", "Asset Optimization"],
-    initials: "KM"
+    initials: "AR",
+    image:"https://i.pinimg.com/736x/a1/89/22/a1892208824db9a0574252c8fb632bb2.jpg"
+
   }
 ];
 
@@ -190,10 +194,10 @@ export default function TeamPage() {
             </div>
             <div className="apple-card p-2 rounded-[2.5rem]">
                <div className="aspect-video relative rounded-[2rem] overflow-hidden">
-                  <Image src="https://picsum.photos/seed/hitech-office/1200/800" alt="Office" fill className="object-cover opacity-50" />
+                  <Image src="https://i.pinimg.com/736x/0c/d1/f8/0cd1f865b2be539ddf26cc161390c289.jpg" alt="Office" fill className="object-cover opacity-50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                   <div className="absolute bottom-8 left-8">
-                     <p className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2">Location: Naalya Studio</p>
+                     <p className="text-[10px] font-bold text-primary uppercase tracking-[0.4em] mb-2">Location: Naalya,Najeera,kira</p>
                      <p className="text-xl font-bold font-headline">HITECH HQ // KAMPALA</p>
                   </div>
                </div>

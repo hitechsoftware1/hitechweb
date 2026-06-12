@@ -11,13 +11,22 @@ import { Button } from '@/components/ui/button';
 
 const posts = [
   {
+    title: "Why Hitech is dominating/scaling",
+    excerpt: "Exploring how Joel hitech and the company at large has grown with in time under taxes revenues .",
+    category: "URA",
+    author: "NTV Uganda",
+    date: "May 13th, 2025",
+    readTime: "8 min",
+    image: "https://i.pinimg.com/736x/36/7c/29/367c291780428a1bfc6ac8d4b45adc25.jpg"
+  },
+  {
     title: "The Future of Neural Architectures",
     excerpt: "Exploring how Gemini and RAG are redefining the boundaries of enterprise software logic.",
     category: "AI",
-    author: "JoelHitech",
+    author: "Pulse.ug",
     date: "March 12, 2024",
     readTime: "8 min",
-    image: "https://picsum.photos/seed/tech1/800/450"
+    image: "https://i.pinimg.com/736x/e5/56/35/e556356cd4b9c7d6dd7018da65c5eefc.jpg"
   },
   {
     title: "Zero-Trust: The New Security Standard",
@@ -26,17 +35,46 @@ const posts = [
     author: "Engineering Team",
     date: "March 08, 2024",
     readTime: "6 min",
-    image: "https://picsum.photos/seed/tech2/800/450"
+    image: "https://i.pinimg.com/1200x/1b/7b/b0/1b7bb0b1d65c769b9dc94a7e5476ecb6.jpg"
   },
   {
-    title: "Scaling Fintech in Emerging Markets",
+    title: "How businesses go digital Markets",
     excerpt: "A deep dive into the technical hurdles of integrating mobile money with global payment rails.",
     category: "Fintech",
     author: "SRE Lead",
     date: "February 28, 2024",
     readTime: "12 min",
-    image: "https://picsum.photos/seed/tech3/800/450"
+    image: "https://i.pinimg.com/736x/3c/13/f2/3c13f278cc5432b3268c7e11d0920456.jpg"
+  },
+  {
+    title: "Why Smart Creators Are Upgrading",
+    excerpt: "The latest tools helping content entrepreneurs build passive revenue faster, smarter, and with fewer manual steps.",
+    category: "Fintech",
+    author: "SRE Lead",
+    date: "February 28, 2026",
+    readTime: "12 min",
+    image: "https://i.pinimg.com/736x/d2/5a/b9/d25ab9eca57e8b0ccd20e9d2ba4da7dd.jpg"
+  },
+  {
+    title: "Adobe 💻",
+    excerpt: "Do youknow all about the best graphics suite of all time?.",
+    category: "Graphics",
+    author: "SRE Lead",
+    date: "June 12, 2026",
+    readTime: "12 min",
+    image: "https://i.pinimg.com/736x/81/e5/76/81e576777c288f5e0584e439cb6759af.jpg"
+  },
+   {
+    title: "AI to take over?!!!",
+    excerpt: "AI isn’t the problem. Lack of strategy is. When brands use the same.......",
+    category: "Fintech",
+    author: "SRE Lead",
+    date: "May 30th, 2026",
+    readTime: "12 min",
+    image: "https://i.pinimg.com/736x/2b/b0/f0/2bb0f03cb67fbdcc3c99294a4c453bc3.jpg"
   }
+  
+  
 ];
 
 export default function BlogPage() {

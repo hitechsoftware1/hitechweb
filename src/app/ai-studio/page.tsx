@@ -61,7 +61,7 @@ interface Message {
 
 export default function AIStudioPage() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', content: "HITECH Neural System v5.0 Active. I am Zainab, your architectural concierge. Define your technical vision or ask for an engineering audit.", time: "BOOT" }
+    { role: 'model', content: "HITECH Neural System v5.0 Active. I am Zainab, your Hitech assistant. Define your vision or ask for an engineering audit.", time: "BOOT" }
   ]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -191,7 +191,7 @@ export default function AIStudioPage() {
                 <h2 className="text-sm font-bold">Zainab AI</h2>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">Neural Cluster: Online</span>
+                  <span className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">Status: Online</span>
                 </div>
               </div>
             </div>
@@ -352,7 +352,7 @@ export default function AIStudioPage() {
                   </div>
                   <div className="bg-foreground/[0.02] border border-foreground/5 p-5 rounded-[1.5rem] rounded-tl-none flex items-center gap-3">
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                    <span className="text-xs font-medium text-foreground/40 italic">Neural synthesis in progress...</span>
+                    <span className="text-xs font-medium text-foreground/40 italic">Lindamu katono ...</span>
                   </div>
                 </div>
               </div>

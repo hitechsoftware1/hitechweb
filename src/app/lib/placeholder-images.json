@@ -3,31 +3,31 @@
     {
       "id": "hero-bg",
       "description": "Minimal tech background",
-      "imageUrl": "blob:https://www.pinterest.com/1b76cfce-cd80-4549-b3ff-d52dd34bad93",
+      "imageUrl": "https://i.pinimg.com/736x/da/8e/2d/da8e2dd82d88ce22b2ff8a0247746682.jpg",
       "imageHint": "minimal tech"
     },
     {
       "id": "project-1",
       "description": "Fintech UI",
-      "imageUrl": "https://picsum.photos/seed/minimal-fin/800/600",
+      "imageUrl": "https://i.pinimg.com/1200x/c9/c8/9d/c9c89da9d329e0197bc61e0ad6e88ec3.jpg",
       "imageHint": "minimal fintech"
     },
     {
       "id": "project-2",
       "description": "Health OS",
-      "imageUrl": "https://i.pinimg.com/736x/67/db/11/67db11344dd115cf2b3e4a561871e845.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/21/92/6f/21926f94ea0215fe188061fe0aeff38f.jpg",
       "imageHint": "minimal health"
     },
     {
       "id": "project-3",
       "description": "Industrial Hub",
-      "imageUrl": "https://i.pinimg.com/736x/44/4a/42/444a42c218cbc885401d5557672ad4a5.jpg",
+      "imageUrl": "https://i.pinimg.com/1200x/4c/6d/18/4c6d1819179d69e04605fd0ab198b5c0.jpg",
       "imageHint": "minimal industry"
     },
     {
       "id": "logo",
       "description": "HITECH Custom Logo",
-      "imageUrl": "https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/da/8e/2d/da8e2dd82d88ce22b2ff8a0247746682.jpg",
       "imageHint": "tech logo"
     }
   ]

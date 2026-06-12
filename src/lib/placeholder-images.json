@@ -3,25 +3,25 @@
     {
       "id": "hero-bg",
       "description": "Minimal tech background",
-      "imageUrl": "https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/da/8e/2d/da8e2dd82d88ce22b2ff8a0247746682.jpg",
       "imageHint": "minimal tech"
     },
     {
       "id": "project-1",
-      "description": "Fintech UI",
-      "imageUrl": "https://i.pinimg.com/736x/b9/c8/78/b9c8787211d7a5a1aa97bf4eb22f7bde.jpg",
+      "description": "Sytem UI",
+      "imageUrl": "https://i.pinimg.com/736x/27/9d/56/279d5640337a9cd16cc01472458f1082.jpg",
       "imageHint": "minimal fintech"
     },
     {
       "id": "project-2",
       "description": "Health OS",
-      "imageUrl": "https://i.pinimg.com/736x/77/9e/a8/779ea844902d241c63c98629f44da6c2.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/67/db/11/67db11344dd115cf2b3e4a561871e845.jpg",
       "imageHint": "minimal health"
     },
     {
       "id": "project-3",
       "description": "Industrial Hub",
-      "imageUrl": "https://i.pinimg.com/1200x/f9/63/48/f96348abe5aa32289b1f25b62164e03f.jpg",
+      "imageUrl": "https://i.pinimg.com/736x/44/4a/42/444a42c218cbc885401d5557672ad4a5.jpg",
       "imageHint": "minimal industry"
     },
     {

@@ -5,7 +5,7 @@ import { Hero } from '@/components/sections/Hero';
 import { Stats } from '@/components/sections/Stats';
 import { Services } from '@/components/sections/Services';
 import { Excellence } from '@/components/sections/Excellence';
-import { AIConsultant } from '@/components/sections/AIConsultant';
+import { Process } from '@/components/sections/Process';
 import { Portfolio } from '@/components/sections/Portfolio';
 import { Pricing } from '@/components/sections/Pricing';
 import { Contact } from '@/components/sections/Contact';
@@ -35,8 +35,8 @@ export default async function Home(props: {
 
       <Excellence />
 
-      <div id="ai-consultant" className="relative">
-        <AIConsultant />
+      <div id="process" className="relative">
+        <Process />
       </div>
 
       <div id="portfolio">

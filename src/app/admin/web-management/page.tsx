@@ -237,8 +237,8 @@ export default function WebManagerPortal() {
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-headline font-bold text-xs tracking-tight uppercase">Deepcode</span>
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Innovations</span>
+              <span className="font-headline font-bold text-xs tracking-tight uppercase">HITECH</span>
+              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">SOFTWARE</span>
             </div>
           </Link>
           

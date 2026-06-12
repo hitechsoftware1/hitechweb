@@ -11,24 +11,32 @@ import Image from 'next/image';
 const testimonials = [
   {
     name: "Henry Kimbugwe",
-    role: "CTO, CozyllenFurniture",
+    role: "CeO, CozyleenFurnitureug",
     text: "HITECH didn't just build a Website; they engineered a sub-5ms liquidity engine that transformed our trading floor. Their architectural precision is unmatched.",
     stars: 5,
     project: "Cozyleenwebsite"
   },
   {
-    name: "Dr. Sarah Chen",
+    name: "Yuni eccomerce platform",
+    role: "Director, YUNI.COM",
+    text: "The eccomerceApp was and is outsanding with its fast loading uis,easy to use and fully manageable.",
+    stars: 6,
+    project: https://yuni-eccomerce-platform.vercel.app/,
+  }
+
+  {
+    name: "Dr.Kitiibwa Cole",
     role: "Director, HealthNet Systems",
     text: "The AI triage system Joel and his team deployed has reduced our emergency response times by 30%. It's stable, intelligent, and sublime in its execution.",
-    stars: 5,
-    project: "Lumina OS"
+    stars: 6,
+    project: "clinic plus"
   },
   {
-    name: "Marcus Thorne",
-    role: "VP Operations, Nexus Hub",
+    name: "Kampala homes",
+    role: "VP Operations, property Management",
     text: "Scaling across 12 countries seemed impossible until HITECH architected our cloud infrastructure. Zero downtime, total control.",
     stars: 5,
-    project: "Global Supply Chain"
+    project: "Property Management system"
   }
 ];
 

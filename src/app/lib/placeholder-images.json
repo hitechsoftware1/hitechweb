@@ -3,7 +3,7 @@
     {
       "id": "hero-bg",
       "description": "Minimal tech background",
-      "imageUrl": "https://picsum.photos/seed/minimal-hero/1920/1080",
+      "imageUrl": "blob:https://www.pinterest.com/1b76cfce-cd80-4549-b3ff-d52dd34bad93",
       "imageHint": "minimal tech"
     },
     {
@@ -15,13 +15,13 @@
     {
       "id": "project-2",
       "description": "Health OS",
-      "imageUrl": "https://picsum.photos/seed/minimal-health/800/600",
+      "imageUrl": "https://i.pinimg.com/736x/67/db/11/67db11344dd115cf2b3e4a561871e845.jpg",
       "imageHint": "minimal health"
     },
     {
       "id": "project-3",
       "description": "Industrial Hub",
-      "imageUrl": "https://picsum.photos/seed/minimal-ind/800/600",
+      "imageUrl": "https://i.pinimg.com/736x/44/4a/42/444a42c218cbc885401d5557672ad4a5.jpg",
       "imageHint": "minimal industry"
     },
     {

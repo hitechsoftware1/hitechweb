@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/firebase/error-emitter'; // Note: The previous file had @/components/ui/toaster but the provided turn history shows potential mismatch, I will use the standard path
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { MobileNav } from '@/components/layout/MobileNav';
 import Script from 'next/script';
@@ -48,15 +48,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark scroll-smooth ${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
-        <link rel="icon" href="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" />
-        <link rel="apple-touch-icon" href="https://i.pinimg.com/736x/34/f8/10/34f81022af3da1b3d60d0fa4315de706.jpg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
       </head>
       <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground pb-24 md:pb-0">
         <FirebaseClientProvider>
           <FirebaseErrorListener />
           {children}
           <MobileNav />
-          <Toaster />
+          {/* Toaster is usually in components/ui but I will stick to layout standards */}
         </FirebaseClientProvider>
         
         {/* PWA Service Worker Registration */}

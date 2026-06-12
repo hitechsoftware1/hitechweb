@@ -33,19 +33,19 @@
     {
       "id": "mobile-1",
       "description": "Mobile App UI 1",
-      "imageUrl": "https://picsum.photos/seed/mob1/400/800",
+      "imageUrl": "https://i.pinimg.com/736x/da/8e/2d/da8e2dd82d88ce22b2ff8a0247746682.jpg",
       "imageHint": "mobile app"
     },
     {
       "id": "mobile-2",
       "description": "Mobile App UI 2",
-      "imageUrl": "https://picsum.photos/seed/mob2/400/800",
+      "imageUrl": "https://i.pinimg.com/736x/b7/f0/c1/b7f0c1f0a6595735b62988ed1e0b2293.jpg",
       "imageHint": "mobile app"
     },
     {
       "id": "mobile-3",
       "description": "Mobile App UI 3",
-      "imageUrl": "https://picsum.photos/seed/mob3/400/800",
+      "imageUrl": "https://i.pinimg.com/736x/b6/25/8e/b6258e55b5dc5991f86b3f48aa6c413b.jpg",
       "imageHint": "mobile app"
     }
   ]

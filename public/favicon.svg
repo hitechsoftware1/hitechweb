@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- HITECH Institutional Favicon -->
+  <rect width="512" height="512" rx="120" fill="#000000"/>
+  
+  <!-- Monitor Frame -->
+  <path d="M100 160 Q 80 160 80 180 L 80 340 Q 80 360 100 360 L 412 360 Q 432 360 432 340 L 432 180 Q 432 160 412 160 Z" fill="none" stroke="#345b73" stroke-width="20"/>
+  <path d="M236 360 L236 390 L276 390 L276 360" fill="none" stroke="#345b73" stroke-width="20" stroke-linecap="round"/>
+  <path d="M216 390 L296 390" fill="none" stroke="#345b73" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Brand Text -->
+  <text x="145" y="285" font-family="Arial Black, sans-serif" font-weight="900" font-size="80" fill="#a46c5e">Hi-</text>
+  
+  <!-- Custom T with Bolt -->
+  <path d="M275 220 L345 220" stroke="#a46c5e" stroke-width="25" stroke-linecap="butt"/>
+  <path d="M310 220 L310 285" stroke="#a46c5e" stroke-width="22" stroke-linecap="butt"/>
+  <path d="M300 240 L320 240 L305 265 L315 265" stroke="#000000" stroke-width="6" fill="none" stroke-linejoin="round"/>
+  
+  <text x="350" y="285" font-family="Arial Black, sans-serif" font-weight="900" font-size="80" fill="#a46c5e">ECH</text>
+  
+  <!-- Software Subtitle -->
+  <text x="315" y="325" font-family="Arial, sans-serif" font-weight="bold" font-size="34" fill="#345b73" text-anchor="middle" letter-spacing="8">SOFTWARE</text>
+</svg>

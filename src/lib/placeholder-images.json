@@ -47,6 +47,24 @@
       "description": "Mobile App UI 3",
       "imageUrl": "https://i.pinimg.com/736x/b6/25/8e/b6258e55b5dc5991f86b3f48aa6c413b.jpg",
       "imageHint": "mobile app"
+    },
+    {
+      "id": "asset-1",
+      "description": "Architecture Design",
+      "imageUrl": "https://i.pinimg.com/736x/81/e5/76/81e576777c288f5e0584e439cb6759af.jpg",
+      "imageHint": "blue architecture"
+    },
+    {
+      "id": "asset-2",
+      "description": "Neural Map",
+      "imageUrl": "https://i.pinimg.com/1200x/c9/c8/9d/c9c89da9d329e0197bc61e0ad6e88ec3.jpg",
+      "imageHint": "neural network"
+    },
+    {
+      "id": "asset-3",
+      "description": "Interface Module",
+      "imageUrl": "https://i.pinimg.com/736x/3c/13/f2/3c13f278cc5432b3268c7e11d0920456.jpg",
+      "imageHint": "modern ui"
     }
   ]
 }

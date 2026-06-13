@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -5,14 +6,80 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Twitter, Linkedin, Github } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { motion } from 'framer-motion';
 
 export function Footer() {
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
   const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
 
+  // Assets for sliding banners
+  const showcaseAssets = [
+    ...PlaceHolderImages.filter(img => ['project-1', 'project-2', 'project-3', 'mobile-1', 'mobile-2', 'mobile-3', 'asset-1', 'asset-2', 'asset-3'].includes(img.id)),
+  ];
+
   return (
-    <footer className="bg-background pt-16 lg:pt-32 pb-8 lg:pb-16 border-t border-foreground/5">
-      <div className="container mx-auto px-4 lg:px-6">
+    <footer className="bg-background pt-16 lg:pt-32 pb-8 lg:pb-16 border-t border-foreground/5 relative overflow-hidden">
+      
+      {/* Sliding Showcase Banners */}
+      <div className="w-full space-y-12 lg:space-y-16 mb-20 lg:mb-32">
+        
+        {/* Row 1: Rolling Pattern */}
+        <div className="flex whitespace-nowrap overflow-hidden -mx-4">
+          <motion.div 
+            animate={{ x: ["0%", "-50%"] }} 
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="flex gap-4 lg:gap-8 px-4"
+          >
+            {[...showcaseAssets, ...showcaseAssets].map((asset, i) => (
+              <div key={`roll-${i}`} className="w-64 lg:w-96 aspect-video relative rounded-3xl overflow-hidden apple-glass border-black/5 dark:border-white/5">
+                <Image src={asset.imageUrl} alt={asset.description} fill className="object-cover opacity-80" data-ai-hint={asset.imageHint} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Row 2: Bouncing Pattern */}
+        <div className="flex whitespace-nowrap overflow-hidden -mx-4">
+          <motion.div 
+            animate={{ x: ["-50%", "0%"] }} 
+            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+            className="flex gap-4 lg:gap-8 px-4"
+          >
+            {[...showcaseAssets, ...showcaseAssets].reverse().map((asset, i) => (
+              <motion.div 
+                key={`bounce-${i}`}
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }}
+                className="w-48 lg:w-72 aspect-[4/5] relative rounded-3xl overflow-hidden apple-glass border-black/5 dark:border-white/5"
+              >
+                <Image src={asset.imageUrl} alt={asset.description} fill className="object-cover opacity-80" data-ai-hint={asset.imageHint} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Row 3: Floating Pattern */}
+        <div className="flex whitespace-nowrap overflow-hidden -mx-4">
+          <motion.div 
+            animate={{ x: ["0%", "-50%"] }} 
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            className="flex gap-4 lg:gap-8 px-4"
+          >
+            {[...showcaseAssets, ...showcaseAssets].map((asset, i) => (
+              <motion.div 
+                key={`float-${i}`}
+                animate={{ y: [-5, 5, -5] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                className="w-56 lg:w-80 aspect-video relative rounded-3xl overflow-hidden apple-glass border-black/5 dark:border-white/5"
+              >
+                <Image src={asset.imageUrl} alt={asset.description} fill className="object-cover opacity-80" data-ai-hint={asset.imageHint} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 lg:px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16 mb-12 lg:mb-24">
           <div className="col-span-1">
             <div className="flex items-center gap-3 mb-6 lg:mb-8">

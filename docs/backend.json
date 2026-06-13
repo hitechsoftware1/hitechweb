@@ -12,11 +12,12 @@
         "description": { "type": "string" },
         "fullName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string" },
         "company": { "type": "string" },
         "status": { "type": "string", "enum": ["new", "reviewing", "contacted", "closed"], "default": "new" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["projectType", "fullName", "email", "description"]
+      "required": ["projectType", "fullName", "email", "phoneNumber", "description"]
     },
     "JobApplication": {
       "title": "Job Application",
@@ -25,6 +26,7 @@
       "properties": {
         "fullName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string" },
         "role": { "type": "string" },
         "portfolio": { "type": "string" },
         "coverLetter": { "type": "string" },
@@ -32,7 +34,7 @@
         "status": { "type": "string", "enum": ["applied", "interviewing", "hired", "rejected"], "default": "applied" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["fullName", "email", "role"]
+      "required": ["fullName", "email", "phoneNumber", "role"]
     },
     "ContactMessage": {
       "title": "Contact Message",
@@ -41,12 +43,13 @@
       "properties": {
         "fullName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string" },
         "budget": { "type": "string" },
         "message": { "type": "string" },
         "status": { "type": "string", "enum": ["unread", "read", "archived"], "default": "unread" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["fullName", "email", "message"]
+      "required": ["fullName", "email", "phoneNumber", "message"]
     },
     "UserProfile": {
       "title": "User Profile",

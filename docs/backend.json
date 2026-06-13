@@ -19,6 +19,22 @@
       },
       "required": ["projectType", "fullName", "email", "phoneNumber", "description"]
     },
+    "Project": {
+      "title": "Active Project",
+      "description": "A live project being executed for a client.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientId": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "active", "on-hold", "completed"] },
+        "progress": { "type": "number" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "clientName", "status"]
+    },
     "Quotation": {
       "title": "Quotation",
       "description": "A formal price estimate for a client project.",
@@ -117,6 +133,7 @@
         "title": { "type": "string" },
         "description": { "type": "string" },
         "assignedTo": { "type": "string" },
+        "assignedToName": { "type": "string" },
         "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
         "status": { "type": "string", "enum": ["todo", "in-progress", "completed", "verified"] },
         "dueDate": { "type": "string", "format": "date-time" },
@@ -137,6 +154,23 @@
         "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
       },
       "required": ["userId", "date", "status"]
+    },
+    "Requisition": {
+      "title": "Requisition",
+      "description": "A formal request for funds or materials.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "priority": { "type": "string" },
+        "department": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["submitted", "approved", "rejected", "fulfilled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "userId", "totalAmount", "status"]
     },
     "OfficeCode": {
       "title": "Office Code",
@@ -172,6 +206,10 @@
       "schema": "#/backend/entities/ProjectInquiry",
       "description": "Collection of project requests."
     },
+    "/projects/{projectId}": {
+      "schema": "#/backend/entities/Project",
+      "description": "Collection of active projects."
+    },
     "/quotations/{quotationId}": {
       "schema": "#/backend/entities/Quotation",
       "description": "Formal project estimates."
@@ -203,6 +241,10 @@
     "/attendance/{logId}": {
       "schema": "#/backend/entities/Attendance",
       "description": "Staff attendance logs."
+    },
+    "/requisitions/{reqId}": {
+      "schema": "#/backend/entities/Requisition",
+      "description": "Asset and fund requests."
     },
     "/officeCodes/{codeId}": {
       "schema": "#/backend/entities/OfficeCode",

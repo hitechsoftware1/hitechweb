@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo, use, useEffect } from 'react';
@@ -166,10 +167,10 @@ export default function AdminHub(props: {
     {
       id: 'system',
       title: 'System Architecture',
-      description: 'Users, roles, module permissions',
+      description: 'Users, roles, workforce tasks, approvals',
       icon: Settings,
       permissions: ['View', 'Edit', 'Delete'],
-      href: '#'
+      href: '/admin/system'
     }
   ];
 

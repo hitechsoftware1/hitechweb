@@ -531,8 +531,8 @@ export default function MyAccountPage() {
             <div className="mt-auto bg-zinc-50/50 dark:bg-zinc-800/30 rounded-3xl p-6 text-center">
               <h4 className="text-sm font-bold mb-8">January</h4>
               <div className="grid grid-cols-7 gap-2">
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-                  <div key={d} className="text-[9px] font-bold text-zinc-300">{d}</div>
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                  <div key={i} className="text-[9px] font-bold text-zinc-300">{d}</div>
                 ))}
                 {Array.from({ length: 31 }).map((_, i) => (
                   <div key={i} className="aspect-square flex items-center justify-center text-[10px] font-medium text-zinc-400 hover:text-foreground transition-colors cursor-pointer">

@@ -33,13 +33,26 @@ export default function LoginPage() {
         title: "Clearance Verified",
         description: "Institutional link established. Welcome to the HITECH core.",
       });
-      // Super admin goes to admin hub, others might too but restricted
       router.push('/admin');
     } catch (error: any) {
+      console.error("Login Error:", error.code, error.message);
+      
+      let errorMessage = "Invalid credentials or insufficient clearance level.";
+      
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = "Identity not found in the neural core. Please verify email.";
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid validation key. Security protocols active.";
+      } else if (error.code === 'auth/configuration-not-found') {
+        errorMessage = "Authentication service is not enabled in the Firebase Console.";
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = "Uplink failure. Check your internet connection.";
+      }
+
       toast({
         variant: "destructive",
         title: "Access Denied",
-        description: "Invalid credentials or insufficient clearance level.",
+        description: errorMessage,
       });
     } finally {
       setLoading(false);

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo, use, useEffect } from 'react';
@@ -162,7 +161,7 @@ export default function AdminHub(props: {
       description: 'Job apps, interviews, onboarding',
       icon: Briefcase,
       permissions: ['View', 'Edit'],
-      href: '#'
+      href: '/admin/talent'
     },
     {
       id: 'system',

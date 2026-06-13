@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is the Super Admin
+    function isSuperAdmin() {
+      return request.auth != null && request.auth.token.email == 'hitechsoftware03@gmail.com';
+    }
+
+    // Helper to check if user has access to a specific portal
+    function hasPortalAccess(portal) {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      return isSuperAdmin() || (userDoc != null && portal in userDoc.data.accessiblePortals);
+    }
+
+    // User profiles: Users can read their own, Super Admin has full control
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      allow write: if isSuperAdmin();
+    }
+
+    // Managed Content (Web Management)
+    match /news/{id} { allow read: if true; allow write: if isSuperAdmin(); }
+    match /services/{id} { allow read: if true; allow write: if isSuperAdmin(); }
+    match /team/{id} { allow read: if true; allow write: if isSuperAdmin(); }
+    match /testimonials/{id} { allow read: if true; allow write: if isSuperAdmin(); }
+    match /banners/{id} { allow read: if true; allow write: if isSuperAdmin(); }
+
+    // Operational Data
+    match /attendance/{id} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isSuperAdmin());
+      allow create: if request.auth != null;
+      allow update: if isSuperAdmin();
+    }
+    
+    match /tasks/{id} {
+      allow read: if request.auth != null && (resource.data.assignedTo == request.auth.uid || isSuperAdmin());
+      allow write: if isSuperAdmin();
+    }
+
+    match /projectInquiries/{id} {
+      allow create: if true;
+      allow read, write: if hasPortalAccess('clients');
+    }
+
+    match /projects/{id} {
+      allow read: if request.auth != null;
+      allow write: if isSuperAdmin();
+    }
+
+    match /requisitions/{id} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isSuperAdmin());
+      allow create: if request.auth != null;
+      allow update: if isSuperAdmin();
+    }
+
+    match /officeCodes/{id} {
+      allow read: if request.auth != null;
+      allow write: if isSuperAdmin();
+    }
+    
+    match /jobApplications/{id} {
+      allow create: if true;
+      allow read, write: if hasPortalAccess('talent');
+    }
+  }
+}

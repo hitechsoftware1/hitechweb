@@ -11,12 +11,15 @@ import {
   Github, 
   Linkedin,
   Star,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { useFirestore, useCollection } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 
-const team = [
+const DEFAULT_TEAM = [
   {
     name: "JoelHitech Lubega",
     role: "Founder & CEO",
@@ -32,26 +35,17 @@ const team = [
     skills: ["Web Apps", "Strategy", "Growth"],
     initials: "CK",
     image: "https://i.pinimg.com/736x/37/11/a8/3711a84535945caff6b76c28c5b54e50.jpg"
-  },
-  {
-    name: "Mr Lubega Lucas",
-    role: "UI/UX Designer",
-    bio: "Building easy-to-use and beautiful designs for all our software.",
-    skills: ["UI Design", "Clean Look", "App Logic"],
-    initials: "LL",
-    image:"https://i.pinimg.com/736x/66/7e/20/667e20b408cf9b32ef62977eef31746c.jpg"
-  },
-  {
-    name: "Asylum Ronald",
-    role: "Graphics & Content",
-    bio: "Helping tell our story through great visuals and clear messages.",
-    skills: ["Visuals", "Design", "Graphics"],
-    initials: "AR",
-    image:"https://i.pinimg.com/736x/a1/89/22/a1892208824db9a0574252c8fb632bb2.jpg"
   }
 ];
 
 export default function TeamPage() {
+  const db = useFirestore();
+  const { data: managedTeam, loading } = useCollection(db ? query(collection(db, 'team'), orderBy('createdAt', 'asc')) : null);
+
+  const team = managedTeam && managedTeam.length > 0 ? managedTeam : DEFAULT_TEAM;
+  const lead = team[0];
+  const engineers = team.slice(1);
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -76,84 +70,98 @@ export default function TeamPage() {
         </motion.div>
       </section>
 
-      {/* Leadership Section */}
-      <section className="container mx-auto px-6 mb-32">
-        <div className="apple-card p-8 lg:p-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-primary/5 border-primary/10">
-          <div className="lg:col-span-4">
-            <div className="aspect-square relative rounded-[2.5rem] overflow-hidden border-2 border-primary/20 shadow-2xl group">
-              <Image 
-                src={team[0].image!} 
-                alt={team[0].name} 
-                fill 
-                className="object-cover transition-transform duration-1000 group-hover:scale-110" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+      {loading ? (
+        <div className="flex items-center justify-center py-32">
+           <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        </div>
+      ) : (
+        <>
+          {/* Leadership Section */}
+          {lead && (
+            <section className="container mx-auto px-6 mb-32">
+              <div className="apple-card p-8 lg:p-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-primary/5 border-primary/10">
+                <div className="lg:col-span-4">
+                  <div className="aspect-square relative rounded-[2.5rem] overflow-hidden border-2 border-primary/20 shadow-2xl group">
+                    {lead.image ? (
+                      <Image 
+                        src={lead.image} 
+                        alt={lead.name} 
+                        fill 
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-4xl font-bold">{lead.initials || lead.name.charAt(0)}</div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                  </div>
+                </div>
+                <div className="lg:col-span-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Star className="w-4 h-4 text-primary fill-primary" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Chief Architect</span>
+                  </div>
+                  <h2 className="text-3xl lg:text-5xl font-headline font-bold mb-4">{lead.name}</h2>
+                  <p className="text-xl lg:text-2xl text-foreground/70 font-light italic mb-8 leading-relaxed">
+                    "{lead.bio}"
+                  </p>
+                  <div className="flex flex-wrap gap-3 mb-10">
+                    {lead.skills?.map((skill: string) => (
+                      <span key={skill} className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-4">
+                    <Button variant="outline" className="rounded-xl border-foreground/10 hover:bg-foreground/5 flex items-center gap-2 h-12 px-6 font-bold">
+                      <Linkedin className="w-4 h-4" /> Profile
+                    </Button>
+                    <Button variant="outline" className="rounded-xl border-foreground/10 hover:bg-foreground/5 flex items-center gap-2 h-12 px-6 font-bold">
+                      <Github className="w-4 h-4" /> Portfolio
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Engineering Grid */}
+          <section className="container mx-auto px-6 mb-32">
+            <div className="mb-16">
+              <h3 className="text-2xl font-headline font-bold">Engineers & Designers</h3>
+              <p className="text-foreground/40 font-light">The people who make our technology work.</p>
             </div>
-          </div>
-          <div className="lg:col-span-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Star className="w-4 h-4 text-primary fill-primary" />
-              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Chief Architect</span>
-            </div>
-            <h2 className="text-3xl lg:text-5xl font-headline font-bold mb-4">{team[0].name}</h2>
-            <p className="text-xl lg:text-2xl text-foreground/70 font-light italic mb-8 leading-relaxed">
-              "{team[0].bio}"
-            </p>
-            <div className="flex flex-wrap gap-3 mb-10">
-              {team[0].skills.map(skill => (
-                <span key={skill} className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
-                  {skill}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {engineers.map((member: any, idx: number) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="apple-card p-10 flex flex-col justify-between group hover:border-primary/30"
+                >
+                  <div>
+                    <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-8 border border-foreground/5 transition-all group-hover:bg-primary group-hover:text-white overflow-hidden relative">
+                      {member.image ? <Image src={member.image} alt={member.name} fill className="object-cover" /> : <span className="text-xl font-bold font-headline">{member.initials || member.name.charAt(0)}</span>}
+                    </div>
+                    <h4 className="text-xl font-bold mb-1">{member.name}</h4>
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6">{member.role}</p>
+                    <p className="text-foreground/50 font-light leading-relaxed mb-8 line-clamp-4">
+                      {member.bio}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {member.skills?.map((skill: string) => (
+                      <span key={skill} className="px-3 py-1 rounded-md bg-foreground/5 text-foreground/40 text-[8px] font-bold uppercase tracking-widest">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
               ))}
             </div>
-            <div className="flex gap-4">
-              <Button variant="outline" className="rounded-xl border-foreground/10 hover:bg-foreground/5 flex items-center gap-2 h-12 px-6 font-bold">
-                <Linkedin className="w-4 h-4" /> Profile
-              </Button>
-              <Button variant="outline" className="rounded-xl border-foreground/10 hover:bg-foreground/5 flex items-center gap-2 h-12 px-6 font-bold">
-                <Github className="w-4 h-4" /> Portfolio
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Engineering Grid */}
-      <section className="container mx-auto px-6 mb-32">
-        <div className="mb-16">
-          <h3 className="text-2xl font-headline font-bold">Engineers & Designers</h3>
-          <p className="text-foreground/40 font-light">The people who make our technology work.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {team.slice(1).map((member, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              className="apple-card p-10 flex flex-col justify-between group hover:border-primary/30"
-            >
-              <div>
-                <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-8 border border-foreground/5 transition-all group-hover:bg-primary group-hover:text-white">
-                  <span className="text-xl font-bold font-headline">{member.initials}</span>
-                </div>
-                <h4 className="text-xl font-bold mb-1">{member.name}</h4>
-                <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-6">{member.role}</p>
-                <p className="text-foreground/50 font-light leading-relaxed mb-8">
-                  {member.bio}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {member.skills.map(skill => (
-                  <span key={skill} className="px-3 py-1 rounded-md bg-foreground/5 text-foreground/40 text-[8px] font-bold uppercase tracking-widest">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* Mission / Environment */}
       <section className="py-24 bg-foreground/[0.02] border-y border-foreground/5 mb-32">

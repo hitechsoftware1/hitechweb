@@ -35,81 +35,77 @@
       },
       "required": ["title", "clientName", "status"]
     },
-    "Quotation": {
-      "title": "Quotation",
-      "description": "A formal price estimate for a client project.",
+    "NewsArticle": {
+      "title": "News Article",
+      "description": "A blog post or news insight.",
       "type": "object",
       "properties": {
-        "clientName": { "type": "string" },
-        "clientEmail": { "type": "string" },
-        "projectTitle": { "type": "string" },
-        "items": { "type": "array", "items": { "type": "object" } },
-        "totalAmount": { "type": "number" },
-        "currency": { "type": "string", "default": "USD" },
-        "status": { "type": "string", "enum": ["draft", "sent", "accepted", "rejected"], "default": "draft" },
-        "expiryDate": { "type": "string", "format": "date" },
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "category": { "type": "string" },
+        "author": { "type": "string" },
+        "date": { "type": "string" },
+        "readTime": { "type": "string" },
+        "image": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["clientName", "projectTitle", "totalAmount"]
+      "required": ["title", "excerpt", "image"]
     },
-    "Invoice": {
-      "title": "Invoice",
-      "description": "A formal billing document for services rendered.",
+    "ServiceNode": {
+      "title": "Service Node",
+      "description": "A service offered by HITECH.",
       "type": "object",
       "properties": {
-        "invoiceNumber": { "type": "string" },
-        "clientName": { "type": "string" },
-        "amount": { "type": "number" },
-        "status": { "type": "string", "enum": ["unpaid", "partially-paid", "paid", "overdue"] },
-        "dueDate": { "type": "string", "format": "date" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "tag": { "type": "string" },
+        "href": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["invoiceNumber", "clientName", "amount", "status"]
+      "required": ["title", "description"]
     },
-    "LPO": {
-      "title": "Local Purchase Order",
-      "description": "A document issued by a buyer to a seller indicating types, quantities, and agreed prices.",
+    "TeamMember": {
+      "title": "Team Member",
+      "description": "An engineering or design unit.",
       "type": "object",
       "properties": {
-        "lpoNumber": { "type": "string" },
-        "supplier": { "type": "string" },
-        "amount": { "type": "number" },
-        "status": { "type": "string", "enum": ["pending", "approved", "fulfilled"] },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["lpoNumber", "supplier", "amount"]
-    },
-    "JobApplication": {
-      "title": "Job Application",
-      "description": "A submission from a candidate applying for a position at HITECH.",
-      "type": "object",
-      "properties": {
-        "fullName": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "phoneNumber": { "type": "string" },
+        "name": { "type": "string" },
         "role": { "type": "string" },
-        "portfolio": { "type": "string" },
-        "coverLetter": { "type": "string" },
-        "resumeUrl": { "type": "string" },
-        "status": { "type": "string", "enum": ["applied", "interviewing", "hired", "rejected"], "default": "applied" },
+        "bio": { "type": "string" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "image": { "type": "string" },
+        "initials": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["fullName", "email", "phoneNumber", "role"]
+      "required": ["name", "role", "bio"]
     },
-    "ContactMessage": {
-      "title": "Contact Message",
-      "description": "General messages from the contact form.",
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client feedback and verification.",
       "type": "object",
       "properties": {
-        "fullName": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "phoneNumber": { "type": "string" },
-        "budget": { "type": "string" },
-        "message": { "type": "string" },
-        "status": { "type": "string", "enum": ["unread", "read", "archived"], "default": "unread" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "text": { "type": "string" },
+        "stars": { "type": "number" },
+        "project": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["fullName", "email", "phoneNumber", "message"]
+      "required": ["name", "text", "stars"]
+    },
+    "BannerNode": {
+      "title": "Banner Node",
+      "description": "Sliding showcase items for the footer and headers.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "imageHint": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["image"]
     },
     "UserProfile": {
       "title": "User Profile",
@@ -120,9 +116,8 @@
         "displayName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "role": { "type": "string", "enum": ["admin", "staff", "client"], "default": "client" },
-        "company": { "type": "string" },
-        "salary": { "type": "number", "description": "Monthly institutional retainer/salary." },
-        "accessiblePortals": { "type": "array", "items": { "type": "string" }, "description": "List of portal IDs this user can access." },
+        "salary": { "type": "number" },
+        "accessiblePortals": { "type": "array", "items": { "type": "string" } },
         "joinedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]
@@ -136,12 +131,12 @@
         "description": { "type": "string" },
         "assignedTo": { "type": "string" },
         "assignedToName": { "type": "string" },
-        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
-        "status": { "type": "string", "enum": ["todo", "in-progress", "completed", "verified"] },
-        "dueDate": { "type": "string", "format": "date-time" },
+        "priority": { "type": "string" },
+        "status": { "type": "string" },
+        "dueDate": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "assignedTo", "priority", "status"]
+      "required": ["title", "assignedTo"]
     },
     "Attendance": {
       "title": "Attendance",
@@ -152,10 +147,11 @@
         "userName": { "type": "string" },
         "date": { "type": "string" },
         "punchInTime": { "type": "string", "format": "date-time" },
+        "punchOutTime": { "type": "string", "format": "date-time" },
         "officeCodeUsed": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] }
+        "status": { "type": "string" }
       },
-      "required": ["userId", "date", "status"]
+      "required": ["userId", "date"]
     },
     "Requisition": {
       "title": "Requisition",
@@ -169,10 +165,10 @@
         "priority": { "type": "string" },
         "department": { "type": "string" },
         "totalAmount": { "type": "number" },
-        "status": { "type": "string", "enum": ["submitted", "approved", "rejected", "fulfilled"] },
+        "status": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["title", "userId", "totalAmount", "status"]
+      "required": ["title", "userId", "totalAmount"]
     },
     "OfficeCode": {
       "title": "Office Code",
@@ -184,20 +180,6 @@
         "active": { "type": "boolean" }
       },
       "required": ["code", "date"]
-    },
-    "SitePage": {
-      "title": "Site Page",
-      "description": "A website page configuration and content for the CMS.",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "path": { "type": "string" },
-        "content": { "type": "string" },
-        "status": { "type": "string", "enum": ["draft", "published"] },
-        "author": { "type": "string" },
-        "lastModified": { "type": "string", "format": "date-time" }
-      },
-      "required": ["title", "path", "status"]
     }
   },
   "auth": {
@@ -212,25 +194,25 @@
       "schema": "#/backend/entities/Project",
       "description": "Collection of active projects."
     },
-    "/quotations/{quotationId}": {
-      "schema": "#/backend/entities/Quotation",
-      "description": "Formal project estimates."
+    "/news/{articleId}": {
+      "schema": "#/backend/entities/NewsArticle",
+      "description": "CMS News Articles."
     },
-    "/invoices/{invoiceId}": {
-      "schema": "#/backend/entities/Invoice",
-      "description": "Billing documents."
+    "/services/{serviceId}": {
+      "schema": "#/backend/entities/ServiceNode",
+      "description": "Managed Services."
     },
-    "/lpos/{lpoId}": {
-      "schema": "#/backend/entities/LPO",
-      "description": "Local Purchase Orders."
+    "/team/{memberId}": {
+      "schema": "#/backend/entities/TeamMember",
+      "description": "Engineering Units."
     },
-    "/jobApplications/{applicationId}": {
-      "schema": "#/backend/entities/JobApplication",
-      "description": "Collection of candidate applications."
+    "/testimonials/{testId}": {
+      "schema": "#/backend/entities/Testimonial",
+      "description": "Client Testimonials."
     },
-    "/contactMessages/{messageId}": {
-      "schema": "#/backend/entities/ContactMessage",
-      "description": "General system messages."
+    "/banners/{bannerId}": {
+      "schema": "#/backend/entities/BannerNode",
+      "description": "Site Banners."
     },
     "/users/{userId}": {
       "schema": "#/backend/entities/UserProfile",
@@ -238,23 +220,19 @@
     },
     "/tasks/{taskId}": {
       "schema": "#/backend/entities/Task",
-      "description": "Workforce task assignments."
+      "description": "Workforce tasks."
     },
     "/attendance/{logId}": {
       "schema": "#/backend/entities/Attendance",
-      "description": "Staff attendance logs."
+      "description": "Attendance logs."
     },
     "/requisitions/{reqId}": {
       "schema": "#/backend/entities/Requisition",
-      "description": "Asset and fund requests."
+      "description": "Fund requests."
     },
     "/officeCodes/{codeId}": {
       "schema": "#/backend/entities/OfficeCode",
-      "description": "Daily office validation codes."
-    },
-    "/sitePages/{pageId}": {
-      "schema": "#/backend/entities/SitePage",
-      "description": "CMS page configurations."
+      "description": "Daily codes."
     }
   }
 }

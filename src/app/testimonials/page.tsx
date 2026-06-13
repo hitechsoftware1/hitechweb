@@ -5,10 +5,11 @@ import React from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { motion } from 'framer-motion';
-import { Star, Quote, CheckCircle2, User } from 'lucide-react';
-import Image from 'next/image';
+import { Star, Quote, CheckCircle2, User, Loader2 } from 'lucide-react';
+import { useFirestore, useCollection } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 
-const testimonials = [
+const DEFAULT_TESTIMONIALS = [
   {
     name: "Henry Kimbugwe",
     role: "CeO, CozyleenFurnitureug",
@@ -22,24 +23,15 @@ const testimonials = [
     text: "The eccomerceApp was and is outsanding with its fast loading uis,easy to use and fully manageable.",
     stars: 6,
     project:"yuni.com"
-  },
-  {
-    name: "Dr.Kitiibwa Cole",
-    role: "Director, HealthNet Systems",
-    text: "The AI triage system Joel and his team deployed has reduced our emergency response times by 30%. It's stable, intelligent, and sublime in its execution.",
-    stars: 6,
-    project: "clinic plus"
-  },
-  {
-    name: "Kampala homes",
-    role: "VP Operations, property Management",
-    text: "Scaling across 12 countries seemed impossible until HITECH architected our cloud infrastructure. Zero downtime, total control.",
-    stars: 5,
-    project: "Property Management system"
   }
 ];
 
 export default function TestimonialsPage() {
+  const db = useFirestore();
+  const { data: managedTestimonials, loading } = useCollection(db ? query(collection(db, 'testimonials'), orderBy('createdAt', 'desc')) : null);
+
+  const testimonials = managedTestimonials && managedTestimonials.length > 0 ? managedTestimonials : DEFAULT_TESTIMONIALS;
+
   return (
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
@@ -55,41 +47,47 @@ export default function TestimonialsPage() {
         </motion.div>
       </section>
 
-      <section className="container mx-auto px-6 mb-32">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((test, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="apple-card p-10 relative group"
-            >
-              <Quote className="absolute top-8 right-8 w-12 h-12 text-primary/10" />
-              <div className="flex gap-1 mb-8">
-                {[...Array(test.stars)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-primary text-primary" />
-                ))}
-              </div>
-              <p className="text-xl font-light leading-relaxed mb-10 text-foreground/80 italic">
-                "{test.text}"
-              </p>
-              <div className="flex items-center gap-4 pt-8 border-t border-foreground/5">
-                <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center border border-foreground/10">
-                  <User className="w-6 h-6 text-foreground/40" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground">{test.name}</h4>
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{test.role}</p>
-                </div>
-              </div>
-              <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                <CheckCircle2 className="w-3 h-3 text-primary" /> System: {test.project}
-              </div>
-            </motion.div>
-          ))}
+      {loading ? (
+        <div className="flex items-center justify-center py-32">
+           <Loader2 className="w-10 h-10 animate-spin text-primary" />
         </div>
-      </section>
+      ) : (
+        <section className="container mx-auto px-6 mb-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((test: any, idx: number) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="apple-card p-10 relative group"
+              >
+                <Quote className="absolute top-8 right-8 w-12 h-12 text-primary/10" />
+                <div className="flex gap-1 mb-8">
+                  {[...Array(Number(test.stars))].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="text-xl font-light leading-relaxed mb-10 text-foreground/80 italic">
+                  "{test.text}"
+                </p>
+                <div className="flex items-center gap-4 pt-8 border-t border-foreground/5">
+                  <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center border border-foreground/10">
+                    <User className="w-6 h-6 text-foreground/40" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">{test.name}</h4>
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{test.role}</p>
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
+                  <CheckCircle2 className="w-3 h-3 text-primary" /> System: {test.project}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Brands Wall */}
       <section className="py-24 bg-foreground/[0.02] border-y border-foreground/5 mb-32">

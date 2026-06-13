@@ -1,4 +1,3 @@
-```tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +11,7 @@ const FEATURES = [
   { id: "mobile", name: "Mobile App", price: 2500, icon: "📱" },
   { id: "ecommerce", name: "E-commerce", price: 1500, icon: "🛒" },
   { id: "ai", name: "AI Systems", price: 3000, icon: "🧠" },
-  { id: "auth", name: "Security", price: 800, icon: "🔐" },
+  { id: "security", name: "Security", price: 800, icon: "🔐" },
   { id: "cloud", name: "Cloud", price: 1200, icon: "☁️" },
   { id: "analytics", name: "Analytics", price: 1000, icon: "📊" },
 ];
@@ -28,51 +27,58 @@ export default function PricingCalculator() {
     setSelected((prev) =>
       prev.includes(id)
         ? prev.filter(
-            (item) => item !== id
+            (x) => x !== id
           )
         : [...prev, id]
     );
   }
 
-  const extras = FEATURES
-    .filter((item) =>
-      selected.includes(item.id)
-    )
-    .reduce(
-      (sum, item) =>
-        sum + item.price,
+  const featuresTotal =
+    FEATURES.filter((f) =>
+      selected.includes(f.id)
+    ).reduce(
+      (sum, f) =>
+        sum + f.price,
       0
     );
 
   const multiplier =
-    1 + (complexity - 1) * 0.5;
+    1 +
+    (complexity - 1) * 0.5;
 
-  const total = Math.round(
-    (2000 + extras) * multiplier
-  );
+  const total =
+    Math.round(
+      (2000 +
+        featuresTotal) *
+        multiplier
+    );
 
   return (
     <main className="min-h-screen bg-background">
 
       <Navbar />
 
-      <section className="container mx-auto px-6 pt-32">
+      <section className="container mx-auto px-6 pt-32 pb-20">
 
-        <div className="text-center mb-16">
+        <div className="text-center">
 
-          <h1 className="text-6xl font-bold">
+          <h1 className="text-6xl font-bold mb-4">
 
             Pricing Calculator
 
           </h1>
 
-          <p className="mt-4 opacity-60">
+          <p className="opacity-60">
 
-            Estimate your project.
+            Estimate project pricing.
 
           </p>
 
         </div>
+
+      </section>
+
+      <section className="container mx-auto px-6 pb-32">
 
         <div className="grid lg:grid-cols-12 gap-10">
 
@@ -84,29 +90,33 @@ export default function PricingCalculator() {
 
                 <Calculator />
 
-                <h2>
-                  Features
+                <h2 className="font-bold">
+
+                  Select Features
+
                 </h2>
 
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
 
                 {FEATURES.map(
-                  (item) => (
+                  (
+                    feature
+                  ) => (
                     <button
                       key={
-                        item.id
+                        feature.id
                       }
                       type="button"
                       onClick={() =>
                         toggle(
-                          item.id
+                          feature.id
                         )
                       }
                       className={`border rounded-3xl p-6 text-left ${
                         selected.includes(
-                          item.id
+                          feature.id
                         )
                           ? "border-primary bg-primary/10"
                           : ""
@@ -115,7 +125,7 @@ export default function PricingCalculator() {
                       <div className="text-3xl">
 
                         {
-                          item.icon
+                          feature.icon
                         }
 
                       </div>
@@ -123,7 +133,7 @@ export default function PricingCalculator() {
                       <div className="mt-3">
 
                         {
-                          item.name
+                          feature.name
                         }
 
                       </div>
@@ -132,7 +142,7 @@ export default function PricingCalculator() {
 
                         $
                         {
-                          item.price
+                          feature.price
                         }
 
                       </div>
@@ -147,21 +157,21 @@ export default function PricingCalculator() {
 
             <div className="apple-card p-8 mt-8">
 
-              <div className="flex justify-between">
+              <div className="flex justify-between mb-6">
 
-                <h3>
+                <span>
+
                   Complexity
-                </h3>
 
-                <div>
+                </span>
 
-                  Level
-                  {" "}
-                  {
+                <strong>
+
+                  Level {
                     complexity
                   }
 
-                </div>
+                </strong>
 
               </div>
 
@@ -189,20 +199,26 @@ export default function PricingCalculator() {
 
             <div className="apple-card p-8">
 
-              <h3>
+              <h3 className="mb-8">
+
                 Estimate
+
               </h3>
 
-              <div className="mt-8 space-y-4">
+              <div className="space-y-5">
 
                 <div className="flex justify-between">
 
                   <span>
+
                     Base
+
                   </span>
 
                   <strong>
+
                     $2000
+
                   </strong>
 
                 </div>
@@ -210,13 +226,17 @@ export default function PricingCalculator() {
                 <div className="flex justify-between">
 
                   <span>
+
                     Features
+
                   </span>
 
                   <strong>
 
                     $
-                    {extras}
+                    {
+                      featuresTotal
+                    }
 
                   </strong>
 
@@ -226,7 +246,7 @@ export default function PricingCalculator() {
 
                   <span>
 
-                    Complexity
+                    Multiplier
 
                   </span>
 
@@ -248,13 +268,17 @@ export default function PricingCalculator() {
                 <div className="flex justify-between">
 
                   <span>
+
                     Total
+
                   </span>
 
                   <strong className="text-4xl">
 
                     $
-                    {total.toLocaleString()}
+                    {
+                      total.toLocaleString()
+                    }
 
                   </strong>
 
@@ -281,4 +305,3 @@ export default function PricingCalculator() {
     </main>
   );
 }
-```

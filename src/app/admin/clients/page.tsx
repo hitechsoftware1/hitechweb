@@ -23,7 +23,8 @@ import {
   Filter,
   DollarSign,
   TrendingUp,
-  Briefcase
+  Briefcase,
+  Loader2
 } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -36,17 +37,31 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 type ClientTab = 'Overview' | 'Inquiries' | 'Quotations' | 'Invoices' | 'LPOs';
 
 export default function ClientEcosystemPortal() {
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const auth = useAuth();
   const db = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<ClientTab>('Overview');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
+
+  // Clearance Check
+  useEffect(() => {
+    if (!userLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.email !== 'hitechsoftware03@gmail.com') {
+        router.push('/admin');
+        toast({ variant: "destructive", title: "Access Restricted", description: "This module requires Super Admin clearance." });
+      }
+    }
+  }, [user, userLoading, router, toast]);
 
   // Queries
   const { data: inquiries } = useCollection(db ? query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc')) : null);
@@ -199,7 +214,7 @@ export default function ClientEcosystemPortal() {
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
-                      {item.fullName.charAt(0)}
+                      {item.fullName?.charAt(0) || '?'}
                     </div>
                     <div>
                       <p className="text-xs font-bold">{item.fullName}</p>
@@ -233,6 +248,10 @@ export default function ClientEcosystemPortal() {
       </div>
     </motion.div>
   );
+
+  if (userLoading || (user && user.email !== 'hitechsoftware03@gmail.com')) {
+    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">

@@ -93,24 +93,6 @@ export default function StaffHub() {
   const { data: todayAttendance } = useCollection(attendanceQuery);
   const { data: activeCodes } = useCollection(dailyCodeQuery);
   
-  // Automated Code Generation Logic
-  useEffect(() => {
-    if (!db || !activeCodes) return;
-    
-    if (activeCodes.length === 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const generatedCode = Math.floor(10 + Math.random() * 90).toString();
-      const codeId = `code_${today}`;
-      
-      setDoc(doc(db, 'officeCodes', codeId), {
-        code: generatedCode,
-        date: today,
-        active: true,
-        createdAt: serverTimestamp()
-      });
-    }
-  }, [db, activeCodes]);
-
   const currentDailyCode = activeCodes?.[0]?.code || 'WAITING...';
   const todayRecord = todayAttendance?.[0];
 

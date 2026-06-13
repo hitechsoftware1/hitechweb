@@ -80,7 +80,7 @@ export default function RequestProjectPage(props: {
       await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(inquiryData),
+        body: JSON.stringify({ ...inquiryData, type: "Project Inquiry" }),
       });
 
       setSubmitted(true);

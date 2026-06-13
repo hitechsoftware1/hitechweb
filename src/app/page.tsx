@@ -6,7 +6,6 @@ import { Stats } from '@/components/sections/Stats';
 import { Services } from '@/components/sections/Services';
 import { Excellence } from '@/components/sections/Excellence';
 import { Process } from '@/components/sections/Process';
-import { BookingCodes } from '@/components/sections/BookingCodes';
 import { Portfolio } from '@/components/sections/Portfolio';
 import { Pricing } from '@/components/sections/Pricing';
 import { Contact } from '@/components/sections/Contact';
@@ -35,10 +34,6 @@ export default async function Home(props: {
       </div>
 
       <Excellence />
-
-      <div id="booking-codes">
-        <BookingCodes />
-      </div>
 
       <div id="process" className="relative">
         <Process />

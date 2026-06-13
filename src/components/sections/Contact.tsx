@@ -49,12 +49,12 @@ export function Contact() {
       await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(messageData),
+        body: JSON.stringify({ ...messageData, type: "Contact Message" }),
       });
 
       setSubmitted(true);
       toast({
-        title: "Message Received",
+        title: "Received.",
         description: "We will contact you soon.",
       });
     } catch (error: any) {

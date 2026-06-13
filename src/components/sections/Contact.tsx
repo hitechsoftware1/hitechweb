@@ -41,24 +41,32 @@ export function Contact() {
       createdAt: serverTimestamp()
     };
 
-    addDoc(collection(db, 'contactMessages'), messageData)
-      .then(() => {
-        setSubmitted(true);
-        setLoading(false);
-        toast({
-          title: "Message Received",
-          description: "We will contact you soon.",
-        });
-      })
-      .catch(async (error) => {
-        const permissionError = new FirestorePermissionError({
-          path: 'contactMessages',
-          operation: 'create',
-          requestResourceData: messageData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setLoading(false);
+    try {
+      // 1. Save to Firestore
+      await addDoc(collection(db, 'contactMessages'), messageData);
+
+      // 2. Transmit via Mail Bridge
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(messageData),
       });
+
+      setSubmitted(true);
+      toast({
+        title: "Message Received",
+        description: "We will contact you soon.",
+      });
+    } catch (error: any) {
+      const permissionError = new FirestorePermissionError({
+        path: 'contactMessages',
+        operation: 'create',
+        requestResourceData: messageData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";

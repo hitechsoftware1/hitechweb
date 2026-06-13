@@ -72,20 +72,28 @@ export default function RequestProjectPage(props: {
       createdAt: serverTimestamp()
     };
 
-    addDoc(collection(db, 'projectInquiries'), inquiryData)
-      .then(() => {
-        setSubmitted(true);
-        setLoading(false);
-      })
-      .catch(async (error) => {
-        const permissionError = new FirestorePermissionError({
-          path: 'projectInquiries',
-          operation: 'create',
-          requestResourceData: inquiryData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setLoading(false);
+    try {
+      // 1. Save to Firestore
+      await addDoc(collection(db, 'projectInquiries'), inquiryData);
+
+      // 2. Transmit via Mail Bridge
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(inquiryData),
       });
+
+      setSubmitted(true);
+    } catch (error: any) {
+      const permissionError = new FirestorePermissionError({
+        path: 'projectInquiries',
+        operation: 'create',
+        requestResourceData: inquiryData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -51,24 +51,32 @@ function ApplyFormContent() {
       createdAt: serverTimestamp()
     };
 
-    addDoc(collection(db, 'jobApplications'), applicationData)
-      .then(() => {
-        setSubmitted(true);
-        setLoading(false);
-        toast({
-          title: "Application Received",
-          description: "We will contact you soon.",
-        });
-      })
-      .catch(async (error) => {
-        const permissionError = new FirestorePermissionError({
-          path: 'jobApplications',
-          operation: 'create',
-          requestResourceData: applicationData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setLoading(false);
+    try {
+      // 1. Save to Firestore
+      await addDoc(collection(db, 'jobApplications'), applicationData);
+
+      // 2. Transmit via Mail Bridge
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...applicationData, type: "Job Application" }),
       });
+
+      setSubmitted(true);
+      toast({
+        title: "Application Received",
+        description: "We will contact you soon.",
+      });
+    } catch (error: any) {
+      const permissionError = new FirestorePermissionError({
+        path: 'jobApplications',
+        operation: 'create',
+        requestResourceData: applicationData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

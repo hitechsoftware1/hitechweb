@@ -1,283 +1,153 @@
-```tsx
+
 "use client";
 
-import { useMemo, useState } from "react";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { Calculator } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Calculator, Sparkles, Check, Info } from 'lucide-react';
 
-const FEATURES = [
-  {
-    id: "mobile",
-    name: "Mobile App (iOS / Android)",
-    price: 2500,
-    icon: "📱",
-  },
-  {
-    id: "ecommerce",
-    name: "E-commerce Integration",
-    price: 1500,
-    icon: "🛒",
-  },
-  {
-    id: "ai",
-    name: "AI & Neural Systems",
-    price: 3000,
-    icon: "🧠",
-  },
-  {
-    id: "auth",
-    name: "Advanced Security",
-    price: 800,
-    icon: "🔐",
-  },
-  {
-    id: "cloud",
-    name: "Cloud Infrastructure",
-    price: 1200,
-    icon: "☁️",
-  },
-  {
-    id: "analytics",
-    name: "Real-time Analytics",
-    price: 1000,
-    icon: "📊",
-  },
+const features = [
+  { id: 'mobile', name: 'Mobile App (iOS/Android)', base: 2500, icon: '📱' },
+  { id: 'ecommerce', name: 'E-commerce Integration', base: 1500, icon: '🛒' },
+  { id: 'ai', name: 'AI & Neural Systems', base: 3000, icon: '🧠' },
+  { id: 'auth', name: 'Advanced Security (Auth)', base: 800, icon: '🔐' },
+  { id: 'cloud', name: 'Cloud Infrastructure', base: 1200, icon: '☁️' },
+  { id: 'analytics', name: 'Real-time Analytics', base: 1000, icon: '📊' }
 ];
 
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default function PricingCalculator() {
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selections, setSelections] = useState<string[]>([]);
   const [complexity, setComplexity] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const featureSum = features
+      .filter(f => selections.includes(f.id))
+      .reduce((acc, f) => acc + f.base, 0);
+    
+    const complexityMultiplier = 1 + (complexity - 1) * 0.5;
+    const calculatedTotal = (2000 + featureSum) * complexityMultiplier;
+    setTotal(calculatedTotal);
+  }, [selections, complexity]);
 
   const toggleFeature = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
-    );
+    setSelections(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  const multiplier = useMemo(
-    () => 1 + (complexity - 1) * 0.5,
-    [complexity]
-  );
-
-  const total = useMemo(() => {
-    const extras = FEATURES
-      .filter((f) => selected.includes(f.id))
-      .reduce((sum, f) => sum + f.price, 0);
-
-    return Math.round((2000 + extras) * multiplier);
-  }, [selected, multiplier]);
-
   return (
-    <main className="min-h-screen bg-background">
-
+    <main className="min-h-screen bg-background pt-32">
       <Navbar />
-
-      <section className="container mx-auto px-6 pt-32 pb-16">
-
-        <div className="max-w-3xl mx-auto text-center">
-
-          <h1 className="text-5xl md:text-7xl font-bold mb-8">
-            Pricing Calculator
-          </h1>
-
-          <p className="text-muted-foreground text-lg">
-            Estimate the investment for your next
-            digital product.
-          </p>
-
-        </div>
-
+      
+      <section className="container mx-auto px-6 mb-24">
+        <h1 className="text-5xl lg:text-8xl font-headline font-bold text-gradient-apple mb-8 tracking-tight text-center">
+          Invest in <br /> Value.
+        </h1>
+        <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl mx-auto text-center">
+          Calculate the estimated investment for your next high-performance digital ecosystem.
+        </p>
       </section>
 
-      <section className="container mx-auto px-6 pb-32">
-
-        <div className="grid lg:grid-cols-12 gap-10 max-w-7xl mx-auto">
-
-          <div className="lg:col-span-7 space-y-8">
-
-            <div className="apple-card p-8">
-
-              <div className="flex items-center gap-3 mb-8">
-
-                <Calculator className="w-6 h-6" />
-
-                <h2 className="text-2xl font-bold">
-                  Select Features
-                </h2>
-
+      <section className="container mx-auto px-6 mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto items-start">
+          
+          <div className="lg:col-span-7 space-y-10">
+            <div className="apple-card p-10 bg-foreground/[0.02] border-foreground/5">
+              <h3 className="text-2xl font-headline font-bold mb-8 flex items-center gap-3">
+                <Calculator className="w-6 h-6 text-primary" /> Feature Selection
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {features.map(feature => (
+                  <div 
+                    key={feature.id} 
+                    onClick={() => toggleFeature(feature.id)}
+                    className={cn(
+                      "p-6 rounded-[1.5rem] border transition-all cursor-pointer flex flex-col gap-3",
+                      selections.includes(feature.id) 
+                        ? "bg-primary/10 border-primary/40 shadow-lg shadow-primary/5" 
+                        : "bg-background border-foreground/5 hover:border-foreground/10"
+                    )}
+                  >
+                    <span className="text-2xl">{feature.icon}</span>
+                    <div>
+                      <h4 className="font-bold text-sm">{feature.name}</h4>
+                      <p className="text-[10px] text-foreground/40 mt-1 uppercase tracking-widest">Base: ${feature.base}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-
-                {FEATURES.map((feature) => {
-
-                  const active =
-                    selected.includes(feature.id);
-
-                  return (
-                    <button
-                      key={feature.id}
-                      type="button"
-                      onClick={() =>
-                        toggleFeature(feature.id)
-                      }
-                      className={cn(
-                        "border rounded-3xl p-6 text-left transition",
-                        active
-                          ? "border-primary bg-primary/10"
-                          : "hover:border-primary/40"
-                      )}
-                    >
-                      <div className="text-3xl mb-4">
-                        {feature.icon}
-                      </div>
-
-                      <h3 className="font-bold mb-2">
-                        {feature.name}
-                      </h3>
-
-                      <p className="text-sm opacity-60">
-                        ${feature.price}
-                      </p>
-
-                    </button>
-                  );
-                })}
-
-              </div>
-
             </div>
 
-            <div className="apple-card p-8">
-
-              <div className="flex justify-between mb-8">
-
-                <h2 className="text-2xl font-bold">
-                  Complexity
-                </h2>
-
-                <div className="border rounded-full px-4 py-1 text-sm">
-
-                  Level {complexity}
-
-                </div>
-
+            <div className="apple-card p-10 bg-foreground/[0.02] border-foreground/5">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-headline font-bold">Project Complexity</h3>
+                <Badge variant="outline" className="text-primary font-bold">Level {complexity}</Badge>
               </div>
-
-              <Slider
-                value={[complexity]}
-                min={1}
-                max={5}
-                step={1}
-                onValueChange={(v) =>
-                  setComplexity(v[0])
-                }
+              <Slider 
+                defaultValue={[1]} 
+                max={5} 
+                min={1} 
+                step={1} 
+                onValueChange={(v) => setComplexity(v[0])}
+                className="mb-6"
               />
-
-              <div className="flex justify-between mt-6 text-sm opacity-50">
-
+              <div className="flex justify-between text-[10px] font-bold text-foreground/30 uppercase tracking-[0.2em]">
                 <span>Startup MVP</span>
-
-                <span>Enterprise</span>
-
+                <span>Enterprise Scale</span>
               </div>
-
             </div>
-
           </div>
 
-          <div className="lg:col-span-5">
-
-            <div className="apple-card sticky top-28 p-8">
-
-              <h3 className="uppercase text-sm mb-8">
-                Estimate
-              </h3>
-
-              <div className="space-y-5">
-
-                <div className="flex justify-between">
-
-                  <span>Base Architecture</span>
-
-                  <strong>$2,000</strong>
-
+          <div className="lg:col-span-5 sticky top-32">
+            <div className="apple-card p-10 bg-primary/5 border-primary/20 glow-blue">
+              <h3 className="text-sm font-bold text-primary uppercase tracking-[0.3em] mb-10">Estimate Breakdown</h3>
+              
+              <div className="space-y-6 mb-12">
+                <div className="flex justify-between text-sm">
+                  <span className="text-foreground/40">Core Architecture Fee</span>
+                  <span className="font-bold">$2,000</span>
                 </div>
-
-                {FEATURES
-                  .filter((f) =>
-                    selected.includes(f.id)
-                  )
-                  .map((f) => (
-                    <div
-                      key={f.id}
-                      className="flex justify-between"
-                    >
-                      <span>{f.name}</span>
-
-                      <strong>
-                        +${f.price}
-                      </strong>
-
-                    </div>
-                  ))}
-
-                <div className="flex justify-between">
-
-                  <span>Multiplier</span>
-
-                  <strong>
-                    ×{multiplier.toFixed(1)}
-                  </strong>
-
-                </div>
-
-                <div className="border-t pt-8">
-
-                  <div className="flex justify-between items-end">
-
-                    <span className="font-bold">
-                      Total
-                    </span>
-
-                    <span className="text-4xl font-bold">
-
-                      ${total.toLocaleString()}
-
-                    </span>
-
+                {features.filter(f => selections.includes(f.id)).map(f => (
+                  <div key={f.id} className="flex justify-between text-sm">
+                    <span className="text-foreground/40">{f.name}</span>
+                    <span className="font-bold">+${f.base}</span>
                   </div>
-
+                ))}
+                <div className="flex justify-between text-sm text-primary">
+                  <span>Complexity Multiplier</span>
+                  <span className="font-bold">x{(1 + (complexity - 1) * 0.5).toFixed(1)}</span>
                 </div>
-
+                <div className="pt-6 border-t border-primary/20 flex justify-between items-end">
+                  <span className="text-lg font-bold">Estimated Total</span>
+                  <span className="text-4xl font-headline font-bold text-gradient-apple">
+                    ${total.toLocaleString()}
+                  </span>
+                </div>
               </div>
 
-              <Button
-                className="w-full mt-10 h-14 rounded-full"
-              >
-                Get Detailed Proposal
-              </Button>
-
+              <div className="space-y-4">
+                <Button className="w-full rounded-full h-14 bg-foreground text-background font-bold hover:scale-105 transition-all text-sm">
+                  Get Detailed Proposal
+                </Button>
+                <p className="text-[10px] text-center text-foreground/30 leading-relaxed">
+                  *This is an estimate. Final pricing depends on technical specs and project duration.
+                </p>
+              </div>
             </div>
-
           </div>
 
         </div>
-
       </section>
 
       <Footer />
-
     </main>
   );
 }
-```
+
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
+}

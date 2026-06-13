@@ -146,7 +146,7 @@ export default function AdminHub(props: {
       description: 'LPOs, quotations, invoices, inquiries',
       icon: Layers,
       permissions: ['View', 'Edit'],
-      href: '#'
+      href: '/admin/clients'
     },
     {
       id: 'communications',
@@ -206,14 +206,12 @@ export default function AdminHub(props: {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
+            <button 
               onClick={toggleTheme} 
-              variant="ghost" 
-              size="icon" 
-              className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm"
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 shadow-sm flex items-center justify-center text-zinc-400 hover:text-foreground transition-all"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button>
+            </button>
             <Button variant="ghost" size="sm" className="rounded-xl bg-white dark:bg-zinc-800 shadow-sm px-4 flex items-center gap-2" asChild>
               <Link href="/">
                 <ExternalLink className="w-4 h-4" /> Site

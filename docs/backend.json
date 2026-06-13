@@ -19,6 +19,50 @@
       },
       "required": ["projectType", "fullName", "email", "phoneNumber", "description"]
     },
+    "Quotation": {
+      "title": "Quotation",
+      "description": "A formal price estimate for a client project.",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "projectTitle": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "object" } },
+        "totalAmount": { "type": "number" },
+        "currency": { "type": "string", "default": "USD" },
+        "status": { "type": "string", "enum": ["draft", "sent", "accepted", "rejected"], "default": "draft" },
+        "expiryDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "projectTitle", "totalAmount"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "A formal billing document for services rendered.",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string" },
+        "clientName": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["unpaid", "partially-paid", "paid", "overdue"] },
+        "dueDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["invoiceNumber", "clientName", "amount", "status"]
+    },
+    "LPO": {
+      "title": "Local Purchase Order",
+      "description": "A document issued by a buyer to a seller indicating types, quantities, and agreed prices.",
+      "type": "object",
+      "properties": {
+        "lpoNumber": { "type": "string" },
+        "supplier": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "approved", "fulfilled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["lpoNumber", "supplier", "amount"]
+    },
     "JobApplication": {
       "title": "Job Application",
       "description": "A submission from a candidate applying for a position at HITECH.",
@@ -127,6 +171,18 @@
     "/projectInquiries/{inquiryId}": {
       "schema": "#/backend/entities/ProjectInquiry",
       "description": "Collection of project requests."
+    },
+    "/quotations/{quotationId}": {
+      "schema": "#/backend/entities/Quotation",
+      "description": "Formal project estimates."
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "#/backend/entities/Invoice",
+      "description": "Billing documents."
+    },
+    "/lpos/{lpoId}": {
+      "schema": "#/backend/entities/LPO",
+      "description": "Local Purchase Orders."
     },
     "/jobApplications/{applicationId}": {
       "schema": "#/backend/entities/JobApplication",

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo, use, useEffect } from 'react';
@@ -37,7 +38,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
+import { useCollection, useFirestore, useUser, useAuth, useDoc } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
@@ -75,6 +76,10 @@ export default function AdminHub(props: {
   const [showPunchInForm, setShowPunchInForm] = useState(false);
   const [punchInCode, setPunchInCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Profile Query to check specific portal access
+  const profileRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: profile } = useDoc(profileRef);
 
   // Authentication & Clearance Redirect
   useEffect(() => {
@@ -146,8 +151,14 @@ export default function AdminHub(props: {
     }
   }, [db, activeCodes, toast]);
 
-  // Role Logic: Supper Admin Access
+  // Role Logic: Supper Admin Access or Portal-specific clearance
   const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+  
+  const hasAccess = (portalId: string) => {
+    if (isSuperAdmin) return true;
+    if (!profile || !profile.accessiblePortals) return false;
+    return profile.accessiblePortals.includes(portalId);
+  };
 
   const modules: PortalModule[] = [
     {
@@ -165,8 +176,8 @@ export default function AdminHub(props: {
       description: 'Platform oversight, SEO management, domain monitoring',
       icon: Globe,
       permissions: ['View', 'Edit'],
-      href: isSuperAdmin ? '/admin/web-management' : undefined,
-      restricted: !isSuperAdmin
+      href: hasAccess('web-management') ? '/admin/web-management' : undefined,
+      restricted: !hasAccess('web-management')
     },
     {
       id: 'clients',
@@ -174,8 +185,8 @@ export default function AdminHub(props: {
       description: 'LPOs, quotations, invoices, inquiries',
       icon: Layers,
       permissions: ['View', 'Edit'],
-      href: isSuperAdmin ? '/admin/clients' : undefined,
-      restricted: !isSuperAdmin
+      href: hasAccess('clients') ? '/admin/clients' : undefined,
+      restricted: !hasAccess('clients')
     },
     {
       id: 'communications',
@@ -183,8 +194,8 @@ export default function AdminHub(props: {
       description: 'Marketing, mail, internal newsletters',
       icon: MessageSquare,
       permissions: ['View', 'Edit'],
-      href: isSuperAdmin ? '/admin/communications' : undefined,
-      restricted: !isSuperAdmin
+      href: hasAccess('communications') ? '/admin/communications' : undefined,
+      restricted: !hasAccess('communications')
     },
     {
       id: 'talent',
@@ -192,8 +203,8 @@ export default function AdminHub(props: {
       description: 'Job apps, interviews, onboarding',
       icon: Briefcase,
       permissions: ['View', 'Edit'],
-      href: isSuperAdmin ? '/admin/talent' : undefined,
-      restricted: !isSuperAdmin
+      href: hasAccess('talent') ? '/admin/talent' : undefined,
+      restricted: !hasAccess('talent')
     },
     {
       id: 'system',
@@ -201,8 +212,8 @@ export default function AdminHub(props: {
       description: 'Users, roles, workforce tasks, approvals',
       icon: Settings,
       permissions: ['View', 'Edit', 'Delete'],
-      href: isSuperAdmin ? '/admin/system' : undefined,
-      restricted: !isSuperAdmin
+      href: hasAccess('system') ? '/admin/system' : undefined,
+      restricted: !hasAccess('system')
     }
   ];
 
@@ -259,7 +270,7 @@ export default function AdminHub(props: {
               <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Operator'}</h1>
               <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest flex items-center gap-2">
                 {isSuperAdmin ? <ShieldCheck className="w-3 h-3 text-primary" /> : <User className="w-3 h-3" />}
-                {isSuperAdmin ? 'Super Administrator' : 'Institutional Staff'} • {isSuperAdmin ? 'All Portals Active' : 'Limited Clearance'}
+                {isSuperAdmin ? 'Super Administrator' : (profile?.role || 'Staff')} • {isSuperAdmin ? 'All Portals Active' : 'Restricted Clearance'}
               </p>
             </div>
           </div>
@@ -363,7 +374,7 @@ export default function AdminHub(props: {
               whileHover={!mod.restricted ? { y: -5 } : {}}
               className={cn(
                 "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all",
-                mod.restricted && "opacity-60 cursor-not-allowed"
+                mod.restricted && "opacity-60"
               )}
             >
               <div className="flex flex-col justify-between h-full">

@@ -121,6 +121,8 @@
         "email": { "type": "string", "format": "email" },
         "role": { "type": "string", "enum": ["admin", "staff", "client"], "default": "client" },
         "company": { "type": "string" },
+        "salary": { "type": "number", "description": "Monthly institutional retainer/salary." },
+        "accessiblePortals": { "type": "array", "items": { "type": "string" }, "description": "List of portal IDs this user can access." },
         "joinedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email"]

@@ -37,7 +37,8 @@ import {
   Monitor,
   Target,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Key
 } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -220,6 +221,7 @@ export default function SystemArchitecturePortal() {
     const name = formData.get('name') as string;
     const role = formData.get('role') as string;
     const salary = parseFloat(formData.get('salary') as string) || 0;
+    const password = formData.get('password') as string;
 
     try {
       const newUserRef = doc(collection(db, 'users'));
@@ -233,7 +235,21 @@ export default function SystemArchitecturePortal() {
         joinedAt: serverTimestamp()
       });
 
-      toast({ title: "Identity Provisioned", description: `${name} has been synchronized with the neural core.` });
+      // Transmit onboarding email via Mail Bridge
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          to: email,
+          fullName: name,
+          email,
+          password,
+          role: role === 'admin' ? 'Administrator' : 'Engineering Staff',
+          type: "Worker Onboarding"
+        }),
+      });
+
+      toast({ title: "Identity Provisioned", description: `${name} has been notified with credentials.` });
       setIsNewUserOpen(false);
       setSelectedPortals([]);
     } catch (error: any) {
@@ -552,7 +568,7 @@ export default function SystemArchitecturePortal() {
         <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800 max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Onboard Worker Identity</DialogTitle>
-            <DialogDescription>Provision a new worker profile and assign institutional access levels.</DialogDescription>
+            <DialogDescription>Provision a new worker profile and assign institutional access levels. An onboarding email will be sent automatically.</DialogDescription>
           </DialogHeader>
           <form className="space-y-6 py-4" onSubmit={handleCreateUser}>
             <div className="grid grid-cols-2 gap-4">
@@ -571,6 +587,12 @@ export default function SystemArchitecturePortal() {
             <div className="space-y-2">
               <Label>Email Address</Label>
               <Input name="email" type="email" required className="rounded-xl h-11" placeholder="worker@hitech.systems" />
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Key className="w-3 h-3 text-primary" /> Temporary Access Password
+              </Label>
+              <Input name="password" type="password" required className="rounded-xl h-11" placeholder="••••••••" />
             </div>
             <div className="space-y-2">
               <Label>Monthly Retainer (UGX)</Label>

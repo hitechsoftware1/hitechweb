@@ -1,29 +1,28 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Beige/Sandstone Light Theme */
-    --background: 30 33% 96%;
-    --foreground: 30 15% 15%;
-    --card: 30 30% 98%;
-    --card-foreground: 30 15% 15%;
-    --popover: 30 30% 98%;
-    --popover-foreground: 30 15% 15%;
+    /* Richer Sandstone Light Theme */
+    --background: 30 30% 92%;
+    --foreground: 30 15% 10%;
+    --card: 30 30% 96%;
+    --card-foreground: 30 15% 10%;
+    --popover: 30 30% 96%;
+    --popover-foreground: 30 15% 10%;
     --primary: 199 100% 50%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 30 20% 92%;
-    --secondary-foreground: 30 15% 15%;
-    --muted: 30 20% 92%;
-    --muted-foreground: 30 10% 45%;
+    --secondary: 30 20% 88%;
+    --secondary-foreground: 30 15% 10%;
+    --muted: 30 20% 85%;
+    --muted-foreground: 30 10% 40%;
     --accent: 262 100% 60%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 30 20% 88%;
-    --input: 30 20% 88%;
+    --border: 30 20% 82%;
+    --input: 30 20% 82%;
     --ring: 199 100% 50%;
     --radius: 1.5rem;
   }
@@ -58,8 +57,8 @@
   body {
     @apply bg-background text-foreground font-body antialiased transition-colors duration-500;
     background-image: 
-      radial-gradient(circle at 50% -20%, hsla(30, 100%, 50%, 0.05), transparent 70%),
-      radial-gradient(circle at 0% 100%, hsla(262, 100%, 60%, 0.02), transparent 50%);
+      radial-gradient(circle at 50% -20%, hsla(30, 100%, 50%, 0.08), transparent 70%),
+      radial-gradient(circle at 0% 100%, hsla(262, 100%, 60%, 0.04), transparent 50%);
     background-attachment: fixed;
   }
   
@@ -73,28 +72,28 @@
 
 .apple-glass {
   @apply backdrop-blur-[12px] md:backdrop-blur-[32px] border transition-all duration-500;
-  @apply bg-black/[0.04] border-black/[0.06] shadow-[0_8px_32px_0_rgba(0,0,0,0.03)];
+  @apply bg-black/[0.04] border-black/[0.1] shadow-[0_8px_32px_0_rgba(0,0,0,0.06)];
   @apply dark:bg-black/40 dark:border-white/[0.08] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
 }
 
 .apple-card {
   @apply relative overflow-hidden backdrop-blur-md md:backdrop-blur-xl border transition-all duration-700;
-  @apply bg-black/[0.02] border-black/[0.05] shadow-sm;
+  @apply bg-black/[0.03] border-black/[0.08] shadow-sm;
   @apply dark:bg-[#1C1C1E]/40 dark:border-white/[0.05] dark:shadow-none;
-  @apply hover:bg-black/[0.05] dark:hover:bg-[#1C1C1E]/60;
+  @apply hover:bg-black/[0.06] dark:hover:bg-[#1C1C1E]/60;
 }
 
 .text-gradient-apple {
   @apply bg-clip-text text-transparent bg-gradient-to-b;
-  @apply from-slate-900 to-slate-500 dark:from-white dark:to-white/60;
+  @apply from-slate-900 to-slate-600 dark:from-white dark:to-white/60;
 }
 
 .glow-blue {
-  box-shadow: 0 0 40px hsla(199, 100%, 50%, 0.1);
+  box-shadow: 0 0 40px hsla(199, 100%, 50%, 0.15);
 }
 
 .neural-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
   background-size: 60px 60px;
 }
 
@@ -111,7 +110,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-white/10 rounded-full hover:bg-slate-400 dark:hover:bg-white/20 transition-colors;
+  @apply bg-slate-400 dark:bg-white/10 rounded-full hover:bg-slate-500 dark:hover:bg-white/20 transition-colors;
 }
 
 @keyframes float {

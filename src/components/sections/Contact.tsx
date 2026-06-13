@@ -42,10 +42,10 @@ export function Contact() {
     };
 
     try {
-      // 1. Save to Firestore
+      // 1. Save to Firestore for Dashboard
       await addDoc(collection(db, 'contactMessages'), messageData);
 
-      // 2. Transmit via Mail Bridge
+      // 2. Transmit via Mail Bridge to hitechsoftware03@gmail.com
       await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -126,7 +126,7 @@ export function Contact() {
                   <Button variant="link" onClick={() => { setSubmitted(false); setStep(1); }} className="mt-8 lg:mt-12 text-primary font-bold text-xs lg:text-sm p-0 h-auto">Send another</Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-8">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-6 lg:space-y-8">
                   {step === 1 && (
                     <div className="space-y-4 lg:space-y-8 animate-in fade-in slide-in-from-right-4">
                       <div>
@@ -209,7 +209,7 @@ export function Contact() {
                       <div className="flex gap-4">
                         <Button onClick={prevStep} type="button" variant="outline" className="flex-1 h-12 lg:h-14 rounded-xl lg:rounded-2xl border-foreground/10 hover:bg-foreground/5 text-sm lg:text-base font-bold text-foreground">Back</Button>
                         <Button 
-                          type="submit" 
+                          onClick={handleSubmit}
                           disabled={loading || !formData.message}
                           className="flex-[2] h-12 lg:h-14 rounded-xl lg:rounded-2xl bg-foreground text-background hover:opacity-90 font-bold text-sm lg:text-base shadow-xl shadow-foreground/5 transition-all"
                         >

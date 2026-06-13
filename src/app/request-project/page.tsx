@@ -76,7 +76,7 @@ export default function RequestProjectPage(props: {
       // 1. Save to Firestore
       await addDoc(collection(db, 'projectInquiries'), inquiryData);
 
-      // 2. Transmit via Mail Bridge
+      // 2. Transmit via Mail Bridge to hitechsoftware03@gmail.com
       await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -67,6 +67,11 @@ export default function AdminHub(props: {
   const { toast } = useToast();
   const [newOfficeCode, setNewOfficeCode] = useState('');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  
+  // Punch states
+  const [showPunchInForm, setShowPunchInForm] = useState(false);
+  const [punchInCode, setPunchInCode] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -96,8 +101,17 @@ export default function AdminHub(props: {
     return query(collection(db, 'officeCodes'), where('date', '==', today));
   }, [db]);
 
+  const attendanceQuery = useMemo(() => {
+    if (!db || !user) return null;
+    const today = new Date().toISOString().split('T')[0];
+    return query(collection(db, 'attendance'), where('userId', '==', user.uid), where('date', '==', today));
+  }, [db, user]);
+
   const { data: activeCodes } = useCollection(dailyCodeQuery);
+  const { data: userAttendance } = useCollection(attendanceQuery);
+  
   const currentDailyCode = activeCodes?.[0]?.code || '--';
+  const todayRecord = userAttendance?.[0];
 
   // Automated Code Generation Logic
   useEffect(() => {
@@ -189,13 +203,51 @@ export default function AdminHub(props: {
     });
   };
 
+  const handlePunchIn = async () => {
+    if (!db || !user || !punchInCode) return;
+    
+    if (punchInCode !== currentDailyCode) {
+      toast({ variant: "destructive", title: "Access Denied", description: "Invalid institutional validation code." });
+      return;
+    }
+
+    setIsProcessing(true);
+    const today = new Date().toISOString().split('T')[0];
+    const attendanceData = {
+      userId: user.uid,
+      userName: user.displayName || user.email,
+      date: today,
+      punchInTime: serverTimestamp(),
+      officeCodeUsed: punchInCode,
+      status: 'pending'
+    };
+
+    addDoc(collection(db, 'attendance'), attendanceData)
+      .then(() => {
+        toast({ title: "Neural Link Established", description: "Shift presence logged. Work session active." });
+        setShowPunchInForm(false);
+      })
+      .finally(() => setIsProcessing(false));
+  };
+
+  const handlePunchOut = async () => {
+    if (!db || !todayRecord) return;
+    setIsProcessing(true);
+    updateDoc(doc(db, 'attendance', todayRecord.id), {
+      punchOutTime: serverTimestamp(),
+      status: 'approved'
+    }).then(() => {
+      toast({ title: "Session Concluded", description: "Shift ended. Institutional data synced. Safe travels." });
+    }).finally(() => setIsProcessing(false));
+  };
+
   return (
-    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body">
+    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body text-zinc-800 dark:text-zinc-100">
       <div className="container mx-auto px-6 max-w-6xl">
         
         <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
           <div className="flex items-center gap-5">
-            <Avatar className="w-14 h-14 border-2 border-white shadow-sm">
+            <Avatar className="w-14 h-14 border-2 border-white dark:border-zinc-800 shadow-sm">
               <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || 'L'}</AvatarFallback>
             </Avatar>
             <div>
@@ -254,13 +306,56 @@ export default function AdminHub(props: {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex items-center gap-6 group transition-all hover:shadow-md">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
-            <Clock className="w-6 h-6 text-zinc-400" />
+        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex flex-col md:flex-row items-center justify-between gap-6 group transition-all hover:shadow-md">
+          <div className="flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
+              <Clock className="w-6 h-6 text-zinc-400" />
+            </div>
+            <div>
+              <h4 className="font-bold text-lg">Working day today</h4>
+              <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest mt-0.5">Working hours 08:00 - 17:30</p>
+            </div>
           </div>
-          <div>
-            <h4 className="font-bold text-lg">Working day today</h4>
-            <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest mt-0.5">Working hours 08:00 - 17:30</p>
+
+          <div className="flex items-center gap-4">
+            {todayRecord ? (
+              todayRecord.punchOutTime ? (
+                <div className="flex items-center gap-3 bg-green-50 dark:bg-green-900/10 px-6 py-3 rounded-2xl border border-green-100 dark:border-green-900/30">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">Shift Completed</span>
+                </div>
+              ) : (
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest animate-pulse">Session Active</span>
+                  <Button 
+                    onClick={handlePunchOut} 
+                    disabled={isProcessing}
+                    className="h-12 px-8 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-red-500/20"
+                  >
+                    {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Punch Out"}
+                  </Button>
+                </div>
+              )
+            ) : showPunchInForm ? (
+              <div className="flex gap-2 animate-in slide-in-from-right-2 duration-300">
+                <Input 
+                  value={punchInCode}
+                  onChange={(e) => setPunchInCode(e.target.value)}
+                  placeholder="CODE"
+                  className="w-28 h-12 rounded-xl text-center font-bold tracking-[0.3em] bg-zinc-50 dark:bg-zinc-800 border-zinc-100"
+                />
+                <Button onClick={handlePunchIn} disabled={isProcessing || !punchInCode} className="h-12 px-6 rounded-xl font-bold">
+                  {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit"}
+                </Button>
+                <Button variant="ghost" onClick={() => setShowPunchInForm(false)} className="h-12 w-12 p-0 rounded-xl hover:bg-zinc-50">
+                  <XCircle className="w-5 h-5 text-zinc-300" />
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={() => setShowPunchInForm(true)} className="h-12 px-10 rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20">
+                Punch In
+              </Button>
+            )}
           </div>
         </div>
 

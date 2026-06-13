@@ -24,12 +24,13 @@ import {
   Lock,
   ExternalLink,
   Moon,
-  Sun
+  Sun,
+  XCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, orderBy, limit, updateDoc, doc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -41,8 +42,10 @@ export default function StaffHub() {
   const db = useFirestore();
   const auth = useAuth();
   const { toast } = useToast();
+  
   const [punchInCode, setPunchInCode] = useState('');
-  const [punchingIn, setPunchingIn] = useState(false);
+  const [showPunchForm, setShowPunchInForm] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
@@ -80,13 +83,20 @@ export default function StaffHub() {
 
   const { data: todayAttendance } = useCollection(attendanceQuery);
   const { data: activeCodes } = useCollection(dailyCodeQuery);
+  
   const currentDailyCode = activeCodes?.[0]?.code || 'WAITING...';
+  const todayRecord = todayAttendance?.[0];
 
   const handlePunchIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!db || !user || !punchInCode) return;
-    setPunchingIn(true);
+    
+    if (punchInCode !== currentDailyCode) {
+      toast({ variant: "destructive", title: "Institutional Error", description: "Invalid Office Code. Clearance denied." });
+      return;
+    }
 
+    setIsProcessing(true);
     const today = new Date().toISOString().split('T')[0];
     const attendanceData = {
       userId: user.uid,
@@ -99,11 +109,23 @@ export default function StaffHub() {
 
     addDoc(collection(db, 'attendance'), attendanceData)
       .then(() => {
-        toast({ title: "Neural Punch-In", description: "Your attendance is pending admin verification." });
+        toast({ title: "Neural Punch-In", description: "Shift logged. Institutional tracking active." });
         setPunchInCode('');
+        setShowPunchInForm(false);
       })
       .catch(console.error)
-      .finally(() => setPunchingIn(false));
+      .finally(() => setIsProcessing(false));
+  };
+
+  const handlePunchOut = async () => {
+    if (!db || !todayRecord) return;
+    setIsProcessing(true);
+    updateDoc(doc(db, 'attendance', todayRecord.id), {
+      punchOutTime: serverTimestamp(),
+      status: 'approved'
+    }).then(() => {
+      toast({ title: "Punch-Out Verified", description: "Session complete. Allowances secured for this cycle." });
+    }).finally(() => setIsProcessing(false));
   };
 
   const modules = [
@@ -115,16 +137,16 @@ export default function StaffHub() {
     { id: 'system', title: 'Settings', desc: 'Security protocols', icon: Settings, access: false }
   ];
 
-  if (userLoading) return <div className="min-h-screen flex items-center justify-center bg-[#F4F1F0]"><Loader2 className="animate-spin text-primary" /></div>;
-  if (!user) return <div className="min-h-screen flex items-center justify-center p-6 text-center bg-[#F4F1F0]"><div><ShieldCheck className="w-12 h-12 mx-auto mb-4 text-primary" /><h1 className="text-2xl font-headline font-bold">Unauthorized.</h1><p className="text-foreground/50">Clearance level insufficient.</p></div></div>;
+  if (userLoading) return <div className="min-h-screen flex items-center justify-center bg-[#F4F1F0] dark:bg-[#0A0A0A]"><Loader2 className="animate-spin text-primary" /></div>;
+  if (!user) return <div className="min-h-screen flex items-center justify-center p-6 text-center bg-[#F4F1F0] dark:bg-[#0A0A0A]"><div><ShieldCheck className="w-12 h-12 mx-auto mb-4 text-primary" /><h1 className="text-2xl font-headline font-bold">Unauthorized.</h1><p className="text-foreground/50">Clearance level insufficient.</p></div></div>;
 
   return (
-    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body">
+    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body text-zinc-800 dark:text-zinc-100">
       <div className="container mx-auto px-6 max-w-6xl">
         
         <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
           <div className="flex items-center gap-5">
-            <Avatar className="w-14 h-14 border-2 border-white shadow-sm">
+            <Avatar className="w-14 h-14 border-2 border-white dark:border-zinc-800 shadow-sm">
               <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || 'E'}</AvatarFallback>
             </Avatar>
             <div>
@@ -168,25 +190,49 @@ export default function StaffHub() {
             </div>
           </div>
           
-          {todayAttendance && todayAttendance.length > 0 ? (
-            <div className="flex items-center gap-4 bg-green-50 dark:bg-green-900/20 px-6 py-3 rounded-2xl border border-green-100">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span className="text-sm font-bold text-green-600 uppercase tracking-widest">Logged: {todayAttendance[0].status}</span>
-            </div>
-          ) : (
-            <form onSubmit={handlePunchIn} className="flex gap-2">
-              <Input 
-                value={punchInCode}
-                onChange={(e) => setPunchInCode(e.target.value)}
-                placeholder="OFFICE CODE"
-                className="w-32 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-zinc-100 text-center font-bold tracking-[0.3em]"
-                required
-              />
-              <Button disabled={punchingIn} type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold">
-                {punchingIn ? <Loader2 className="animate-spin w-5 h-5" /> : "Submit"}
+          <div className="flex items-center gap-4">
+            {todayRecord ? (
+              todayRecord.punchOutTime ? (
+                <div className="flex items-center gap-4 bg-green-50 dark:bg-green-900/20 px-6 py-3 rounded-2xl border border-green-100">
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-bold text-green-600 uppercase tracking-widest">Shift Completed</span>
+                </div>
+              ) : (
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                   <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-[0.2em] animate-pulse">
+                      <div className="w-2 h-2 rounded-full bg-primary" /> Active Link
+                   </div>
+                   <Button 
+                    onClick={handlePunchOut} 
+                    disabled={isProcessing}
+                    className="h-12 px-8 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-red-500/20"
+                   >
+                    {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Punch Out"}
+                   </Button>
+                </div>
+              )
+            ) : showPunchForm ? (
+              <form onSubmit={handlePunchIn} className="flex gap-2 animate-in slide-in-from-right-2">
+                <Input 
+                  value={punchInCode}
+                  onChange={(e) => setPunchInCode(e.target.value)}
+                  placeholder="OFFICE CODE"
+                  className="w-32 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-zinc-100 text-center font-bold tracking-[0.3em]"
+                  required
+                />
+                <Button disabled={isProcessing} type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold">
+                  {isProcessing ? <Loader2 className="animate-spin w-5 h-5" /> : "Submit"}
+                </Button>
+                <Button variant="ghost" onClick={() => setShowPunchInForm(false)} className="h-12 w-12 p-0 rounded-xl">
+                  <XCircle className="w-5 h-5 text-zinc-300" />
+                </Button>
+              </form>
+            ) : (
+              <Button onClick={() => setShowPunchInForm(true)} className="h-12 px-10 rounded-xl bg-primary text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20">
+                Punch In
               </Button>
-            </form>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 mb-10 shadow-sm border border-black/5 flex items-center gap-6">

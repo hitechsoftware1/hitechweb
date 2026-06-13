@@ -1,190 +1,355 @@
-
+```tsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import Autoplay from 'embla-carousel-autoplay';
+import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import Autoplay from "embla-carousel-autoplay";
+
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { cn } from '@/lib/utils';
+
+import { cn } from "@/lib/utils";
 
 const tiers = [
   {
     name: "Startup",
     price: "$2,499",
-    description: "Great for new businesses starting their journey.",
-    features: ["Dedicated Lead", "Easy Design", "Secure Setup", "Weekly Updates"]
+    description:
+      "Great for new businesses starting their journey.",
+    features: [
+      "Dedicated Lead",
+      "Easy Design",
+      "Secure Setup",
+      "Weekly Updates",
+    ],
   },
+
   {
     name: "Business",
     price: "$5,999",
-    description: "The complete team to help your business grow fast.",
-    features: ["Full Team", "24/7 Support", "AI Tools", "Guaranteed Speed"],
-    popular: true
+    description:
+      "The complete team to help your business grow fast.",
+    features: [
+      "Full Team",
+      "24/7 Support",
+      "AI Tools",
+      "Guaranteed Speed",
+    ],
+    popular: true,
   },
+
   {
     name: "Enterprise",
     price: "Custom",
-    description: "Built for large companies that need global reach.",
-    features: ["Global R&D", "Safe Storage", "Easy Migration", "Personal Support"]
-  }
+    description:
+      "Built for large companies that need global reach.",
+    features: [
+      "Global R&D",
+      "Safe Storage",
+      "Easy Migration",
+      "Personal Support",
+    ],
+  },
 ];
 
+type Tier =
+  (typeof tiers)[number];
+
 export function Pricing() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [
+    api,
+    setApi,
+  ] =
+    useState<
+      CarouselApi | null
+    >(null);
+
+  const [
+    current,
+    setCurrent,
+  ] = useState(0);
 
   useEffect(() => {
     if (!api) return;
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+
+    setCurrent(
+      api.selectedScrollSnap()
+    );
+
+    const update =
+      () =>
+        setCurrent(
+          api.selectedScrollSnap()
+        );
+
+    api.on(
+      "select",
+      update
+    );
+
+    return () => {
+      api.off(
+        "select",
+        update
+      );
+    };
   }, [api]);
 
   return (
-    <section id="pricing" className="py-12 lg:py-32 bg-background relative overflow-hidden">
-      
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          className="w-full h-full object-cover opacity-10 lg:opacity-20"
+    <section
+      id="pricing"
+      className="relative overflow-hidden bg-background py-16 lg:py-32"
+    >
+      <div className="absolute inset-0">
+
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover opacity-10"
         >
-          <source src="https://assets.mixkit.co/videos/31413/31413-720.mp4" type="video/mp4" />
+          <source
+            src="https://assets.mixkit.co/videos/31413/31413-720.mp4"
+            type="video/mp4"
+          />
         </video>
-        {/* Overlays for texture */}
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
-        <div className="absolute inset-0 neural-grid opacity-30" />
+
+        <div className="absolute inset-0 bg-background/60" />
+
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-10 lg:mb-24">
-          <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Investment.</h2>
-          <p className="text-sm lg:text-xl text-foreground/40 max-w-2xl mx-auto font-light">
-            Simple and clear pricing for teams that value quality and speed.
+      <div className="container relative z-10 mx-auto px-6">
+
+        <div className="mb-20 text-center">
+
+          <h2 className="text-5xl font-bold mb-6">
+
+            Investment
+
+          </h2>
+
+          <p className="mx-auto max-w-2xl text-muted-foreground">
+
+            Simple pricing for teams
+            that value speed and
+            quality.
+
           </p>
+
         </div>
 
-        {/* Desktop Grid View */}
+        {/* Desktop */}
+
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {tiers.map((tier, idx) => (
-            <PricingCard key={idx} tier={tier} />
-          ))}
+
+          {tiers.map(
+            (
+              tier,
+              index
+            ) => (
+              <PricingCard
+                key={
+                  index
+                }
+                tier={
+                  tier
+                }
+              />
+            )
+          )}
+
         </div>
 
-        {/* Mobile Automatic 3D Floating Carousel */}
+        {/* Mobile */}
+
         <div className="lg:hidden">
-          <Carousel 
-            setApi={setApi}
+
+          <Carousel
+            setApi={
+              setApi
+            }
             plugins={[
               Autoplay({
                 delay: 5000,
-                stopOnInteraction: false,
+                stopOnInteraction:
+                  false,
               }),
             ]}
-            opts={{ 
-              align: "center",
+            opts={{
               loop: true,
-            }} 
-            className="w-full"
+              align:
+                "center",
+            }}
           >
-            <CarouselContent className="-ml-4">
-              {tiers.map((tier, idx) => (
-                <CarouselItem key={idx} className="pl-4 basis-[80%] sm:basis-[50%]">
-                  <motion.div
-                    animate={{
-                      scale: current === idx ? 1.05 : 0.9,
-                      opacity: current === idx ? 1 : 0.5,
-                      y: current === idx ? [0, -12, 0] : 0,
-                    }}
-                    transition={{ 
-                      scale: { duration: 0.5 },
-                      y: { repeat: Infinity, duration: 7, ease: "easeInOut" }
-                    }}
-                    className={cn(
-                      "transition-all h-full duration-700",
-                      current === idx && "drop-shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
-                    )}
+            <CarouselContent>
+
+              {tiers.map(
+                (
+                  tier,
+                  index
+                ) => (
+                  <CarouselItem
+                    key={
+                      index
+                    }
+                    className="basis-[85%]"
                   >
-                    <PricingCard tier={tier} isMobile />
-                  </motion.div>
-                </CarouselItem>
-              ))}
+                    <motion.div
+                      animate={{
+                        scale:
+                          current ===
+                          index
+                            ? 1
+                            : 0.9,
+                        opacity:
+                          current ===
+                          index
+                            ? 1
+                            : 0.6,
+                      }}
+                    >
+                      <PricingCard
+                        tier={
+                          tier
+                        }
+                        mobile
+                      />
+                    </motion.div>
+                  </CarouselItem>
+                )
+              )}
+
             </CarouselContent>
+
           </Carousel>
-          
-          <div className="flex justify-center gap-2 mt-16">
-            {tiers.map((_, idx) => (
-              <div 
-                key={idx} 
-                className={cn(
-                  "h-1 rounded-full transition-all duration-500",
-                  current === idx ? "w-8 bg-primary" : "w-2 bg-foreground/10"
-                )} 
-              />
-            ))}
-          </div>
+
         </div>
+
       </div>
     </section>
   );
 }
 
-function PricingCard({ tier, isMobile }: { tier: typeof tiers[0] & { popular?: boolean }, isMobile?: boolean }) {
+function PricingCard({
+  tier,
+  mobile,
+}: {
+  tier: Tier;
+  mobile?: boolean;
+}) {
   return (
-    <div 
+    <div
       className={cn(
-        "apple-card flex flex-col h-full",
-        tier.popular ? 'border-primary/40 ring-1 ring-primary/20' : '',
-        isMobile ? "p-6" : "p-5 lg:p-10"
+        "apple-card flex h-full flex-col",
+
+        mobile
+          ? "p-6"
+          : "p-10",
+
+        tier.popular
+          ? "border-primary ring-1 ring-primary/20"
+          : ""
       )}
     >
-      <div className="mb-4 lg:mb-8 flex justify-between items-start">
-        <h3 className={cn("font-headline font-bold text-foreground", isMobile ? "text-xl" : "text-base lg:text-2xl")}>{tier.name}</h3>
-        {tier.popular && <Badge className="bg-primary text-white rounded-full px-2 py-0.5 lg:px-3 lg:py-1 text-[8px] lg:text-xs border-none">Popular</Badge>}
-      </div>
+      <div className="mb-8 flex justify-between">
 
-      <div className="mb-4 lg:mb-10">
-        <span className={cn("font-bold font-headline text-foreground", isMobile ? "text-3xl" : "text-2xl lg:text-4xl")}>{tier.price}</span>
-        {tier.price !== "Custom" && <span className="text-foreground/40 text-[10px] lg:text-sm ml-1">/ mo</span>}
-        <p className="text-foreground/40 mt-3 lg:mt-6 text-[10px] lg:text-sm leading-relaxed font-light">
-          {tier.description}
-        </p>
-      </div>
+        <h3
+          className={cn(
+            "font-bold",
 
-      <div className="space-y-3 lg:space-y-4 mb-8 lg:mb-12 flex-grow">
-        {tier.features.map((feature, fIdx) => (
-          <div key={fIdx} className="flex items-center gap-2 lg:gap-3">
-            <Check className="w-3 h-3 lg:w-4 lg:h-4 text-primary" />
-            <span className="text-[10px] lg:text-sm text-foreground/70">{feature}</span>
+            mobile
+              ? "text-2xl"
+              : "text-3xl"
+          )}
+        >
+          {tier.name}
+        </h3>
+
+        {tier.popular && (
+          <div className="rounded-full bg-primary px-3 py-1 text-xs text-white font-bold">
+
+            Popular
+
           </div>
-        ))}
+        )}
+
       </div>
 
-      <Button asChild
-        variant={tier.popular ? 'default' : 'outline'} 
-        className={cn(
-          "w-full rounded-full font-bold cursor-pointer",
-          isMobile ? "h-11 text-xs" : "h-9 lg:h-12 text-[9px] lg:text-sm",
-          tier.popular ? 'bg-primary text-primary-foreground hover:opacity-90' : 'border-foreground/10 hover:bg-foreground/5 text-foreground'
+      <div className="mb-8">
+
+        <div className="text-4xl font-bold">
+
+          {tier.price}
+
+        </div>
+
+        {tier.price !==
+          "Custom" && (
+          <span className="opacity-50">
+
+            / month
+
+          </span>
         )}
+
+        <p className="mt-4 text-muted-foreground">
+
+          {tier.description}
+
+        </p>
+
+      </div>
+
+      <div className="space-y-4 flex-grow">
+
+        {tier.features.map(
+          (
+            item,
+            idx
+          ) => (
+            <div
+              key={
+                idx
+              }
+              className="flex gap-3"
+            >
+              <Check className="w-4 h-4 text-primary" />
+
+              <span>
+
+                {item}
+
+              </span>
+
+            </div>
+          )
+        )}
+
+      </div>
+
+      <Button
+        asChild
+        className="mt-10 rounded-full"
       >
         <Link href="#contact">
-          {tier.price === "Custom" ? "Contact Us" : "Get Started"}
+
+          {tier.price ===
+          "Custom"
+            ? "Contact Us"
+            : "Get Started"}
+
         </Link>
       </Button>
+
     </div>
   );
 }
+```

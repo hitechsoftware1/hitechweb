@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo, use, useEffect } from 'react';
@@ -37,6 +36,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';

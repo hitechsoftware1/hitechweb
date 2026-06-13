@@ -1,181 +1,141 @@
 ```tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Calculator } from "lucide-react";
 
-const features = [
-  {
-    id: "mobile",
-    name: "Mobile App (iOS/Android)",
-    base: 2500,
-    icon: "📱",
-  },
-  {
-    id: "ecommerce",
-    name: "E-commerce Integration",
-    base: 1500,
-    icon: "🛒",
-  },
-  {
-    id: "ai",
-    name: "AI & Neural Systems",
-    base: 3000,
-    icon: "🧠",
-  },
-  {
-    id: "auth",
-    name: "Advanced Security (Auth)",
-    base: 800,
-    icon: "🔐",
-  },
-  {
-    id: "cloud",
-    name: "Cloud Infrastructure",
-    base: 1200,
-    icon: "☁️",
-  },
-  {
-    id: "analytics",
-    name: "Real-time Analytics",
-    base: 1000,
-    icon: "📊",
-  },
+const FEATURES = [
+  { id: "mobile", name: "Mobile App", price: 2500, icon: "📱" },
+  { id: "ecommerce", name: "E-commerce", price: 1500, icon: "🛒" },
+  { id: "ai", name: "AI Systems", price: 3000, icon: "🧠" },
+  { id: "auth", name: "Security", price: 800, icon: "🔐" },
+  { id: "cloud", name: "Cloud", price: 1200, icon: "☁️" },
+  { id: "analytics", name: "Analytics", price: 1000, icon: "📊" },
 ];
 
-function cn(...inputs: string[]) {
-  return inputs.filter(Boolean).join(" ");
-}
-
 export default function PricingCalculator() {
-  const [selections, setSelections] =
+  const [selected, setSelected] =
     useState<string[]>([]);
 
   const [complexity, setComplexity] =
     useState(1);
 
-  const total = useMemo(() => {
-    const featureTotal = features
-      .filter((f) =>
-        selections.includes(f.id)
-      )
-      .reduce(
-        (sum, f) => sum + f.base,
-        0
-      );
-
-    return Math.round(
-      (2000 + featureTotal) *
-        (1 + (complexity - 1) * 0.5)
-    );
-  }, [selections, complexity]);
-
-  const toggleFeature = (
-    id: string
-  ) => {
-    setSelections((prev) =>
+  function toggle(id: string) {
+    setSelected((prev) =>
       prev.includes(id)
         ? prev.filter(
-            (x) => x !== id
+            (item) => item !== id
           )
         : [...prev, id]
     );
-  };
+  }
+
+  const extras = FEATURES
+    .filter((item) =>
+      selected.includes(item.id)
+    )
+    .reduce(
+      (sum, item) =>
+        sum + item.price,
+      0
+    );
+
+  const multiplier =
+    1 + (complexity - 1) * 0.5;
+
+  const total = Math.round(
+    (2000 + extras) * multiplier
+  );
 
   return (
     <main className="min-h-screen bg-background">
 
       <Navbar />
 
-      <section className="container mx-auto px-6 pt-32 mb-24">
+      <section className="container mx-auto px-6 pt-32">
 
-        <h1 className="text-5xl lg:text-8xl font-bold text-center mb-8">
+        <div className="text-center mb-16">
 
-          Invest in
-          <br />
-          Value.
+          <h1 className="text-6xl font-bold">
 
-        </h1>
+            Pricing Calculator
 
-        <p className="text-center max-w-2xl mx-auto text-muted-foreground">
+          </h1>
 
-          Calculate the estimated
-          investment for your next
-          high-performance digital
-          ecosystem.
+          <p className="mt-4 opacity-60">
 
-        </p>
+            Estimate your project.
 
-      </section>
+          </p>
 
-      <section className="container mx-auto px-6 mb-32">
+        </div>
 
-        <div className="grid lg:grid-cols-12 gap-12 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-12 gap-10">
 
-          <div className="lg:col-span-7 space-y-10">
+          <div className="lg:col-span-7">
 
-            <div className="apple-card p-10">
+            <div className="apple-card p-8">
 
-              <div className="flex items-center gap-3 mb-8">
+              <div className="flex gap-3 mb-8">
 
-                <Calculator className="w-6 h-6" />
+                <Calculator />
 
-                <h3 className="text-2xl font-bold">
-
-                  Feature Selection
-
-                </h3>
+                <h2>
+                  Features
+                </h2>
 
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
 
-                {features.map(
-                  (feature) => (
+                {FEATURES.map(
+                  (item) => (
                     <button
                       key={
-                        feature.id
+                        item.id
                       }
                       type="button"
                       onClick={() =>
-                        toggleFeature(
-                          feature.id
+                        toggle(
+                          item.id
                         )
                       }
-                      className={cn(
-                        "p-6 rounded-3xl border transition text-left",
-
-                        selections.includes(
-                          feature.id
+                      className={`border rounded-3xl p-6 text-left ${
+                        selected.includes(
+                          item.id
                         )
-                          ? "bg-primary/10 border-primary"
-                          : "hover:border-primary/40"
-                      )}
+                          ? "border-primary bg-primary/10"
+                          : ""
+                      }`}
                     >
-                      <div className="text-2xl mb-3">
+                      <div className="text-3xl">
+
                         {
-                          feature.icon
+                          item.icon
                         }
+
                       </div>
 
-                      <h4 className="font-bold">
+                      <div className="mt-3">
 
                         {
-                          feature.name
+                          item.name
                         }
 
-                      </h4>
+                      </div>
 
-                      <p className="text-sm opacity-60">
+                      <div className="opacity-60">
 
-                        Base:
-                        ${feature.base}
+                        $
+                        {
+                          item.price
+                        }
 
-                      </p>
+                      </div>
 
                     </button>
                   )
@@ -185,28 +145,32 @@ export default function PricingCalculator() {
 
             </div>
 
-            <div className="apple-card p-10">
+            <div className="apple-card p-8 mt-8">
 
-              <div className="flex justify-between items-center mb-8">
+              <div className="flex justify-between">
 
-                <h3 className="text-2xl font-bold">
-
-                  Project Complexity
-
+                <h3>
+                  Complexity
                 </h3>
 
-                <div className="border rounded-full px-4 py-1">
+                <div>
 
-                  Level {complexity}
+                  Level
+                  {" "}
+                  {
+                    complexity
+                  }
 
                 </div>
 
               </div>
 
               <Slider
-                value={[complexity]}
-                max={5}
+                value={[
+                  complexity,
+                ]}
                 min={1}
+                max={5}
                 step={1}
                 onValueChange={(
                   value
@@ -223,27 +187,63 @@ export default function PricingCalculator() {
 
           <div className="lg:col-span-5">
 
-            <div className="apple-card p-10 sticky top-32">
+            <div className="apple-card p-8">
 
-              <h3 className="mb-8 uppercase">
-
-                Estimate Breakdown
-
+              <h3>
+                Estimate
               </h3>
 
-              <div className="space-y-5">
+              <div className="mt-8 space-y-4">
 
                 <div className="flex justify-between">
 
                   <span>
-                    Core Fee
+                    Base
                   </span>
 
                   <strong>
-                    $2,000
+                    $2000
                   </strong>
 
                 </div>
+
+                <div className="flex justify-between">
+
+                  <span>
+                    Features
+                  </span>
+
+                  <strong>
+
+                    $
+                    {extras}
+
+                  </strong>
+
+                </div>
+
+                <div className="flex justify-between">
+
+                  <span>
+
+                    Complexity
+
+                  </span>
+
+                  <strong>
+
+                    ×
+                    {
+                      multiplier.toFixed(
+                        1
+                      )
+                    }
+
+                  </strong>
+
+                </div>
+
+                <hr />
 
                 <div className="flex justify-between">
 
@@ -262,9 +262,9 @@ export default function PricingCalculator() {
 
               </div>
 
-              <Button className="w-full mt-10 h-14 rounded-full">
+              <Button className="w-full mt-8">
 
-                Get Detailed Proposal
+                Get Proposal
 
               </Button>
 

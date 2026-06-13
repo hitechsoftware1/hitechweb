@@ -1,74 +1,59 @@
-
+```tsx
 "use client";
 
 import { useMemo, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-
 import { Calculator } from "lucide-react";
 
-const features = [
+const FEATURES = [
   {
     id: "mobile",
-    name: "Mobile App (iOS/Android)",
-    base: 2500,
+    name: "Mobile App (iOS / Android)",
+    price: 2500,
     icon: "📱",
   },
   {
     id: "ecommerce",
     name: "E-commerce Integration",
-    base: 1500,
+    price: 1500,
     icon: "🛒",
   },
   {
     id: "ai",
     name: "AI & Neural Systems",
-    base: 3000,
+    price: 3000,
     icon: "🧠",
   },
   {
     id: "auth",
-    name: "Advanced Security (Auth)",
-    base: 800,
+    name: "Advanced Security",
+    price: 800,
     icon: "🔐",
   },
   {
     id: "cloud",
     name: "Cloud Infrastructure",
-    base: 1200,
+    price: 1200,
     icon: "☁️",
   },
   {
     id: "analytics",
     name: "Real-time Analytics",
-    base: 1000,
+    price: 1000,
     icon: "📊",
   },
 ];
 
-function cn(...classes: (string | boolean | undefined)[]) {
+function cn(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PricingCalculator() {
   const [selected, setSelected] = useState<string[]>([]);
   const [complexity, setComplexity] = useState(1);
-
-  const total = useMemo(() => {
-    const featureTotal = features
-      .filter((f) => selected.includes(f.id))
-      .reduce((sum, item) => sum + item.base, 0);
-
-    const multiplier = 1 + (complexity - 1) * 0.5;
-
-    return Math.round((2000 + featureTotal) * multiplier);
-  }, [selected, complexity]);
-
-  const multiplier = (1 + (complexity - 1) * 0.5).toFixed(1);
 
   const toggleFeature = (id: string) => {
     setSelected((prev) =>
@@ -78,73 +63,92 @@ export default function PricingCalculator() {
     );
   };
 
+  const multiplier = useMemo(
+    () => 1 + (complexity - 1) * 0.5,
+    [complexity]
+  );
+
+  const total = useMemo(() => {
+    const extras = FEATURES
+      .filter((f) => selected.includes(f.id))
+      .reduce((sum, f) => sum + f.price, 0);
+
+    return Math.round((2000 + extras) * multiplier);
+  }, [selected, multiplier]);
+
   return (
     <main className="min-h-screen bg-background">
 
       <Navbar />
 
-      <section className="container mx-auto px-6 pt-32 pb-20">
+      <section className="container mx-auto px-6 pt-32 pb-16">
+
         <div className="max-w-3xl mx-auto text-center">
 
           <h1 className="text-5xl md:text-7xl font-bold mb-8">
             Pricing Calculator
           </h1>
 
-          <p className="text-lg text-muted-foreground">
-            Estimate the investment required to build your next
+          <p className="text-muted-foreground text-lg">
+            Estimate the investment for your next
             digital product.
           </p>
 
         </div>
+
       </section>
 
       <section className="container mx-auto px-6 pb-32">
 
         <div className="grid lg:grid-cols-12 gap-10 max-w-7xl mx-auto">
 
-          {/* LEFT */}
-
           <div className="lg:col-span-7 space-y-8">
 
             <div className="apple-card p-8">
 
               <div className="flex items-center gap-3 mb-8">
-                <Calculator className="w-6 h-6 text-primary" />
+
+                <Calculator className="w-6 h-6" />
+
                 <h2 className="text-2xl font-bold">
                   Select Features
                 </h2>
+
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
 
-                {features.map((feature) => {
+                {FEATURES.map((feature) => {
 
-                  const active = selected.includes(feature.id);
+                  const active =
+                    selected.includes(feature.id);
 
                   return (
                     <button
                       key={feature.id}
                       type="button"
-                      onClick={() => toggleFeature(feature.id)}
+                      onClick={() =>
+                        toggleFeature(feature.id)
+                      }
                       className={cn(
-                        "rounded-3xl border p-6 text-left transition-all",
-
+                        "border rounded-3xl p-6 text-left transition",
                         active
                           ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/30"
+                          : "hover:border-primary/40"
                       )}
                     >
                       <div className="text-3xl mb-4">
                         {feature.icon}
                       </div>
 
-                      <h3 className="font-semibold mb-2">
+                      <h3 className="font-bold mb-2">
                         {feature.name}
                       </h3>
 
-                      <p className="text-sm text-muted-foreground">
-                        Starting at ${feature.base}
+                      <p className="text-sm opacity-60">
+                        ${feature.price}
                       </p>
+
                     </button>
                   );
                 })}
@@ -155,15 +159,17 @@ export default function PricingCalculator() {
 
             <div className="apple-card p-8">
 
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex justify-between mb-8">
 
                 <h2 className="text-2xl font-bold">
                   Complexity
                 </h2>
 
-                <Badge variant="outline">
+                <div className="border rounded-full px-4 py-1 text-sm">
+
                   Level {complexity}
-                </Badge>
+
+                </div>
 
               </div>
 
@@ -177,7 +183,7 @@ export default function PricingCalculator() {
                 }
               />
 
-              <div className="flex justify-between mt-6 text-xs text-muted-foreground">
+              <div className="flex justify-between mt-6 text-sm opacity-50">
 
                 <span>Startup MVP</span>
 
@@ -189,50 +195,49 @@ export default function PricingCalculator() {
 
           </div>
 
-          {/* RIGHT */}
-
           <div className="lg:col-span-5">
 
-            <div className="apple-card p-8 sticky top-28">
+            <div className="apple-card sticky top-28 p-8">
 
-              <h2 className="uppercase tracking-widest text-primary mb-10 text-sm">
-                Estimate Breakdown
-              </h2>
+              <h3 className="uppercase text-sm mb-8">
+                Estimate
+              </h3>
 
               <div className="space-y-5">
 
                 <div className="flex justify-between">
 
-                  <span>Core Architecture</span>
+                  <span>Base Architecture</span>
 
                   <strong>$2,000</strong>
 
                 </div>
 
-                {features
+                {FEATURES
                   .filter((f) =>
                     selected.includes(f.id)
                   )
-                  .map((item) => (
+                  .map((f) => (
                     <div
-                      key={item.id}
+                      key={f.id}
                       className="flex justify-between"
                     >
-                      <span>
-                        {item.name}
-                      </span>
+                      <span>{f.name}</span>
 
                       <strong>
-                        +${item.base}
+                        +${f.price}
                       </strong>
+
                     </div>
                   ))}
 
-                <div className="flex justify-between text-primary">
+                <div className="flex justify-between">
 
-                  <span>Complexity</span>
+                  <span>Multiplier</span>
 
-                  <strong>x{multiplier}</strong>
+                  <strong>
+                    ×{multiplier.toFixed(1)}
+                  </strong>
 
                 </div>
 
@@ -245,7 +250,9 @@ export default function PricingCalculator() {
                     </span>
 
                     <span className="text-4xl font-bold">
+
                       ${total.toLocaleString()}
+
                     </span>
 
                   </div>

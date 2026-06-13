@@ -30,7 +30,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, orderBy, limit, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, orderBy, limit, updateDoc, doc, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -84,6 +84,24 @@ export default function StaffHub() {
   const { data: todayAttendance } = useCollection(attendanceQuery);
   const { data: activeCodes } = useCollection(dailyCodeQuery);
   
+  // Automated Code Generation Logic for Staff Hub (ensure worker isn't blocked)
+  useEffect(() => {
+    if (!db || !activeCodes) return;
+    
+    if (activeCodes.length === 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const generatedCode = Math.floor(10 + Math.random() * 90).toString();
+      const codeId = `code_${today}`;
+      
+      setDoc(doc(db, 'officeCodes', codeId), {
+        code: generatedCode,
+        date: today,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+    }
+  }, [db, activeCodes]);
+
   const currentDailyCode = activeCodes?.[0]?.code || 'WAITING...';
   const todayRecord = todayAttendance?.[0];
 

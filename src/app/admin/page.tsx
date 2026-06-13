@@ -65,7 +65,6 @@ export default function AdminHub(props: {
   const auth = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
-  const [newOfficeCode, setNewOfficeCode] = useState('');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   
   // Punch states
@@ -113,11 +112,10 @@ export default function AdminHub(props: {
   const currentDailyCode = activeCodes?.[0]?.code || '--';
   const todayRecord = userAttendance?.[0];
 
-  // Automated Code Generation Logic
+  // Automated Code Generation Logic - Autochanges every 24 hours based on date string
   useEffect(() => {
     if (!db || !activeCodes) return;
     
-    // Only generate if no code exists for today
     if (activeCodes.length === 0) {
       const today = new Date().toISOString().split('T')[0];
       const generatedCode = Math.floor(10 + Math.random() * 90).toString();
@@ -187,21 +185,6 @@ export default function AdminHub(props: {
       href: '/admin/system'
     }
   ];
-
-  const handleManualOfficeCode = () => {
-    if (!db || !newOfficeCode) return;
-    const today = new Date().toISOString().split('T')[0];
-    const codeId = `code_${today}`;
-    setDoc(doc(db, 'officeCodes', codeId), {
-      code: newOfficeCode,
-      date: today,
-      active: true,
-      createdAt: serverTimestamp()
-    }).then(() => {
-      toast({ title: "Neural Code Override", description: `Code ${newOfficeCode} is now active for all workers.` });
-      setNewOfficeCode('');
-    });
-  };
 
   const handlePunchIn = async () => {
     if (!db || !user || !punchInCode) return;
@@ -290,19 +273,10 @@ export default function AdminHub(props: {
               <p className="text-xs text-foreground/50 font-medium">Auto-generated daily for global workforce validation.</p>
             </div>
           </div>
-          <div className="flex items-center gap-8">
-            <span className="text-5xl font-headline font-bold tracking-tighter text-zinc-800 dark:text-zinc-100">
+          <div className="flex items-center">
+            <span className="text-6xl font-headline font-bold tracking-tighter text-primary">
               {currentDailyCode}
             </span>
-            <div className="flex gap-2">
-              <Input 
-                value={newOfficeCode} 
-                onChange={(e) => setNewOfficeCode(e.target.value)}
-                placeholder="Override"
-                className="w-24 h-12 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-zinc-100 text-center font-bold"
-              />
-              <Button onClick={handleManualOfficeCode} className="h-12 w-12 rounded-xl bg-primary text-white"><Plus className="w-5 h-5" /></Button>
-            </div>
           </div>
         </div>
 

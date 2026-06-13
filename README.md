@@ -2,18 +2,25 @@
 
 This is a premium Next.js enterprise platform architected for HITECH SOFTWARE COMPANY.
 
-## 🚀 Deployment Instructions
+## 🚀 Vercel Deployment Instructions
 
-### 1. GitHub
+Follow these steps to host the HITECH platform on Vercel:
+
+### 1. Push to GitHub
 - Initialize a git repository: `git init`
-- Add files: `git add .`
-- Commit: `git commit -m "Initial HITECH deployment"`
-- Push to your GitHub repository.
+- Add all files: `git add .`
+- Commit changes: `git commit -m "Prepare for Vercel deployment"`
+- Create a new repository on GitHub and push your code.
 
-### 2. Vercel / App Hosting
-When deploying to Vercel, ensure you configure the following Environment Variables:
+### 2. Import to Vercel
+- Log in to [Vercel](https://vercel.com).
+- Click **Add New** > **Project**.
+- Import your GitHub repository.
 
-#### Firebase Configuration (Client-Side)
+### 3. Configure Environment Variables
+In the Vercel "Configure Project" screen, expand the **Environment Variables** section and add the following keys (values found in your `.env` file):
+
+#### Firebase (Required for Database & Auth)
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
@@ -21,22 +28,24 @@ When deploying to Vercel, ensure you configure the following Environment Variabl
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
 
-#### AI & Intelligence (Server-Side)
-- `GOOGLE_GENAI_API_KEY`: Required for Zainab (AI Concierge) and the Strategy Studio.
+#### AI Intelligence (Required for Zainab & Strategy Studio)
+- `GOOGLE_GENAI_API_KEY`: Obtain this from the [Google AI Studio](https://aistudio.google.com/).
 
+#### Mail Bridge (Required for Onboarding & Contact)
+- `SMTP_HOST`
+- `SMTP_USER`
+- `SMTP_PASS`
+
+### 4. Deploy
+- Click **Deploy**. Vercel will autonomously build and host your HITECH platform.
+
+---
 ## 🛠️ Tech Stack
 - **Framework**: Next.js 15 (App Router)
 - **Styling**: Tailwind CSS + ShadCN UI
 - **Database**: Firebase Firestore
 - **Auth**: Firebase Authentication
 - **AI**: Google Genkit (Gemini 2.5 Flash)
-- **Animations**: Framer Motion
+- **Email**: Nodemailer (Mail Bridge)
 
-## 📁 Architecture
-- `/src/app`: Application routes and pages.
-- `/src/components`: Reusable UI modules and section layouts.
-- `/src/firebase`: Firebase initialization and custom data hooks.
-- `/src/ai`: Genkit flows and AI logic.
-
----
 © 2024 HITECH SOFTWARE COMPANY. Engineered for the extraordinary.

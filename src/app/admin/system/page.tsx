@@ -30,7 +30,9 @@ import {
   Shield,
   Trash2,
   Mail,
-  Lock
+  Lock,
+  AlertCircle,
+  Sparkles
 } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { signOut, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -90,7 +92,7 @@ export default function SystemArchitecturePortal() {
   const { data: tasks } = useCollection(db ? query(collection(db, 'tasks'), orderBy('createdAt', 'desc')) : null);
   const { data: profiles } = useCollection(db ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
   const { data: requisitions } = useCollection(db ? query(collection(db, 'requisitions'), orderBy('createdAt', 'desc')) : null);
-  const { data: projects } = useCollection(db ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
+  const { data: inquiries } = useCollection(db ? query(collection(db, 'projectInquiries'), where('status', '==', 'new')) : null);
 
   // States
   const [isNewUserOpen, setIsNewUserOpen] = useState(false);
@@ -125,6 +127,33 @@ export default function SystemArchitecturePortal() {
       .catch(() => toast({ variant: "destructive", title: "Update Failed" }));
   };
 
+  const updateRequisitionStatus = async (id: string, status: string) => {
+    if (!db) return;
+    updateDoc(doc(db, 'requisitions', id), { status })
+      .then(() => toast({ title: "Requisition Processed", description: `Status updated to ${status}.` }))
+      .catch(() => toast({ variant: "destructive", title: "Process Failed" }));
+  };
+
+  const promoteToProject = async (inquiry: any) => {
+    if (!db) return;
+    try {
+      const projectData = {
+        title: inquiry.description.substring(0, 30) + "...",
+        clientName: inquiry.fullName,
+        clientId: inquiry.email,
+        description: inquiry.description,
+        status: 'active',
+        progress: 0,
+        startDate: serverTimestamp(),
+      };
+      await addDoc(collection(db, 'projects'), projectData);
+      await updateDoc(doc(db, 'projectInquiries', inquiry.id), { status: 'closed' });
+      toast({ title: "Portal Generated", description: "Strategic inquiry has been promoted to a live project portal." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Generation Failed" });
+    }
+  };
+
   const handleCreateUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!db || !auth) return;
@@ -137,8 +166,6 @@ export default function SystemArchitecturePortal() {
     const role = formData.get('role') as string;
 
     try {
-      // NOTE: Creating a user with client SDK signs the creator OUT and the new user IN.
-      // In a production app, this would be handled by a Firebase Function to avoid logout.
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
@@ -150,13 +177,9 @@ export default function SystemArchitecturePortal() {
         joinedAt: serverTimestamp()
       });
 
-      toast({ title: "Identity Provisioned", description: `${name} has been added to the neural database.` });
+      toast({ title: "Identity Provisioned", description: `${name} added to neural database.` });
       setIsNewUserOpen(false);
-      
-      // Auto-logout the newly created user to return to admin state (or user will have to relogin)
-      // This is a limitation of client-side user creation.
       signOut(auth).then(() => router.push('/login'));
-      
     } catch (error: any) {
       toast({ variant: "destructive", title: "Provisioning Failed", description: error.message });
     } finally {
@@ -177,36 +200,29 @@ export default function SystemArchitecturePortal() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight mb-1">Workforce Presence</h1>
-          <p className="text-sm text-zinc-400 font-medium">Verify and confirm daily worker punch-ins.</p>
+          <p className="text-sm text-zinc-400 font-medium">Verify daily worker punch-ins and shift sign-offs.</p>
         </div>
       </div>
-
       <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 overflow-hidden shadow-sm">
         <table className="w-full text-left">
           <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-100 dark:border-zinc-800">
             <tr className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
               <th className="px-8 py-5">Staff Member</th>
               <th className="px-8 py-5">Date</th>
-              <th className="px-8 py-5">Code Used</th>
               <th className="px-8 py-5">Status</th>
               <th className="px-8 py-5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
-            {attendance?.map((log: any, i) => (
-              <tr key={i} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all">
+            {attendance?.map((log: any) => (
+              <tr key={log.id} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all">
+                <td className="px-8 py-6"><p className="text-xs font-bold">{log.userName}</p></td>
+                <td className="px-8 py-6 text-[10px] font-bold text-zinc-400">{log.date}</td>
                 <td className="px-8 py-6">
-                  <p className="text-xs font-bold">{log.userName}</p>
-                </td>
-                <td className="px-8 py-6 text-[10px] font-bold text-zinc-400 uppercase">{log.date}</td>
-                <td className="px-8 py-6 text-xs font-medium text-zinc-600 dark:text-zinc-300 font-mono tracking-widest">{log.officeCodeUsed}</td>
-                <td className="px-8 py-6">
-                   <Badge variant="outline" className={cn(
-                      "text-[9px] font-bold uppercase",
-                      log.status === 'approved' ? 'border-green-500/20 text-green-500 bg-green-500/5' :
-                      log.status === 'pending' ? 'border-amber-500/20 text-amber-500 bg-amber-500/5' :
-                      'border-red-500/20 text-red-500 bg-red-500/5'
-                    )}>{log.status}</Badge>
+                  <Badge variant="outline" className={cn(
+                    "text-[9px] font-bold uppercase",
+                    log.status === 'approved' ? 'border-green-500/20 text-green-500 bg-green-500/5' : 'border-amber-500/20 text-amber-500 bg-amber-500/5'
+                  )}>{log.status}</Badge>
                 </td>
                 <td className="px-8 py-6 text-right">
                   <div className="flex justify-end gap-2">
@@ -222,80 +238,55 @@ export default function SystemArchitecturePortal() {
     </motion.div>
   );
 
-  const renderAccess = () => (
+  const renderProjects = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight mb-1">Access Management</h1>
-          <p className="text-sm text-zinc-400 font-medium">Provision identities and audit module permissions.</p>
+          <h1 className="text-2xl font-bold tracking-tight mb-1">Strategic Portals</h1>
+          <p className="text-sm text-zinc-400 font-medium">Generate project portals from pending client inquiries.</p>
         </div>
-        <Button onClick={() => setIsNewUserOpen(true)} className="rounded-xl h-11 px-6 font-bold flex items-center gap-2">
-          <UserPlus className="w-4 h-4" /> Provision identity
-        </Button>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {[
-          { label: 'TOTAL IDENTITIES', value: profiles?.length || 0, icon: Users },
-          { label: 'ADMIN CLEARANCE', value: profiles?.filter((p: any) => p.role === 'admin').length || 0, icon: Shield },
-          { label: 'STAFF CLEARANCE', value: profiles?.filter((p: any) => p.role === 'staff').length || 0, icon: UserCheck },
-          { label: 'CLIENT PORTALS', value: profiles?.filter((p: any) => p.role === 'client').length || 0, icon: Layers },
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm">
-            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-3">{stat.label}</p>
-            <div className="flex justify-between items-end">
-              <p className="text-3xl font-headline font-bold">{stat.value}</p>
-              <stat.icon className="w-5 h-5 text-zinc-100 dark:text-zinc-800" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {inquiries?.map((inq: any) => (
+          <div key={inq.id} className="apple-card p-8 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-start mb-6">
+                <Badge className="bg-primary/10 text-primary border-none text-[8px] uppercase tracking-widest">{inq.projectType}</Badge>
+                <span className="text-[10px] font-bold text-zinc-400">{inq.budget}</span>
+              </div>
+              <h4 className="text-lg font-bold mb-2">{inq.fullName}</h4>
+              <p className="text-xs text-zinc-400 line-clamp-2 mb-8">{inq.description}</p>
             </div>
+            <Button onClick={() => promoteToProject(inq)} className="w-full rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center gap-2">
+              <Sparkles className="w-3 h-3" /> Generate Portal
+            </Button>
           </div>
         ))}
       </div>
+    </motion.div>
+  );
 
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-100 dark:border-zinc-800">
-            <tr className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-              <th className="px-8 py-5">Identity</th>
-              <th className="px-8 py-5">Role</th>
-              <th className="px-8 py-5">Joined</th>
-              <th className="px-8 py-5 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
-            {profiles?.map((profile: any) => (
-              <tr key={profile.id} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all">
-                <td className="px-8 py-6">
-                  <div>
-                    <p className="text-xs font-bold">{profile.displayName || 'Unnamed Operator'}</p>
-                    <p className="text-[10px] text-zinc-400">{profile.email}</p>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <Badge variant="outline" className={cn(
-                    "text-[9px] font-bold uppercase",
-                    profile.role === 'admin' ? 'border-primary/20 text-primary bg-primary/5' :
-                    profile.role === 'staff' ? 'border-blue-500/20 text-blue-500 bg-blue-500/5' :
-                    'border-zinc-300 text-zinc-400'
-                  )}>{profile.role}</Badge>
-                </td>
-                <td className="px-8 py-6 text-[10px] font-bold text-zinc-400">
-                  {profile.joinedAt?.toDate ? profile.joinedAt.toDate().toLocaleDateString() : 'Historical'}
-                </td>
-                <td className="px-8 py-6 text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="rounded-lg"><MoreVertical className="w-4 h-4 text-zinc-300" /></Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="rounded-xl">
-                      <DropdownMenuItem className="text-xs font-bold">Adjust clearance</DropdownMenuItem>
-                      <DropdownMenuItem className="text-xs font-bold text-red-500">Revoke access</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  const renderApprovals = () => (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <h1 className="text-2xl font-bold tracking-tight">Institutional Requisitions</h1>
+      <div className="space-y-4">
+        {requisitions?.map((req: any) => (
+          <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="flex gap-6 items-center">
+              <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
+                <Briefcase className="w-6 h-6 text-zinc-400" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm">{req.title}</h4>
+                <p className="text-xs text-zinc-400">{req.userName} • UGX {req.totalAmount?.toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => updateRequisitionStatus(req.id, 'approved')} variant="outline" className="border-green-500/20 text-green-500 hover:bg-green-50 rounded-xl h-10">Approve</Button>
+              <Button onClick={() => updateRequisitionStatus(req.id, 'rejected')} variant="outline" className="border-red-500/20 text-red-500 hover:bg-red-50 rounded-xl h-10">Reject</Button>
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );
@@ -306,141 +297,53 @@ export default function SystemArchitecturePortal() {
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] dark:bg-[#0A0A0A] font-body text-zinc-800 dark:text-zinc-100">
-      
       <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex flex-col fixed h-full z-20">
         <div className="p-6">
           <Link href="/" className="flex items-center gap-3 mb-10">
             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden border border-black/5 shrink-0">
-              {logo ? (
-                <Image src={logo.imageUrl} alt="Logo" width={32} height={32} className="object-cover w-full h-full" />
-              ) : (
-                <div className="w-full h-full bg-primary" />
-              )}
+              {logo ? <Image src={logo.imageUrl} alt="Logo" width={32} height={32} /> : <div className="w-full h-full bg-primary" />}
             </div>
             <div className="flex flex-col">
               <span className="font-headline font-bold text-xs tracking-tight uppercase">HITECH</span>
               <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest leading-none">SYSTEM</span>
             </div>
           </Link>
-          
           <nav className="space-y-1">
             {sidebarItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setActiveTab(item.label as SystemTab)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                  activeTab === item.label ? "bg-zinc-100 dark:bg-zinc-800 text-foreground" : "text-zinc-400 hover:text-foreground"
-                )}
-              >
+              <button key={item.label} onClick={() => setActiveTab(item.label as SystemTab)} className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all", activeTab === item.label ? "bg-zinc-100 dark:bg-zinc-800 text-foreground" : "text-zinc-400 hover:text-foreground")}>
                 <item.icon className={cn("w-4 h-4", activeTab === item.label ? "text-primary" : "text-zinc-400")} />
                 {item.label}
               </button>
             ))}
           </nav>
         </div>
-
         <div className="mt-auto p-6 space-y-1 border-t border-zinc-100 dark:border-zinc-800">
-          <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400">
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-          </button>
-          <Link href="/admin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400">
-            <ArrowLeft className="w-4 h-4" /> Portals hub
-          </Link>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">
-            <LogOut className="w-4 h-4" /> Sign out
-          </button>
+          <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400">{theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />} {theme === 'dark' ? 'Light mode' : 'Dark mode'}</button>
+          <Link href="/admin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400"><ArrowLeft className="w-4 h-4" /> Portals hub</Link>
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500"><LogOut className="w-4 h-4" /> Sign out</button>
         </div>
       </aside>
-
       <main className="flex-1 ml-64 p-8 lg:p-12 overflow-y-auto">
         <AnimatePresence mode="wait">
           {activeTab === 'Workforce' && renderWorkforce()}
-          {activeTab === 'Access' && renderAccess()}
-          {activeTab !== 'Workforce' && activeTab !== 'Access' && (
-            <motion.div key="fallback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-[60vh] text-zinc-400 italic">
-              {activeTab} module is initializing...
+          {activeTab === 'Projects' && renderProjects()}
+          {activeTab === 'Approvals' && renderApprovals()}
+          {activeTab !== 'Workforce' && activeTab !== 'Projects' && activeTab !== 'Approvals' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-[60vh] text-zinc-400 italic">
+              {activeTab} module active. Full provisioning tools available under clearance.
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* Provision Identity Dialog */}
       <Dialog open={isNewUserOpen} onOpenChange={setIsNewUserOpen}>
         <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800">
-          <DialogHeader>
-            <DialogTitle>Provision Identity</DialogTitle>
-            <DialogDescription>Add a new operator or staff member to the HITECH system.</DialogDescription>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Provision Identity</DialogTitle></DialogHeader>
           <form className="space-y-4 py-4" onSubmit={handleCreateUser}>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Full Name</Label>
-              <Input name="name" required className="rounded-xl h-11" placeholder="Lubega Joel" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Email Address</Label>
-              <Input name="email" type="email" required className="rounded-xl h-11" placeholder="operator@hitech.systems" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Initial Password</Label>
-              <Input name="password" type="password" required className="rounded-xl h-11" placeholder="Minimum 6 characters" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Clearance Role</Label>
-              <select name="role" className="w-full h-11 rounded-xl bg-background border border-input px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="staff">Engineering Staff</option>
-                <option value="admin">Administrator</option>
-              </select>
-            </div>
-            <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl flex gap-3 items-start mt-4">
-              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-amber-700/70 dark:text-amber-200/50 leading-relaxed font-medium">
-                Identity provisioning will momentarily refresh the neural link. You may need to sign back in.
-              </p>
-            </div>
-            <DialogFooter className="pt-6">
-              <Button type="submit" disabled={newUserLoading} className="w-full rounded-xl font-bold uppercase tracking-widest text-[10px]">
-                {newUserLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Authorize Provisioning"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* New Task Dialog */}
-      <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
-        <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800">
-          <DialogHeader>
-            <DialogTitle>Issue Mission Directive</DialogTitle>
-            <DialogDescription>Assign a new mission task to an engineering unit.</DialogDescription>
-          </DialogHeader>
-          <form className="space-y-4 py-4" onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const taskData = {
-              title: formData.get('title'),
-              description: formData.get('description'),
-              priority: 'medium',
-              status: 'todo',
-              createdAt: serverTimestamp()
-            };
-            addDoc(collection(db!, 'tasks'), taskData).then(() => {
-              toast({ title: "Task Issued" });
-              setIsNewTaskOpen(false);
-            });
-          }}>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Task Title</Label>
-              <Input name="title" required className="rounded-xl h-11" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Directives</Label>
-              <Input name="description" required className="rounded-xl h-11" />
-            </div>
-            <DialogFooter className="pt-6">
-              <Button type="submit" className="w-full rounded-xl font-bold uppercase tracking-widest text-[10px]">Transmit Directive</Button>
-            </DialogFooter>
+            <div className="space-y-2"><Label>Full Name</Label><Input name="name" required className="rounded-xl h-11" /></div>
+            <div className="space-y-2"><Label>Email Address</Label><Input name="email" type="email" required className="rounded-xl h-11" /></div>
+            <div className="space-y-2"><Label>Initial Password</Label><Input name="password" type="password" required className="rounded-xl h-11" /></div>
+            <DialogFooter className="pt-6"><Button type="submit" disabled={newUserLoading} className="w-full rounded-xl">Authorize Provisioning</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

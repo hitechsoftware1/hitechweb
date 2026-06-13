@@ -8,7 +8,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { ShieldCheck, Loader2, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Loader2, Lock, Mail, ArrowRight, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -35,16 +35,14 @@ export default function LoginPage() {
       });
       router.push('/admin');
     } catch (error: any) {
-      console.error("Login Error:", error.code, error.message);
-      
       let errorMessage = "Invalid credentials or insufficient clearance level.";
       
       if (error.code === 'auth/user-not-found') {
-        errorMessage = "Identity not found in the neural core. Please verify email.";
+        errorMessage = "Identity not found. Please verify your credentials.";
       } else if (error.code === 'auth/wrong-password') {
-        errorMessage = "Invalid validation key. Security protocols active.";
+        errorMessage = "Invalid validation key. Access denied.";
       } else if (error.code === 'auth/configuration-not-found') {
-        errorMessage = "Authentication service is not enabled in the Firebase Console.";
+        errorMessage = "Authentication service is not enabled in the Firebase Console. Please enable Email/Password provider.";
       } else if (error.code === 'auth/network-request-failed') {
         errorMessage = "Uplink failure. Check your internet connection.";
       }
@@ -63,7 +61,6 @@ export default function LoginPage() {
     <main className="min-h-screen bg-background pt-32">
       <Navbar />
       
-      {/* Background Decor */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-primary/5 blur-[120px] rounded-full opacity-50" />
         <div className="absolute inset-0 neural-grid opacity-30" />
@@ -79,7 +76,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 border border-primary/20">
               <ShieldCheck className="w-8 h-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-headline font-bold mb-2">System Access.</h1>
+            <h1 className="text-3xl font-headline font-bold mb-2 text-foreground">System Access.</h1>
             <p className="text-foreground/40 text-sm font-medium">Enter your institutional credentials to continue.</p>
           </motion.div>
 
@@ -99,7 +96,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@hitech.systems"
-                  className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50"
+                  className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50 text-foreground"
                   required
                 />
               </div>
@@ -113,15 +110,16 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50"
+                  className="h-12 rounded-xl bg-foreground/5 border-foreground/10 focus:ring-primary/50 text-foreground"
                   required
                 />
               </div>
 
-              <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex gap-3 items-start mb-4">
+              <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex gap-3 items-start">
                 <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                 <p className="text-[10px] text-foreground/50 leading-relaxed font-medium">
-                  Unauthorized access attempts are logged and transmitted to the HITECH security cluster.
+                  Super Admin: hitechsoftware03@gmail.com <br/>
+                  Ensure Auth is enabled in Firebase Console.
                 </p>
               </div>
 

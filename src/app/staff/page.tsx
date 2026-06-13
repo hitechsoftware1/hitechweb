@@ -36,17 +36,26 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function StaffHub() {
   const { user, loading: userLoading } = useUser();
   const db = useFirestore();
   const auth = useAuth();
+  const router = useRouter();
   const { toast } = useToast();
   
   const [punchInCode, setPunchInCode] = useState('');
   const [showPunchForm, setShowPunchInForm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  // Authentication Redirect
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, userLoading, router]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -84,7 +93,7 @@ export default function StaffHub() {
   const { data: todayAttendance } = useCollection(attendanceQuery);
   const { data: activeCodes } = useCollection(dailyCodeQuery);
   
-  // Automated Code Generation Logic for Staff Hub (ensure worker isn't blocked)
+  // Automated Code Generation Logic
   useEffect(() => {
     if (!db || !activeCodes) return;
     
@@ -155,17 +164,16 @@ export default function StaffHub() {
     { id: 'system', title: 'Settings', desc: 'Security protocols', icon: Settings, access: false }
   ];
 
-  if (userLoading) return <div className="min-h-screen flex items-center justify-center bg-[#F4F1F0] dark:bg-[#0A0A0A]"><Loader2 className="animate-spin text-primary" /></div>;
-  if (!user) return <div className="min-h-screen flex items-center justify-center p-6 text-center bg-[#F4F1F0] dark:bg-[#0A0A0A]"><div><ShieldCheck className="w-12 h-12 mx-auto mb-4 text-primary" /><h1 className="text-2xl font-headline font-bold">Unauthorized.</h1><p className="text-foreground/50">Clearance level insufficient.</p></div></div>;
+  if (userLoading) return <div className="min-h-screen flex items-center justify-center bg-[#F4F1F0] dark:bg-[#0A0A0A]"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>;
 
   return (
-    <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body text-zinc-800 dark:text-zinc-100">
+    <div className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body text-zinc-800 dark:text-zinc-100">
       <div className="container mx-auto px-6 max-w-6xl">
         
         <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
           <div className="flex items-center gap-5">
             <Avatar className="w-14 h-14 border-2 border-white dark:border-zinc-800 shadow-sm">
-              <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || 'E'}</AvatarFallback>
+              <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'E'}</AvatarFallback>
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Engineer'}</h1>
@@ -301,6 +309,6 @@ export default function StaffHub() {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 }

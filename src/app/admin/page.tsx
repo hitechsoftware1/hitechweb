@@ -33,7 +33,8 @@ import {
   Globe, 
   Briefcase, 
   Settings, 
-  User 
+  User,
+  ShieldAlert
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
@@ -44,6 +45,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type PortalModule = {
   id: string;
@@ -52,6 +54,7 @@ type PortalModule = {
   icon: any;
   permissions: string[];
   href?: string;
+  restricted?: boolean;
 };
 
 export default function AdminHub(props: {
@@ -63,7 +66,8 @@ export default function AdminHub(props: {
 
   const db = useFirestore();
   const auth = useAuth();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
+  const router = useRouter();
   const { toast } = useToast();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   
@@ -71,6 +75,13 @@ export default function AdminHub(props: {
   const [showPunchInForm, setShowPunchInForm] = useState(false);
   const [punchInCode, setPunchInCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Authentication & Clearance Redirect
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, userLoading, router]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -112,7 +123,7 @@ export default function AdminHub(props: {
   const currentDailyCode = activeCodes?.[0]?.code || '--';
   const todayRecord = userAttendance?.[0];
 
-  // Automated Code Generation Logic - Autochanges every 24 hours based on date string
+  // Automated Code Generation Logic
   useEffect(() => {
     if (!db || !activeCodes) return;
     
@@ -135,6 +146,9 @@ export default function AdminHub(props: {
     }
   }, [db, activeCodes, toast]);
 
+  // Role Logic: Supper Admin Access
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+
   const modules: PortalModule[] = [
     {
       id: 'account',
@@ -142,7 +156,8 @@ export default function AdminHub(props: {
       description: 'Profile, advance requests, requisitions',
       icon: User,
       permissions: ['View', 'Create', 'Edit', 'Delete'],
-      href: '/admin/my-account'
+      href: '/admin/my-account',
+      restricted: false
     },
     {
       id: 'web-management',
@@ -150,7 +165,8 @@ export default function AdminHub(props: {
       description: 'Platform oversight, SEO management, domain monitoring',
       icon: Globe,
       permissions: ['View', 'Edit'],
-      href: '/admin/web-management'
+      href: isSuperAdmin ? '/admin/web-management' : undefined,
+      restricted: !isSuperAdmin
     },
     {
       id: 'clients',
@@ -158,7 +174,8 @@ export default function AdminHub(props: {
       description: 'LPOs, quotations, invoices, inquiries',
       icon: Layers,
       permissions: ['View', 'Edit'],
-      href: '/admin/clients'
+      href: isSuperAdmin ? '/admin/clients' : undefined,
+      restricted: !isSuperAdmin
     },
     {
       id: 'communications',
@@ -166,7 +183,8 @@ export default function AdminHub(props: {
       description: 'Marketing, mail, internal newsletters',
       icon: MessageSquare,
       permissions: ['View', 'Edit'],
-      href: '/admin/communications'
+      href: isSuperAdmin ? '/admin/communications' : undefined,
+      restricted: !isSuperAdmin
     },
     {
       id: 'talent',
@@ -174,7 +192,8 @@ export default function AdminHub(props: {
       description: 'Job apps, interviews, onboarding',
       icon: Briefcase,
       permissions: ['View', 'Edit'],
-      href: '/admin/talent'
+      href: isSuperAdmin ? '/admin/talent' : undefined,
+      restricted: !isSuperAdmin
     },
     {
       id: 'system',
@@ -182,7 +201,8 @@ export default function AdminHub(props: {
       description: 'Users, roles, workforce tasks, approvals',
       icon: Settings,
       permissions: ['View', 'Edit', 'Delete'],
-      href: '/admin/system'
+      href: isSuperAdmin ? '/admin/system' : undefined,
+      restricted: !isSuperAdmin
     }
   ];
 
@@ -224,6 +244,8 @@ export default function AdminHub(props: {
     }).finally(() => setIsProcessing(false));
   };
 
+  if (userLoading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>;
+
   return (
     <main className="min-h-screen bg-[#F4F1F0] dark:bg-[#121212] pt-12 pb-24 font-body text-zinc-800 dark:text-zinc-100">
       <div className="container mx-auto px-6 max-w-6xl">
@@ -231,12 +253,13 @@ export default function AdminHub(props: {
         <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
           <div className="flex items-center gap-5">
             <Avatar className="w-14 h-14 border-2 border-white dark:border-zinc-800 shadow-sm">
-              <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || 'L'}</AvatarFallback>
+              <AvatarFallback className="bg-primary text-white font-bold">{user?.displayName?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'L'}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Lubega'}</h1>
-              <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest">
-                System Administrator • All Portals Active
+              <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || 'Operator'}</h1>
+              <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest flex items-center gap-2">
+                {isSuperAdmin ? <ShieldCheck className="w-3 h-3 text-primary" /> : <User className="w-3 h-3" />}
+                {isSuperAdmin ? 'Super Administrator' : 'Institutional Staff'} • {isSuperAdmin ? 'All Portals Active' : 'Limited Clearance'}
               </p>
             </div>
           </div>
@@ -337,13 +360,26 @@ export default function AdminHub(props: {
           {modules.map((mod) => (
             <motion.div 
               key={mod.id}
-              whileHover={{ y: -5 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all"
+              whileHover={!mod.restricted ? { y: -5 } : {}}
+              className={cn(
+                "bg-white dark:bg-zinc-900 rounded-[2rem] p-10 border border-black/5 shadow-sm flex flex-col justify-between min-h-[320px] relative transition-all",
+                mod.restricted && "opacity-60 cursor-not-allowed"
+              )}
             >
-              <Link href={mod.href || '#'} className="flex flex-col justify-between h-full">
+              <div className="flex flex-col justify-between h-full">
                 <div>
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-zinc-50 dark:bg-zinc-800 text-zinc-500">
-                    <mod.icon className="w-7 h-7" />
+                  <div className="flex justify-between items-start mb-8">
+                    <div className={cn(
+                      "w-14 h-14 rounded-2xl flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-500",
+                      mod.restricted && "bg-zinc-100/50 text-zinc-200"
+                    )}>
+                      <mod.icon className="w-7 h-7" />
+                    </div>
+                    {mod.restricted && (
+                      <Badge variant="outline" className="border-red-500/20 text-red-500 bg-red-500/5 flex items-center gap-1 font-bold text-[8px] uppercase tracking-widest">
+                        <Lock className="w-2.5 h-2.5" /> No Access
+                      </Badge>
+                    )}
                   </div>
                   <h3 className="text-xl font-bold mb-3">{mod.title}</h3>
                   <p className="text-sm text-foreground/40 leading-relaxed max-w-[200px]">{mod.description}</p>
@@ -351,14 +387,18 @@ export default function AdminHub(props: {
 
                 <div className="mt-10 pt-8 border-t border-black/5">
                   <div className="flex flex-wrap gap-2">
-                    {mod.permissions.map((perm) => (
-                      <button key={perm} className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors">
-                        {perm}
-                      </button>
-                    ))}
+                    {mod.href ? (
+                      <Link href={mod.href} className="text-[10px] font-bold uppercase tracking-widest text-primary hover:opacity-80 transition-opacity">
+                        Access Portal
+                      </Link>
+                    ) : (
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/20 italic">
+                        Restricted Module
+                      </span>
+                    )}
                   </div>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

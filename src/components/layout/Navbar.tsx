@@ -21,11 +21,13 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
   const { user } = useUser();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -104,21 +106,24 @@ export function Navbar() {
             </Link>
           ))}
           
-          <DropdownMenu>
-            <DropdownMenuTrigger className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors flex items-center gap-1.5 focus:outline-none">
-              Resources <ChevronDown className="w-3 h-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="apple-glass border-foreground/10 rounded-2xl p-2 min-w-[200px]">
-              {resourceLinks.map((res) => (
-                <DropdownMenuItem key={res.name} asChild className="rounded-xl focus:bg-primary/10 focus:text-primary p-0">
-                  <Link href={res.href} className="flex items-center gap-3 w-full px-4 py-3">
-                    <res.icon className="w-4 h-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">{res.name}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Use mounted state to prevent hydration ID mismatch on DropdownMenu */}
+          {mounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors flex items-center gap-1.5 focus:outline-none">
+                Resources <ChevronDown className="w-3 h-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="apple-glass border-foreground/10 rounded-2xl p-2 min-w-[200px]">
+                {resourceLinks.map((res) => (
+                  <DropdownMenuItem key={res.name} asChild className="rounded-xl focus:bg-primary/10 focus:text-primary p-0">
+                    <Link href={res.href} className="flex items-center gap-3 w-full px-4 py-3">
+                      <res.icon className="w-4 h-4" />
+                      <span className="text-xs font-bold uppercase tracking-wider">{res.name}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-4">

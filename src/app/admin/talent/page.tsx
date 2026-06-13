@@ -25,7 +25,10 @@ import {
   FileText,
   Calendar,
   ChevronDown,
-  Loader2
+  Loader2,
+  Trash2,
+  UserCheck,
+  UserX
 } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -56,6 +59,7 @@ export default function TalentPortal() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<TalentTab>('Overview');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [searchTerm, setSearchInput] = useState('');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
   // Clearance Check
@@ -104,6 +108,18 @@ export default function TalentPortal() {
     }
   };
 
+  const deleteApplication = async (appId: string) => {
+    if (!db) return;
+    if (confirm("Are you sure you want to purge this application node?")) {
+      try {
+        await deleteDoc(doc(db, 'jobApplications', appId));
+        toast({ title: "Node Purged", description: "Application removed from neural database." });
+      } catch (e) {
+        toast({ variant: "destructive", title: "Error", description: "Failed to delete record." });
+      }
+    }
+  };
+
   const sidebarItems = [
     { label: 'Overview', icon: LayoutGrid },
     { label: 'Applications', icon: ClipboardList },
@@ -117,6 +133,123 @@ export default function TalentPortal() {
     { label: 'Hired (MTD)', value: applications?.filter((a: any) => a.status === 'hired').length || 0, color: 'text-green-500' },
     { label: 'Pipeline Health', value: 'Strong', color: 'text-zinc-400' },
   ];
+
+  const filteredApps = (status?: string) => {
+    let list = applications || [];
+    if (status) {
+      list = list.filter((a: any) => a.status === status);
+    }
+    if (searchTerm) {
+      list = list.filter((a: any) => 
+        a.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        a.role?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return list;
+  };
+
+  const renderApplicationTable = (title: string, list: any[]) => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <p className="text-xs text-zinc-400 font-medium">Managing {list.length} recruitment nodes.</p>
+        </div>
+        <div className="relative w-full md:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
+          <Input 
+            placeholder="Filter candidates..." 
+            value={searchTerm}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="pl-10 rounded-xl h-10 bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 overflow-hidden shadow-sm">
+        <table className="w-full text-left">
+          <thead className="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-100 dark:border-zinc-800">
+            <tr className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <th className="px-8 py-5">Candidate / Role</th>
+              <th className="px-8 py-5">Contact</th>
+              <th className="px-8 py-5">Status</th>
+              <th className="px-8 py-5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+            {list.map((app: any) => (
+              <tr key={app.id} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all">
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold uppercase shrink-0">
+                      {app.fullName?.charAt(0) || '?'}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold">{app.fullName}</p>
+                      <p className="text-[10px] text-zinc-400 font-medium">{app.role}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-medium flex items-center gap-2"><Mail className="w-3 h-3" /> {app.email}</p>
+                    <p className="text-[10px] font-medium flex items-center gap-2"><Phone className="w-3 h-3" /> {app.phoneNumber}</p>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <Badge variant="outline" className={cn(
+                    "text-[8px] font-bold uppercase tracking-widest",
+                    app.status === 'applied' ? 'border-blue-500/20 text-blue-500 bg-blue-500/5' :
+                    app.status === 'interviewing' ? 'border-amber-500/20 text-amber-500 bg-amber-500/5' :
+                    app.status === 'hired' ? 'border-green-500/20 text-green-500 bg-green-500/5' :
+                    'border-red-500/20 text-red-500 bg-red-500/5'
+                  )}>
+                    {app.status}
+                  </Badge>
+                </td>
+                <td className="px-8 py-6 text-right">
+                  <div className="flex justify-end gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg">
+                          <MoreVertical className="w-4 h-4 text-zinc-400" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="rounded-xl border-zinc-100 dark:border-zinc-800 min-w-[160px]">
+                        <DropdownMenuItem onClick={() => window.open(app.portfolio, '_blank')} className="gap-2 text-[10px] font-bold uppercase tracking-widest rounded-lg">
+                          <ExternalLink className="w-3.5 h-3.5" /> View Portfolio
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => updateStatus(app.id, 'interviewing')} className="gap-2 text-[10px] font-bold uppercase tracking-widest rounded-lg text-amber-500">
+                          <Calendar className="w-3.5 h-3.5" /> Move to Interview
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => updateStatus(app.id, 'hired')} className="gap-2 text-[10px] font-bold uppercase tracking-widest rounded-lg text-green-500">
+                          <UserCheck className="w-3.5 h-3.5" /> Mark as Hired
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => updateStatus(app.id, 'rejected')} className="gap-2 text-[10px] font-bold uppercase tracking-widest rounded-lg text-red-400">
+                          <UserX className="w-3.5 h-3.5" /> Mark as Rejected
+                        </DropdownMenuItem>
+                        <div className="h-px bg-zinc-50 dark:bg-zinc-800 my-1" />
+                        <DropdownMenuItem onClick={() => deleteApplication(app.id)} className="gap-2 text-[10px] font-bold uppercase tracking-widest rounded-lg text-red-600">
+                          <Trash2 className="w-3.5 h-3.5" /> Purge Record
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {list.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-8 py-20 text-center">
+                  <p className="text-xs text-zinc-400 italic">Institutional recruitment ledger is empty for this segment.</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
+  );
 
   const renderOverview = () => (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
@@ -139,7 +272,7 @@ export default function TalentPortal() {
           <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col h-full overflow-hidden">
             <div className="p-8 border-b border-zinc-50 dark:border-zinc-800/50 flex justify-between items-center">
               <h3 className="text-sm font-bold uppercase tracking-widest">Recent Applications</h3>
-              <Button variant="ghost" size="sm" onClick={() => setActiveTab('Applications')}>View All</Button>
+              <Button variant="ghost" size="sm" onClick={() => setActiveTab('Applications')} className="text-[10px] font-bold uppercase tracking-widest">View All</Button>
             </div>
             <div className="flex-1 overflow-y-auto">
                {applications?.slice(0, 5).map((app: any, i) => (
@@ -162,6 +295,9 @@ export default function TalentPortal() {
                     </Badge>
                  </div>
                ))}
+               {(!applications || applications.length === 0) && (
+                 <div className="p-20 text-center text-zinc-400 italic text-xs">No active applications in the neural buffer.</div>
+               )}
             </div>
           </div>
         </div>
@@ -226,12 +362,9 @@ export default function TalentPortal() {
       <main className="flex-1 ml-64 p-8 lg:p-12 overflow-y-auto">
         <AnimatePresence mode="wait">
           {activeTab === 'Overview' && renderOverview()}
-          {/* Add other renders as needed */}
-          {activeTab !== 'Overview' && (
-            <motion.div key="fallback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-[60vh] text-zinc-400 italic">
-              {activeTab} module is initializing...
-            </motion.div>
-          )}
+          {activeTab === 'Applications' && renderApplicationTable('Active Applications', filteredApps())}
+          {activeTab === 'Interviews' && renderApplicationTable('Scheduled Interviews', filteredApps('interviewing'))}
+          {activeTab === 'Hired' && renderApplicationTable('Engineering Onboarding', filteredApps('hired'))}
         </AnimatePresence>
       </main>
     </div>

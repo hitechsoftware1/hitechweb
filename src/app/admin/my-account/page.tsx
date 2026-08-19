@@ -87,6 +87,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { zainabChat } from '@/ai/flows/zainab';
 
 type TabType = 'Overview' | 'Profile' | 'Attendance' | 'Advance Retainer' | 'Allowances' | 'Punch-In Allowances' | 'Requisitions' | 'Projects & Tasks' | 'My Documents' | 'Files' | 'Chat';
 
@@ -121,11 +122,17 @@ export default function MyAccountPage() {
   // Sub-tabs
   const [projectSubTab, setProjectSubTab] = useState<'Projects' | 'Tasks'>('Tasks');
 
+  // Zainab Chat State
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'model'; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+
   // Real-time Data
   const { data: attendanceLogs } = useCollection(db && user ? query(collection(db, 'attendance'), where('userId', '==', user.uid), orderBy('date', 'desc')) : null);
   const { data: myTasks } = useCollection(db && user ? query(collection(db, 'tasks'), where('assignedTo', '==', user.uid), orderBy('createdAt', 'desc')) : null);
   const { data: allProjects } = useCollection(db ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
   const { data: myRequisitions } = useCollection(db && user ? query(collection(db, 'requisitions'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null);
+  const { data: myRetainerRequests } = useCollection(db && user ? query(collection(db, 'retainerRequests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null);
   const { data: activeCodes } = useCollection(db ? query(collection(db, 'officeCodes'), where('date', '==', new Date().toISOString().split('T')[0])) : null);
 
   useEffect(() => {
@@ -191,7 +198,32 @@ export default function MyAccountPage() {
       setIsNewRetainerOpen(false);
       setRetainerAmount('');
       setRetainerReason('');
+    }).catch(() => {
+      toast({ variant: "destructive", title: "Request Failed", description: "Could not submit your advance request." });
     });
+  };
+
+  const handleSendChatMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim() || chatLoading) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    const newMessages: { role: 'user' | 'model'; content: string }[] = [...chatMessages, { role: 'user', content: userMessage }];
+    setChatMessages(newMessages);
+    setChatLoading(true);
+
+    try {
+      const response = await zainabChat({
+        message: userMessage,
+        history: chatMessages,
+      });
+      setChatMessages([...newMessages, { role: 'model', content: response.response }]);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Neural Sync Error", description: "Zainab is momentarily offline." });
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   // --- RENDERERS ---
@@ -441,13 +473,34 @@ export default function MyAccountPage() {
              </div>
              <span className="text-[8px] font-bold text-zinc-300 uppercase tracking-widest mt-2">Zainab // BOOT</span>
           </div>
+          {chatMessages.map((m, i) => (
+             <div key={i} className={cn("flex flex-col max-w-[80%]", m.role === 'user' ? "items-end ml-auto" : "items-start")}>
+                <div className={cn(
+                  "p-5 rounded-2xl text-sm font-light leading-relaxed",
+                  m.role === 'user' ? "bg-primary text-white rounded-tr-none" : "bg-zinc-50 dark:bg-zinc-800 rounded-tl-none"
+                )}>
+                   {m.content}
+                </div>
+                <span className="text-[8px] font-bold text-zinc-300 uppercase tracking-widest mt-2">{m.role === 'user' ? 'You' : 'Zainab'}</span>
+             </div>
+          ))}
+          {chatLoading && (
+             <div className="flex items-center gap-2 text-zinc-400">
+                <Loader2 className="w-4 h-4 animate-spin" /> <span className="text-xs italic">Zainab is thinking...</span>
+             </div>
+          )}
        </div>
-       <div className="p-6 border-t border-zinc-100 dark:border-zinc-800">
+       <form onSubmit={handleSendChatMessage} className="p-6 border-t border-zinc-100 dark:border-zinc-800">
           <div className="relative flex items-center gap-3">
-             <Input placeholder="Message the neural concierge..." className="h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-none pr-14" />
-             <Button className="h-14 w-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 transition-all"><Send className="w-5 h-5" /></Button>
+             <Input
+               value={chatInput}
+               onChange={(e) => setChatInput(e.target.value)}
+               placeholder="Message the neural concierge..."
+               className="h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-none pr-14"
+             />
+             <Button type="submit" disabled={chatLoading || !chatInput.trim()} className="h-14 w-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 transition-all"><Send className="w-5 h-5" /></Button>
           </div>
-       </div>
+       </form>
     </motion.div>
   );
 
@@ -596,7 +649,7 @@ export default function MyAccountPage() {
         <AnimatePresence mode="wait">
           {activeTab === 'Overview' && renderOverview()}
           {activeTab === 'Attendance' && renderAttendance()}
-          {activeTab === 'Advance Retainer' && renderFinancials('Advance Retainers', [], 'retainer')}
+          {activeTab === 'Advance Retainer' && renderFinancials('Advance Retainers', myRetainerRequests || [], 'retainer')}
           {activeTab === 'Allowances' && renderFinancials('Monthly Allowances', [], 'allowance')}
           {activeTab === 'Punch-In Allowances' && renderFinancials('Punch-In Performance', [], 'punch')}
           {activeTab === 'Requisitions' && renderRequisitions()}

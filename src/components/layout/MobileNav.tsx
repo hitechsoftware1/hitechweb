@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Zap, Sparkles, Briefcase, LayoutDashboard } from 'lucide-react';
+import { Home, Zap, Sparkles, Briefcase, LayoutDashboard, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -13,8 +13,8 @@ export function MobileNav() {
   const links = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Solutions', href: '/services', icon: Zap },
+    { name: 'Market', href: '/marketplace', icon: ShoppingBag },
     { name: 'Studio', href: '/ai-studio', icon: Sparkles },
-    { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
     { name: 'Portal', href: '/portal', icon: LayoutDashboard },
   ];
 

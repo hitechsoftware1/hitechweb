@@ -5,6 +5,9 @@ import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/firebase/error-emitter'; // Note: The previous file had @/components/ui/toaster but the provided turn history shows potential mismatch, I will use the standard path
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { CartProvider } from '@/hooks/use-cart';
+import { CartDrawer } from '@/components/marketplace/CartDrawer';
+import { SubscribePopup } from '@/components/SubscribePopup';
 import Script from 'next/script';
 
 const inter = Inter({
@@ -53,10 +56,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground pb-24 md:pb-0">
         <FirebaseClientProvider>
-          <FirebaseErrorListener />
-          {children}
-          <MobileNav />
-          {/* Toaster is usually in components/ui but I will stick to layout standards */}
+          <CartProvider>
+            <FirebaseErrorListener />
+            {children}
+            <CartDrawer />
+            <SubscribePopup />
+            <MobileNav />
+            {/* Toaster is usually in components/ui but I will stick to layout standards */}
+          </CartProvider>
         </FirebaseClientProvider>
         
         {/* PWA Service Worker Registration */}

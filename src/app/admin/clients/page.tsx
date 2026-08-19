@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutGrid, 
@@ -15,7 +15,6 @@ import {
   Sun, 
   Moon, 
   LogOut,
-  ExternalLink,
   ChevronDown,
   Filter,
   DollarSign,
@@ -26,7 +25,7 @@ import {
   Save,
   CheckCircle2
 } from 'lucide-react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import Link from 'next/link';
@@ -36,10 +35,26 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type ClientTab = 'Overview' | 'Inquiries' | 'Quotations' | 'Invoices' | 'LPOs';
+
+const RECORD_LABELS: Record<string, string> = {
+  quotations: 'Quotation Reference',
+  invoices: 'Invoice Number',
+  lpos: 'PO Number',
+};
 
 export default function ClientEcosystemPortal() {
   const { user, loading: userLoading } = useUser();
@@ -51,17 +66,29 @@ export default function ClientEcosystemPortal() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
+  const [isNewRecordOpen, setIsNewRecordOpen] = useState(false);
+  const [recordCol, setRecordCol] = useState<'quotations' | 'invoices' | 'lpos'>('quotations');
+  const [recordLoading, setRecordLoading] = useState(false);
+
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+  const profileRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: profile, loading: profileLoading } = useDoc(profileRef);
+  const hasClientsAccess = isSuperAdmin || !!profile?.accessiblePortals?.includes('clients');
+
   // Clearance Check
   useEffect(() => {
-    if (!userLoading) {
-      if (!user) {
-        router.push('/login');
-      } else if (user.email !== 'hitechsoftware03@gmail.com') {
-        router.push('/admin');
-        toast({ variant: "destructive", title: "Access Restricted", description: "Super Admin clearance required." });
-      }
+    if (userLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [user, userLoading, router, toast]);
+    if (isSuperAdmin) return;
+    if (profileLoading) return;
+    if (!hasClientsAccess) {
+      router.push('/admin');
+      toast({ variant: "destructive", title: "Access Restricted", description: "Client Ecosystem clearance required." });
+    }
+  }, [user, userLoading, isSuperAdmin, profileLoading, hasClientsAccess, router, toast]);
 
   // Queries
   const { data: inquiries } = useCollection(db ? query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc')) : null);
@@ -94,13 +121,60 @@ export default function ClientEcosystemPortal() {
     }
   };
 
-  const renderList = (title: string, items: any[], col: string) => (
+  const deleteRecord = async (col: string, id: string) => {
+    if (!db) return;
+    if (!confirm('Delete this record?')) return;
+    try {
+      await deleteDoc(doc(db, col, id));
+      toast({ title: "Record Removed" });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Delete Failed" });
+    }
+  };
+
+  const openNewRecord = (col: 'quotations' | 'invoices' | 'lpos') => {
+    setRecordCol(col);
+    setIsNewRecordOpen(true);
+  };
+
+  const handleCreateRecord = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!db) return;
+    setRecordLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data: any = {
+      clientName: formData.get('clientName') as string,
+      reference: formData.get('reference') as string,
+      totalAmount: Number(formData.get('totalAmount')) || 0,
+      notes: formData.get('notes') as string,
+      status: 'draft',
+      createdAt: serverTimestamp(),
+    };
+    if (recordCol === 'invoices') data.invoiceNumber = data.reference;
+    if (recordCol === 'lpos') data.poNumber = data.reference;
+    if (recordCol === 'quotations') data.quotationRef = data.reference;
+
+    try {
+      await addDoc(collection(db, recordCol), data);
+      toast({ title: "Record Created", description: "Added to the client ledger." });
+      setIsNewRecordOpen(false);
+    } catch (err) {
+      toast({ variant: "destructive", title: "Creation Failed" });
+    } finally {
+      setRecordLoading(false);
+    }
+  };
+
+  const renderList = (title: string, items: any[], col: string, allowCreate: boolean = false) => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        <Button className="rounded-xl h-11 px-6 font-bold flex items-center gap-2">
-          <Plus className="w-4 h-4" /> New {title.slice(0, -1)}
-        </Button>
+        {allowCreate && (
+          <Button onClick={() => openNewRecord(col as 'quotations' | 'invoices' | 'lpos')} className="rounded-xl h-11 px-6 font-bold flex items-center gap-2">
+            <Plus className="w-4 h-4" /> New {title.slice(0, -1)}
+          </Button>
+        )}
       </div>
       <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 overflow-hidden shadow-sm">
         <table className="w-full text-left">
@@ -115,19 +189,19 @@ export default function ClientEcosystemPortal() {
             {items?.map((item: any) => (
               <tr key={item.id} className="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-all">
                 <td className="px-8 py-6">
-                  <p className="text-xs font-bold">{item.clientName || item.fullName || item.invoiceNumber}</p>
-                  <p className="text-[10px] text-zinc-400 font-mono uppercase">{item.id.substring(0, 8)}</p>
+                  <p className="text-xs font-bold">{item.clientName || item.fullName}</p>
+                  <p className="text-[10px] text-zinc-400 font-mono uppercase">{item.reference || item.id.substring(0, 8)}</p>
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
                      <Badge variant="outline" className="text-[9px] font-bold uppercase border-blue-500/20 text-blue-500 bg-blue-500/5">{item.status}</Badge>
-                     <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{item.totalAmount ? `$${item.totalAmount.toLocaleString()}` : ''}</span>
+                     <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{item.totalAmount ? `UGX ${item.totalAmount.toLocaleString()}` : ''}</span>
                   </div>
                 </td>
                 <td className="px-8 py-6 text-right">
                   <div className="flex justify-end gap-2">
-                    <Button onClick={() => updateStatus(col, item.id, 'accepted')} size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-500"><CheckCircle2 className="w-4 h-4" /></Button>
-                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-zinc-300"><ExternalLink className="w-4 h-4" /></Button>
+                    <Button onClick={() => updateStatus(col, item.id, 'accepted')} size="sm" variant="ghost" title="Mark accepted" className="h-8 w-8 p-0 text-green-500"><CheckCircle2 className="w-4 h-4" /></Button>
+                    <Button onClick={() => deleteRecord(col, item.id)} size="sm" variant="ghost" title="Delete" className="h-8 w-8 p-0 text-red-400"><Trash2 className="w-4 h-4" /></Button>
                   </div>
                 </td>
               </tr>
@@ -158,7 +232,7 @@ export default function ClientEcosystemPortal() {
     </motion.div>
   );
 
-  if (userLoading || (user && user.email !== 'hitechsoftware03@gmail.com')) {
+  if (userLoading || (user && !isSuperAdmin && (profileLoading || !hasClientsAccess))) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 
@@ -194,10 +268,43 @@ export default function ClientEcosystemPortal() {
         <AnimatePresence mode="wait">
           {activeTab === 'Overview' && renderOverview()}
           {activeTab === 'Inquiries' && renderList('Project Inquiries', inquiries || [], 'projectInquiries')}
-          {activeTab === 'Quotations' && renderList('Formal Quotations', quotations || [], 'quotations')}
-          {activeTab === 'Invoices' && renderList('Billing Invoices', invoices || [], 'invoices')}
-          {activeTab === 'LPOs' && renderList('Purchase Orders', lpos || [], 'lpos')}
+          {activeTab === 'Quotations' && renderList('Formal Quotations', quotations || [], 'quotations', true)}
+          {activeTab === 'Invoices' && renderList('Billing Invoices', invoices || [], 'invoices', true)}
+          {activeTab === 'LPOs' && renderList('Purchase Orders', lpos || [], 'lpos', true)}
         </AnimatePresence>
+
+        <Dialog open={isNewRecordOpen} onOpenChange={setIsNewRecordOpen}>
+          <DialogContent className="rounded-[2rem] border-zinc-200 dark:border-zinc-800 max-w-lg">
+            <DialogHeader>
+              <DialogTitle>New {recordCol === 'quotations' ? 'Quotation' : recordCol === 'invoices' ? 'Invoice' : 'Purchase Order'}</DialogTitle>
+              <DialogDescription>Add a new record to the client ecosystem ledger.</DialogDescription>
+            </DialogHeader>
+            <form className="space-y-6 py-4" onSubmit={handleCreateRecord}>
+              <div className="space-y-2">
+                <Label>Client Name</Label>
+                <Input name="clientName" required className="rounded-xl" />
+              </div>
+              <div className="space-y-2">
+                <Label>{RECORD_LABELS[recordCol]}</Label>
+                <Input name="reference" className="rounded-xl" placeholder="e.g. QT-2026-014" />
+              </div>
+              <div className="space-y-2">
+                <Label>Total Amount (UGX)</Label>
+                <Input name="totalAmount" type="number" min="0" required className="rounded-xl" />
+              </div>
+              <div className="space-y-2">
+                <Label>Notes</Label>
+                <Textarea name="notes" className="rounded-xl h-24" />
+              </div>
+              <DialogFooter className="pt-2">
+                <Button type="submit" disabled={recordLoading} className="w-full rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]">
+                  {recordLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Record
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

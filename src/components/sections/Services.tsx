@@ -42,9 +42,8 @@ export function Services() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-2 mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] justify-center"
+            className="mb-4 lg:mb-6 text-primary text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] text-center"
           >
-            <div className="w-6 lg:w-8 h-[1px] bg-primary" />
             Our Services
           </motion.div>
           <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight leading-tight">

@@ -53,7 +53,7 @@ export default function BlogPage() {
             <span className="text-[10px] font-bold text-primary uppercase tracking-[0.4em]">Knowledge Base</span>
           </div>
           <h1 className="text-4xl lg:text-6xl font-headline font-bold text-gradient-apple mb-8 tracking-tight">
-            Insights.
+            News & Blog.
           </h1>
           <p className="text-xl text-foreground/50 font-light leading-relaxed max-w-2xl">
             Guides, news, and our thoughts on the future of business technology.

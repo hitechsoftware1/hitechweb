@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutGrid, 
@@ -25,7 +25,7 @@ import {
   Type,
   Link as LinkIcon
 } from 'lucide-react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { collection, query, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
@@ -64,17 +64,25 @@ export default function WebManagerPortal() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+  const profileRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: profile, loading: profileLoading } = useDoc(profileRef);
+  const hasWebAccess = isSuperAdmin || !!profile?.accessiblePortals?.includes('web-management');
+
   // Clearance Check
   useEffect(() => {
-    if (!userLoading) {
-      if (!user) {
-        router.push('/login');
-      } else if (user.email !== 'hitechsoftware03@gmail.com') {
-        router.push('/admin');
-        toast({ variant: "destructive", title: "Access Restricted", description: "Super Admin clearance required." });
-      }
+    if (userLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [user, userLoading, router, toast]);
+    if (isSuperAdmin) return;
+    if (profileLoading) return;
+    if (!hasWebAccess) {
+      router.push('/admin');
+      toast({ variant: "destructive", title: "Access Restricted", description: "Web Management clearance required." });
+    }
+  }, [user, userLoading, isSuperAdmin, profileLoading, hasWebAccess, router, toast]);
 
   // CMS Data Queries
   const { data: news } = useCollection(db ? query(collection(db, 'news'), orderBy('createdAt', 'desc')) : null);
@@ -82,6 +90,9 @@ export default function WebManagerPortal() {
   const { data: team } = useCollection(db ? query(collection(db, 'team'), orderBy('createdAt', 'asc')) : null);
   const { data: banners } = useCollection(db ? query(collection(db, 'banners'), orderBy('createdAt', 'asc')) : null);
   const { data: testimonials } = useCollection(db ? query(collection(db, 'testimonials'), orderBy('createdAt', 'desc')) : null);
+  const configRef = useMemo(() => (db ? doc(db, 'siteConfig', 'main') : null), [db]);
+  const { data: siteConfig } = useDoc(configRef);
+  const [configSaving, setConfigSaving] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -151,6 +162,29 @@ export default function WebManagerPortal() {
   const openEdit = (item: any) => {
     setEditingId(item.id);
     setIsDialogOpen(true);
+  };
+
+  const handleSaveConfig = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!db) return;
+    setConfigSaving(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data: any = {};
+    formData.forEach((value, key) => {
+      // Only write fields the admin actually filled in, so blank inputs
+      // never overwrite an existing value with an empty string.
+      if (typeof value === 'string' && value.trim() !== '') data[key] = value;
+    });
+
+    try {
+      await setDoc(doc(db, 'siteConfig', 'main'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+      toast({ title: "Site Content Updated", description: "Changes are now live across the site." });
+    } catch (err) {
+      toast({ variant: "destructive", title: "Save Failed" });
+    } finally {
+      setConfigSaving(false);
+    }
   };
 
   const sidebarItems = [
@@ -223,7 +257,7 @@ export default function WebManagerPortal() {
     </motion.div>
   );
 
-  if (userLoading || (user && user.email !== 'hitechsoftware03@gmail.com')) {
+  if (userLoading || (user && !isSuperAdmin && (profileLoading || !hasWebAccess))) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 
@@ -280,7 +314,108 @@ export default function WebManagerPortal() {
           {activeTab === 'Team' && renderContentList('Engineering Units', team || [], 'team')}
           {activeTab === 'Testimonials' && renderContentList('Client Verification', testimonials || [], 'testimonials')}
           {activeTab === 'Global Config' && (
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-[50vh] text-zinc-400 italic text-xs">Registry restricted to Super Admin terminal.</motion.div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-3xl">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Global Config</h1>
+                <p className="text-xs text-zinc-400 font-medium">Edit the shared text and images used across the site. Leave a field blank to keep its current value.</p>
+              </div>
+              <form onSubmit={handleSaveConfig} className="space-y-8">
+                <div className="apple-card p-6 space-y-4 rounded-2xl">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Homepage Hero</h3>
+                  <div className="space-y-2">
+                    <Label>Headline Prefix</Label>
+                    <Input name="heroHeadline" defaultValue={siteConfig?.heroHeadline} placeholder="Building" className="rounded-xl" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtext</Label>
+                    <Textarea name="heroSubtext" defaultValue={siteConfig?.heroSubtext} className="rounded-xl h-20" placeholder="HITECH builds strong foundations for world-class digital tools..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Hero Image URL</Label>
+                    <Input name="heroImage" defaultValue={siteConfig?.heroImage} placeholder="https://..." className="rounded-xl" />
+                  </div>
+                </div>
+
+                <div className="apple-card p-6 space-y-4 rounded-2xl">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Contact Details (Footer &amp; Contact section)</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input name="contactEmail" defaultValue={siteConfig?.contactEmail} placeholder="hitechsoftware03@gmail.com" className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Phone</Label>
+                      <Input name="contactPhone" defaultValue={siteConfig?.contactPhone} placeholder="+256 742 928 508" className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>WhatsApp Number</Label>
+                      <Input name="whatsappNumber" defaultValue={siteConfig?.whatsappNumber} placeholder="+256 759 408 917" className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Address</Label>
+                      <Input name="contactAddress" defaultValue={siteConfig?.contactAddress} placeholder="Naalya Kampala, Uganda" className="rounded-xl" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="apple-card p-6 space-y-4 rounded-2xl">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Footer &amp; Social</h3>
+                  <div className="space-y-2">
+                    <Label>Footer Tagline</Label>
+                    <Input name="footerTagline" defaultValue={siteConfig?.footerTagline} placeholder="Precision engineered software systems..." className="rounded-xl" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Twitter / X URL</Label>
+                      <Input name="socialTwitter" defaultValue={siteConfig?.socialTwitter} placeholder="https://x.com/..." className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>LinkedIn URL</Label>
+                      <Input name="socialLinkedin" defaultValue={siteConfig?.socialLinkedin} placeholder="https://linkedin.com/..." className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>GitHub URL</Label>
+                      <Input name="socialGithub" defaultValue={siteConfig?.socialGithub} placeholder="https://github.com/..." className="rounded-xl" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="apple-card p-6 space-y-4 rounded-2xl">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">About Page &mdash; Founder &amp; Mission</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Founder Name</Label>
+                      <Input name="founderName" defaultValue={siteConfig?.founderName} placeholder="JoelHitech" className="rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Founder Title</Label>
+                      <Input name="founderTitle" defaultValue={siteConfig?.founderTitle} placeholder="Founder & CEO" className="rounded-xl" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Founder Photo URL</Label>
+                    <Input name="founderImage" defaultValue={siteConfig?.founderImage} placeholder="https://..." className="rounded-xl" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Founder Quote</Label>
+                    <Textarea name="founderQuote" defaultValue={siteConfig?.founderQuote} className="rounded-xl h-20" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Mission Statement</Label>
+                    <Textarea name="missionText" defaultValue={siteConfig?.missionText} className="rounded-xl h-20" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Standard Statement</Label>
+                    <Textarea name="standardText" defaultValue={siteConfig?.standardText} className="rounded-xl h-20" />
+                  </div>
+                </div>
+
+                <Button type="submit" disabled={configSaving} className="w-full rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]">
+                  {configSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Site Content
+                </Button>
+              </form>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

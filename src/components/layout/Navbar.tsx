@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck, Users, Sparkles } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck, Users, Sparkles, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
+import { useCart } from '@/hooks/use-cart';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ export function Navbar() {
   const pathname = usePathname();
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
   const { user } = useUser();
+  const { totalItems, openCart } = useCart();
 
   useEffect(() => {
     setMounted(true);
@@ -53,6 +55,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Solutions', href: '/services', icon: Zap },
+    { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
     { name: 'Portfolio', href: '/portfolio', icon: BarChart3 },
     { name: 'Status', href: '/status', icon: Terminal },
   ];
@@ -61,7 +64,7 @@ export function Navbar() {
     { name: 'AI Studio', href: '/ai-studio', icon: Sparkles },
     { name: 'Engineering Team', href: '/team', icon: Users },
     { name: 'Testimonials', href: '/testimonials', icon: Star },
-    { name: 'Insights', href: '/blog', icon: Newspaper },
+    { name: 'News & Blog', href: '/blog', icon: Newspaper },
     { name: 'Careers', href: '/careers', icon: Briefcase },
     { name: 'About', href: '/about', icon: Info },
   ];
@@ -127,13 +130,26 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <button 
+          <button
+            onClick={openCart}
+            className="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-foreground/60"
+            aria-label="Open cart"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+
+          <button
             onClick={toggleTheme}
             className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-foreground/60"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          
+
           {user && (
             <Button asChild variant="outline" className="rounded-full border-primary/20 hover:bg-primary/5 text-primary font-bold text-xs h-10 px-6">
               <Link href="/staff" className="flex items-center gap-2">
@@ -155,7 +171,19 @@ export function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="flex items-center gap-2 md:hidden">
-           <button 
+           <button
+            onClick={openCart}
+            className="relative w-8 h-8 flex items-center justify-center rounded-full bg-foreground/5 text-foreground"
+            aria-label="Open cart"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+           <button
             onClick={toggleTheme}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-foreground/5 text-foreground"
           >

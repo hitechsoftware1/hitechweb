@@ -11,6 +11,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteConfig } from '@/hooks/use-site-config';
 
 export function Contact() {
   const [step, setStep] = useState(1);
@@ -18,6 +19,10 @@ export function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const db = useFirestore();
   const { toast } = useToast();
+  const { config } = useSiteConfig();
+  const contactEmail = config?.contactEmail || 'hitechsoftware03@gmail.com';
+  const contactPhone = config?.contactPhone || '+256 742 928 508';
+  const whatsappNumber = config?.whatsappNumber || '+256 759 408 917';
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -69,7 +74,7 @@ export function Contact() {
     }
   };
 
-  const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
+  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${contactEmail}`;
 
   return (
     <section id="contact" className="py-12 lg:py-20 bg-background relative overflow-hidden">
@@ -89,25 +94,25 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Email Us</p>
-                  <p className="text-xs lg:text-lg font-medium text-foreground/90">hitechsoftware03@gmail.com</p>
+                  <p className="text-xs lg:text-lg font-medium text-foreground/90">{contactEmail}</p>
                 </div>
               </a>
-              <a href="tel:+256742928508" className="flex items-center gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
+              <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="flex items-center gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <Phone className="text-primary w-5 h-5 lg:w-6 lg:h-6" />
                 </div>
                 <div>
                   <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">Call Us</p>
-                  <p className="text-xs lg:text-lg font-medium text-foreground/90">+256 742 928 508</p>
+                  <p className="text-xs lg:text-lg font-medium text-foreground/90">{contactPhone}</p>
                 </div>
               </a>
-              <a href="https://wa.me/256759408917" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
+              <a href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 group cursor-pointer decoration-transparent hover:decoration-transparent">
                 <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-foreground/5 flex items-center justify-center border border-foreground/10 group-hover:border-primary/50 transition-colors">
                   <MessageCircle className="text-primary w-5 h-5 lg:w-6 lg:h-6" />
                 </div>
                 <div>
                   <p className="text-[8px] lg:text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-0.5">WhatsApp</p>
-                  <p className="text-xs lg:text-lg font-medium text-foreground/90">+256 759 408 917</p>
+                  <p className="text-xs lg:text-lg font-medium text-foreground/90">{whatsappNumber}</p>
                 </div>
               </a>
             </div>

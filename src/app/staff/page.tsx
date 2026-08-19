@@ -30,7 +30,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUser, useFirestore, useCollection, useAuth } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, orderBy, limit, updateDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, query, where, serverTimestamp, orderBy, limit, updateDoc, doc, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -116,13 +116,17 @@ export default function StaffHub() {
       status: 'pending'
     };
 
-    addDoc(collection(db, 'attendance'), attendanceData)
+    // Deterministic doc id (one per worker per day) so a double-click or
+    // retry can never create duplicate attendance records for the same day.
+    setDoc(doc(db, 'attendance', `${user.uid}_${today}`), attendanceData)
       .then(() => {
         toast({ title: "Neural Punch-In", description: "Shift logged. Institutional tracking active." });
         setPunchInCode('');
         setShowPunchInForm(false);
       })
-      .catch(console.error)
+      .catch(() => {
+        toast({ variant: "destructive", title: "Punch-In Failed", description: "Could not log your presence. Please try again." });
+      })
       .finally(() => setIsProcessing(false));
   };
 
@@ -131,9 +135,10 @@ export default function StaffHub() {
     setIsProcessing(true);
     updateDoc(doc(db, 'attendance', todayRecord.id), {
       punchOutTime: serverTimestamp(),
-      status: 'approved'
     }).then(() => {
       toast({ title: "Punch-Out Verified", description: "Session complete. Allowances secured for this cycle." });
+    }).catch(() => {
+      toast({ variant: "destructive", title: "Punch-Out Failed", description: "Could not log your departure. Please try again." });
     }).finally(() => setIsProcessing(false));
   };
 

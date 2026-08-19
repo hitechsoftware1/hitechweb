@@ -10,27 +10,12 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
+      // Admin-editable image fields (Web Management hero/founder image,
+      // Marketplace product images, News/Team/Banners) accept any pasted
+      // URL, so any HTTPS host is allowed here rather than a fixed list.
       {
         protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i.pinimg.com',
+        hostname: '**',
         port: '',
         pathname: '/**',
       },

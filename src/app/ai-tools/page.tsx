@@ -93,7 +93,7 @@ export default function AIToolsPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1">Architecture</p>
-                  <p className="text-sm font-bold">Llama 3 / Gemini</p>
+                  <p className="text-sm font-bold">HITECH Neural Engine</p>
                 </div>
               </div>
               <h3 className="text-2xl lg:text-3xl font-headline font-bold mb-4">{tool.title}</h3>
@@ -149,7 +149,7 @@ export default function AIToolsPage() {
 const hitech = require('@hitech/ai');
 
 const helper = await hitech.addHelper({
-  model: 'gemini-pro',
+  model: 'hitech-neural-v2',
   safety: 'high',
   vault: 'your-secure-docs'
 });

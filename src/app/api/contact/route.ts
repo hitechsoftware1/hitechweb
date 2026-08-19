@@ -21,14 +21,26 @@ export async function POST(req: Request) {
     const submissionType = data.type || "New Submission";
     const senderName = data.fullName || data.name || "HITECH System";
 
-    // Build specialized email for onboarding
+    // Build specialized email for onboarding / campaigns
     const isOnboarding = data.type === "Worker Onboarding";
-    
-    const subject = isOnboarding 
+    const isCampaign = data.type === "Newsletter Campaign";
+
+    const subject = isOnboarding
       ? `Welcome to HITECH Systems, ${senderName}`
+      : isCampaign
+      ? (data.subject || "HITECH Update")
       : `[${submissionType}] From: ${senderName}`;
 
-    const htmlContent = isOnboarding ? `
+    const htmlContent = isCampaign ? `
+      <div style="font-family: sans-serif; padding: 32px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 24px;">
+        <h2 style="color: #00A3FF; margin-bottom: 8px; font-size: 22px;">${data.subject || "HITECH Update"}</h2>
+        <p style="font-size: 11px; color: #6b7280; margin-top: 0; text-transform: uppercase; letter-spacing: 0.2em;">HITECH Software Company</p>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+        <div style="font-size: 15px; line-height: 1.7; color: #374151; white-space: pre-wrap;">${data.message || ""}</div>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 32px 0;" />
+        <p style="font-size: 10px; color: #9ca3af; text-align: center; font-style: italic;">You're receiving this because you subscribed or contacted HITECH SOFTWARE COMPANY.</p>
+      </div>
+    ` : isOnboarding ? `
       <div style="font-family: sans-serif; padding: 32px; color: #1a1a1a; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 24px;">
         <h2 style="color: #00A3FF; margin-bottom: 8px; font-size: 24px;">Welcome to the Team.</h2>
         <p style="font-size: 11px; color: #6b7280; margin-top: 0; text-transform: uppercase; letter-spacing: 0.2em;">Institutional Onboarding Protocol</p>

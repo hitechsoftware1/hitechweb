@@ -10,26 +10,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TypingText } from '@/components/ui/typing-text';
+import { useSiteConfig } from '@/hooks/use-site-config';
 
 export function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-bg');
+  const { config } = useSiteConfig();
 
   return (
     <section className="relative flex items-center pt-16 lg:pt-24 pb-2 lg:pb-4 overflow-hidden bg-background">
       
-      {/* Video Background */}
+      {/* Lightweight gradient background (no external video request, so the
+          hero paints immediately instead of waiting on a multi-MB fetch) */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          className="w-full h-full object-cover opacity-20 dark:opacity-40"
-        >
-          <source src="https://video-previews.elements.envatousercontent.com/88a1c795-102f-4bbe-8239-8be32b72c10c/watermarked_preview/watermarked_preview.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]" />
         <div className="absolute inset-0 neural-grid opacity-40 dark:opacity-20" />
+        <div className="absolute top-1/3 right-0 w-2/3 h-2/3 bg-accent/10 dark:bg-accent/5 blur-[100px] rounded-full opacity-60" />
       </div>
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
@@ -50,16 +44,16 @@ export function Hero() {
             </Badge>
             
             <h1 className="font-headline text-xl sm:text-4xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-gradient-apple">
-              Building <br />
-              <TypingText 
-                texts={["Great Apps", "Smart AI", "Fast Systems"]} 
+              {config?.heroHeadline || 'Building'} <br />
+              <TypingText
+                texts={["Great Apps", "Smart AI", "Fast Systems"]}
                 className="text-primary"
               /> <br />
               for Your Business.
             </h1>
-            
+
             <p className="text-[9px] sm:text-base lg:text-xl text-foreground/50 max-w-xl leading-relaxed font-light line-clamp-3 lg:line-clamp-none">
-              HITECH builds strong foundations for world-class digital tools. We write clean code for innovators and companies.
+              {config?.heroSubtext || "HITECH builds strong foundations for world-class digital tools. We write clean code for innovators and companies."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full mt-2 lg:mt-4">
@@ -85,8 +79,8 @@ export function Hero() {
           >
             <div className="apple-card p-0.5 lg:p-2 group">
               <div className="aspect-[4/3] relative rounded-[0.8rem] lg:rounded-[2.5rem] overflow-hidden">
-                <Image 
-                  src={heroImage?.imageUrl || "https://picsum.photos/seed/apple-tech/1200/800"} 
+                <Image
+                  src={config?.heroImage || heroImage?.imageUrl || "https://picsum.photos/seed/apple-tech/1200/800"}
                   alt="Modern Interface"
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-105"

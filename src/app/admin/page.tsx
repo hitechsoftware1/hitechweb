@@ -30,16 +30,17 @@ import {
   Sun,
   LayoutGrid, 
   Lock, 
-  Globe, 
-  Briefcase, 
-  Settings, 
+  Globe,
+  Briefcase,
+  Settings,
   User,
-  ShieldAlert
+  ShieldAlert,
+  ShoppingBag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCollection, useFirestore, useUser, useAuth, useDoc } from '@/firebase';
-import { collection, query, orderBy, limit, updateDoc, doc, deleteDoc, addDoc, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import { collection, query, orderBy, limit, updateDoc, doc, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -128,32 +129,38 @@ export default function AdminHub(props: {
   const currentDailyCode = activeCodes?.[0]?.code || '--';
   const todayRecord = userAttendance?.[0];
 
-  // Automated Code Generation Logic
+  // Role Logic: Supper Admin Access or Portal-specific clearance
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+
+  // Automated Code Generation Logic. Only the Super Admin can write
+  // officeCodes (see firestore.rules), so only attempt this from their
+  // session — otherwise every staff member's browser would silently hit a
+  // permission-denied write and the code would never get generated if
+  // staff open /admin before the Super Admin does.
   useEffect(() => {
-    if (!db || !activeCodes) return;
-    
+    if (!db || !activeCodes || !isSuperAdmin) return;
+
     if (activeCodes.length === 0) {
       const today = new Date().toISOString().split('T')[0];
       const generatedCode = Math.floor(10 + Math.random() * 90).toString();
       const codeId = `code_${today}`;
-      
+
       setDoc(doc(db, 'officeCodes', codeId), {
         code: generatedCode,
         date: today,
         active: true,
         createdAt: serverTimestamp()
       }).then(() => {
-        toast({ 
-          title: "Neural Sync: Active", 
-          description: `Today's validation code [${generatedCode}] has been autonomously generated.` 
+        toast({
+          title: "Neural Sync: Active",
+          description: `Today's validation code [${generatedCode}] has been autonomously generated.`
         });
+      }).catch(() => {
+        toast({ variant: "destructive", title: "Code Generation Failed", description: "Could not generate today's office code." });
       });
     }
-  }, [db, activeCodes, toast]);
+  }, [db, activeCodes, toast, isSuperAdmin]);
 
-  // Role Logic: Supper Admin Access or Portal-specific clearance
-  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
-  
   const hasAccess = (portalId: string) => {
     if (isSuperAdmin) return true;
     if (!profile || !profile.accessiblePortals) return false;
@@ -207,6 +214,15 @@ export default function AdminHub(props: {
       restricted: !hasAccess('talent')
     },
     {
+      id: 'marketplace',
+      title: 'Marketplace',
+      description: 'Products, orders, payment verification',
+      icon: ShoppingBag,
+      permissions: ['View', 'Edit'],
+      href: hasAccess('marketplace') ? '/admin/marketplace' : undefined,
+      restricted: !hasAccess('marketplace')
+    },
+    {
       id: 'system',
       title: 'System Architecture',
       description: 'Users, roles, workforce tasks, approvals',
@@ -219,7 +235,7 @@ export default function AdminHub(props: {
 
   const handlePunchIn = async () => {
     if (!db || !user || !punchInCode) return;
-    
+
     if (punchInCode !== currentDailyCode) {
       toast({ variant: "destructive", title: "Access Denied", description: "Invalid institutional validation code." });
       return;
@@ -236,10 +252,15 @@ export default function AdminHub(props: {
       status: 'pending'
     };
 
-    addDoc(collection(db, 'attendance'), attendanceData)
+    // Deterministic doc id (one per worker per day) so a double-click or
+    // retry can never create duplicate attendance records for the same day.
+    setDoc(doc(db, 'attendance', `${user.uid}_${today}`), attendanceData)
       .then(() => {
         toast({ title: "Neural Link Established", description: "Shift presence logged. Work session active." });
         setShowPunchInForm(false);
+      })
+      .catch(() => {
+        toast({ variant: "destructive", title: "Punch-In Failed", description: "Could not log your presence. Please try again." });
       })
       .finally(() => setIsProcessing(false));
   };
@@ -249,9 +270,10 @@ export default function AdminHub(props: {
     setIsProcessing(true);
     updateDoc(doc(db, 'attendance', todayRecord.id), {
       punchOutTime: serverTimestamp(),
-      status: 'approved'
     }).then(() => {
       toast({ title: "Session Concluded", description: "Shift ended. Institutional data synced. Safe travels." });
+    }).catch(() => {
+      toast({ variant: "destructive", title: "Punch-Out Failed", description: "Could not log your departure. Please try again." });
     }).finally(() => setIsProcessing(false));
   };
 

@@ -1,12 +1,17 @@
 
+"use client";
+
 import React from 'react';
+import Image from 'next/image';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Stats } from '@/components/sections/Stats';
 import { Excellence } from '@/components/sections/Excellence';
 import { User, Shield, Target, Award, Milestone, Rocket, Users, Heart } from 'lucide-react';
+import { useSiteConfig } from '@/hooks/use-site-config';
 
 export default function AboutPage() {
+  const { config } = useSiteConfig();
   const timeline = [
     { year: '2020', title: 'The Start', desc: 'JoelHitech founded the firm in Kampala with a vision to build better software for business.' },
     { year: '2021', title: 'Smart Systems', desc: 'Launched our first AI tools for hospitals to help with patient care.' },
@@ -56,14 +61,14 @@ export default function AboutPage() {
             <Target className="w-8 h-8 lg:w-12 lg:h-12 text-primary mb-4 lg:mb-6" />
             <h3 className="text-sm lg:text-2xl font-headline font-bold mb-2 lg:mb-4">Our Mission</h3>
             <p className="text-[10px] lg:text-base text-foreground/60 leading-relaxed font-light line-clamp-4 lg:line-clamp-none">
-              To help innovators by building world-class digital tools. We believe in clean code, secure setups, and great user experiences.
+              {config?.missionText || 'To help innovators by building world-class digital tools. We believe in clean code, secure setups, and great user experiences.'}
             </p>
           </div>
           <div className="apple-card p-6 lg:p-12 bg-accent/5 border-accent/10">
             <Shield className="w-8 h-8 lg:w-12 lg:h-12 text-accent mb-4 lg:mb-6" />
             <h3 className="text-sm lg:text-2xl font-headline font-bold mb-2 lg:mb-4">Our Standard</h3>
             <p className="text-[10px] lg:text-base text-foreground/60 leading-relaxed font-light line-clamp-4 lg:line-clamp-none">
-              Every system we build is safe, fast, and ready to grow. we are focused on making things work perfectly.
+              {config?.standardText || 'Every system we build is safe, fast, and ready to grow. we are focused on making things work perfectly.'}
             </p>
           </div>
         </div>
@@ -100,15 +105,19 @@ export default function AboutPage() {
         <div className="apple-card p-6 lg:p-12 grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="md:col-span-4 flex justify-center">
             <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-[2rem] lg:rounded-[3rem] bg-muted flex items-center justify-center border-2 border-primary/20 overflow-hidden shadow-2xl relative">
-              <User className="w-24 h-24 lg:w-32 lg:h-32 text-foreground/20" />
+              {config?.founderImage ? (
+                <Image src={config.founderImage} alt={config?.founderName || 'Founder'} fill className="object-cover" />
+              ) : (
+                <User className="w-24 h-24 lg:w-32 lg:h-32 text-foreground/20" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
             </div>
           </div>
           <div className="md:col-span-8 text-center md:text-left">
-            <h2 className="text-2xl lg:text-3xl font-headline font-bold mb-1 lg:mb-2">JoelHitech</h2>
-            <p className="text-primary font-bold uppercase tracking-widest text-xs lg:text-sm mb-4 lg:mb-6">Founder & CEO</p>
+            <h2 className="text-2xl lg:text-3xl font-headline font-bold mb-1 lg:mb-2">{config?.founderName || 'JoelHitech'}</h2>
+            <p className="text-primary font-bold uppercase tracking-widest text-xs lg:text-sm mb-4 lg:mb-6">{config?.founderTitle || 'Founder & CEO'}</p>
             <p className="text-base lg:text-xl text-foreground/70 font-light leading-relaxed italic mb-8">
-              "Technology is only as strong as the foundation it stands upon. At HITECH, we focus on making digital systems work perfectly. We are building the tools that will power businesses for years to come."
+              "{config?.founderQuote || 'Technology is only as strong as the foundation it stands upon. At HITECH, we focus on making digital systems work perfectly. We are building the tools that will power businesses for years to come.'}"
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4 lg:gap-8">
               <div className="flex items-center gap-2 text-[10px] lg:text-sm font-bold text-foreground/40 uppercase tracking-wider">

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutGrid, 
@@ -30,7 +30,7 @@ import {
   UserCheck,
   UserX
 } from 'lucide-react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { collection, query, orderBy, updateDoc, doc, deleteDoc, serverTimestamp, where } from 'firebase/firestore';
 import Link from 'next/link';
@@ -62,17 +62,25 @@ export default function TalentPortal() {
   const [searchTerm, setSearchInput] = useState('');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+  const profileRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: profile, loading: profileLoading } = useDoc(profileRef);
+  const hasTalentAccess = isSuperAdmin || !!profile?.accessiblePortals?.includes('talent');
+
   // Clearance Check
   useEffect(() => {
-    if (!userLoading) {
-      if (!user) {
-        router.push('/login');
-      } else if (user.email !== 'hitechsoftware03@gmail.com') {
-        router.push('/admin');
-        toast({ variant: "destructive", title: "Access Restricted", description: "This module requires Super Admin clearance." });
-      }
+    if (userLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [user, userLoading, router, toast]);
+    if (isSuperAdmin) return;
+    if (profileLoading) return;
+    if (!hasTalentAccess) {
+      router.push('/admin');
+      toast({ variant: "destructive", title: "Access Restricted", description: "This module requires Talent Pipeline clearance." });
+    }
+  }, [user, userLoading, isSuperAdmin, profileLoading, hasTalentAccess, router, toast]);
 
   // Queries
   const { data: applications } = useCollection(db ? query(collection(db, 'jobApplications'), orderBy('createdAt', 'desc')) : null);
@@ -305,7 +313,7 @@ export default function TalentPortal() {
     </motion.div>
   );
 
-  if (userLoading || (user && user.email !== 'hitechsoftware03@gmail.com')) {
+  if (userLoading || (user && !isSuperAdmin && (profileLoading || !hasTalentAccess))) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 

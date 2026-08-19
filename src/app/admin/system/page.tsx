@@ -40,9 +40,9 @@ import {
   AlertTriangle,
   Key
 } from 'lucide-react';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { collection, query, orderBy, updateDoc, doc, addDoc, serverTimestamp, where, deleteDoc, setDoc } from 'firebase/firestore';
+import { collection, query, orderBy, updateDoc, doc, addDoc, serverTimestamp, where, deleteDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -90,17 +90,25 @@ export default function SystemArchitecturePortal() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
 
+  const isSuperAdmin = user?.email === 'hitechsoftware03@gmail.com';
+  const profileRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: profile, loading: profileLoading } = useDoc(profileRef);
+  const hasSystemAccess = isSuperAdmin || !!profile?.accessiblePortals?.includes('system');
+
   // Clearance Check
   useEffect(() => {
-    if (!userLoading) {
-      if (!user) {
-        router.push('/login');
-      } else if (user.email !== 'hitechsoftware03@gmail.com') {
-        router.push('/admin');
-        toast({ variant: "destructive", title: "Access Restricted", description: "Super Admin clearance required." });
-      }
+    if (userLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [user, userLoading, router, toast]);
+    if (isSuperAdmin) return;
+    if (profileLoading) return;
+    if (!hasSystemAccess) {
+      router.push('/admin');
+      toast({ variant: "destructive", title: "Access Restricted", description: "System Architecture clearance required." });
+    }
+  }, [user, userLoading, isSuperAdmin, profileLoading, hasSystemAccess, router, toast]);
 
   // Real-time Queries
   const { data: attendance } = useCollection(db ? query(collection(db, 'attendance'), orderBy('date', 'desc')) : null);
@@ -108,6 +116,7 @@ export default function SystemArchitecturePortal() {
   const { data: projects } = useCollection(db ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
   const { data: profiles } = useCollection(db ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
   const { data: requisitions } = useCollection(db ? query(collection(db, 'requisitions'), orderBy('createdAt', 'desc')) : null);
+  const { data: retainerRequests } = useCollection(db ? query(collection(db, 'retainerRequests'), orderBy('createdAt', 'desc')) : null);
   const { data: inquiries } = useCollection(db ? query(collection(db, 'projectInquiries'), where('status', '==', 'new')) : null);
 
   // Modal States
@@ -157,6 +166,13 @@ export default function SystemArchitecturePortal() {
     if (!db) return;
     updateDoc(doc(db, 'requisitions', id), { status })
       .then(() => toast({ title: "Requisition Processed", description: `Fund request ${status}.` }))
+      .catch(() => toast({ variant: "destructive", title: "Process Failed" }));
+  };
+
+  const updateRetainerStatus = async (id: string, status: string) => {
+    if (!db) return;
+    updateDoc(doc(db, 'retainerRequests', id), { status })
+      .then(() => toast({ title: "Retainer Processed", description: `Advance request ${status}.` }))
       .catch(() => toast({ variant: "destructive", title: "Process Failed" }));
   };
 
@@ -213,7 +229,7 @@ export default function SystemArchitecturePortal() {
 
   const handleCreateUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!db) return;
+    if (!db || !user) return;
     setNewUserLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -224,22 +240,25 @@ export default function SystemArchitecturePortal() {
     const password = formData.get('password') as string;
 
     try {
-      const newUserRef = doc(collection(db, 'users'));
-      await setDoc(newUserRef, {
-        uid: newUserRef.id,
-        email,
-        displayName: name,
-        role,
-        salary,
-        accessiblePortals: selectedPortals,
-        joinedAt: serverTimestamp()
+      // Provision a real Firebase Auth account (not just a Firestore
+      // profile) so the worker can actually sign in at /login.
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/admin/create-worker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ name, email, password, role, salary, accessiblePortals: selectedPortals }),
       });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || 'Failed to provision worker.');
 
       // Transmit onboarding email via Mail Bridge
       await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           to: email,
           fullName: name,
           email,
@@ -249,7 +268,7 @@ export default function SystemArchitecturePortal() {
         }),
       });
 
-      toast({ title: "Identity Provisioned", description: `${name} has been notified with credentials.` });
+      toast({ title: "Identity Provisioned", description: `${name} can now sign in and has been notified with credentials.` });
       setIsNewUserOpen(false);
       setSelectedPortals([]);
     } catch (error: any) {
@@ -452,6 +471,37 @@ export default function SystemArchitecturePortal() {
         ))}
         {(!requisitions || requisitions.length === 0) && <div className="p-20 text-center text-zinc-400 italic text-xs">Institutional ledger is balanced. No pending requisitions.</div>}
       </div>
+
+      <div className="space-y-4 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+        <h2 className="text-lg font-bold tracking-tight">Advance Retainer Requests</h2>
+        {retainerRequests?.map((req: any) => (
+          <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] p-8 border border-zinc-100 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex gap-6 items-center">
+              <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+                <DollarSign className="w-7 h-7" />
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                   <h4 className="font-bold text-base">{req.userName}</h4>
+                   <Badge variant="outline" className={cn(
+                     "text-[8px] font-bold uppercase tracking-widest",
+                     req.status === 'approved' ? 'border-green-500/20 text-green-500 bg-green-500/5' :
+                     req.status === 'rejected' ? 'border-red-500/20 text-red-500 bg-red-500/5' : 'border-zinc-200'
+                   )}>{req.status}</Badge>
+                </div>
+                <p className="text-xs text-zinc-400 font-medium">{req.reason} • <span className="text-primary font-bold">UGX {req.amount?.toLocaleString()}</span></p>
+              </div>
+            </div>
+            {req.status === 'pending' && (
+              <div className="flex gap-3">
+                <Button onClick={() => updateRetainerStatus(req.id, 'approved')} className="bg-green-500 hover:bg-green-600 text-white rounded-xl h-11 px-6 font-bold text-xs">Authorize</Button>
+                <Button onClick={() => updateRetainerStatus(req.id, 'rejected')} variant="outline" className="border-red-500/20 text-red-500 hover:bg-red-50 rounded-xl h-11 px-6 font-bold text-xs">Deny</Button>
+              </div>
+            )}
+          </div>
+        ))}
+        {(!retainerRequests || retainerRequests.length === 0) && <div className="p-20 text-center text-zinc-400 italic text-xs">No pending advance requests.</div>}
+      </div>
     </motion.div>
   );
 
@@ -501,7 +551,7 @@ export default function SystemArchitecturePortal() {
     </motion.div>
   );
 
-  if (userLoading || (user && user.email !== 'hitechsoftware03@gmail.com')) {
+  if (userLoading || (user && !isSuperAdmin && (profileLoading || !hasSystemAccess))) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 
@@ -601,7 +651,7 @@ export default function SystemArchitecturePortal() {
             <div className="space-y-4">
               <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portal Authorization</Label>
               <div className="grid grid-cols-2 gap-3">
-                {['web-management', 'clients', 'communications', 'talent', 'system'].map((id) => (
+                {['web-management', 'clients', 'communications', 'talent', 'system', 'marketplace'].map((id) => (
                   <div key={id} className="flex items-center space-x-3 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
                     <Checkbox 
                       id={id} 

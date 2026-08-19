@@ -7,10 +7,16 @@ import Image from 'next/image';
 import { Twitter, Linkedin, Github } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { motion } from 'framer-motion';
+import { useSiteConfig } from '@/hooks/use-site-config';
 
 export function Footer() {
   const logo = PlaceHolderImages.find(img => img.id === 'logo');
-  const gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=hitechsoftware03@gmail.com";
+  const { config } = useSiteConfig();
+  const contactEmail = config?.contactEmail || 'hitechsoftware03@gmail.com';
+  const contactPhone = config?.contactPhone || '+256 742 928 508';
+  const whatsappNumber = config?.whatsappNumber || '+256 759 408 917';
+  const contactAddress = config?.contactAddress || 'Naalya Kampala, Uganda';
+  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${contactEmail}`;
 
   // Assets for sliding banners
   const showcaseAssets = [
@@ -99,16 +105,16 @@ export function Footer() {
               <span className="font-headline font-bold text-xl tracking-tight text-foreground">HITECH</span>
             </div>
             <p className="text-foreground/40 text-xs lg:text-sm leading-relaxed font-light mb-8 max-w-xs">
-              Precision engineered software systems for companies defining the future.
+              {config?.footerTagline || 'Precision engineered software systems for companies defining the future.'}
             </p>
             <div className="flex gap-4">
-              <Link href="#" className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
+              <Link href={config?.socialTwitter || '#'} className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
                 <Twitter className="w-4 h-4" />
               </Link>
-              <Link href="#" className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
+              <Link href={config?.socialLinkedin || '#'} className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
                 <Linkedin className="w-4 h-4" />
               </Link>
-              <Link href="#" className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
+              <Link href={config?.socialGithub || '#'} className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all text-foreground">
                 <Github className="w-4 h-4" />
               </Link>
             </div>
@@ -137,10 +143,10 @@ export function Footer() {
 
           <div className="col-span-1">
             <h4 className="text-[10px] font-bold text-foreground/30 uppercase tracking-[0.3em] mb-6 lg:mb-8">Contact</h4>
-            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">Naalya Kampala, Uganda</p>
-            <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">hitechsoftware03@gmail.com</a>
-            <a href="tel:+256742928508" className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">+256 742 928 508</a>
-            <a href="https://wa.me/256759408917" target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light block hover:text-primary transition-colors">WA: +256 759 408 917</a>
+            <p className="text-foreground/50 text-xs lg:text-sm font-light mb-1">{contactAddress}</p>
+            <a href={gmailLink} target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">{contactEmail}</a>
+            <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="text-foreground/50 text-xs lg:text-sm font-light mb-1 block hover:text-primary transition-colors">{contactPhone}</a>
+            <a href={`https://wa.me/${whatsappNumber.replace(/[^\d]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-foreground/50 text-xs lg:text-sm font-light block hover:text-primary transition-colors">WA: {whatsappNumber}</a>
           </div>
         </div>
 

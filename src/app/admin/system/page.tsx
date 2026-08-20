@@ -110,14 +110,18 @@ export default function SystemArchitecturePortal() {
     }
   }, [user, userLoading, isSuperAdmin, profileLoading, hasSystemAccess, router, toast]);
 
-  // Real-time Queries
-  const { data: attendance } = useCollection(db ? query(collection(db, 'attendance'), orderBy('date', 'desc')) : null);
-  const { data: tasks } = useCollection(db ? query(collection(db, 'tasks'), orderBy('createdAt', 'desc')) : null);
-  const { data: projects } = useCollection(db ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
-  const { data: profiles } = useCollection(db ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
-  const { data: requisitions } = useCollection(db ? query(collection(db, 'requisitions'), orderBy('createdAt', 'desc')) : null);
-  const { data: retainerRequests } = useCollection(db ? query(collection(db, 'retainerRequests'), orderBy('createdAt', 'desc')) : null);
-  const { data: inquiries } = useCollection(db ? query(collection(db, 'projectInquiries'), where('status', '==', 'new')) : null);
+  // Real-time Queries — each tab's collection is only fetched while that
+  // tab is actually open, not all 7 at once on mount. This was the single
+  // biggest source of concurrent Firestore listeners in the admin area
+  // (every one of them a live onSnapshot connection torn down and
+  // reopened on every navigation into this page).
+  const { data: attendance } = useCollection(db && activeTab === 'Workforce' ? query(collection(db, 'attendance'), orderBy('date', 'desc')) : null);
+  const { data: tasks } = useCollection(db && activeTab === 'Tasks' ? query(collection(db, 'tasks'), orderBy('createdAt', 'desc')) : null);
+  const { data: projects } = useCollection(db && activeTab === 'Projects' ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
+  const { data: profiles } = useCollection(db && (activeTab === 'Tasks' || activeTab === 'Access') ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
+  const { data: requisitions } = useCollection(db && activeTab === 'Approvals' ? query(collection(db, 'requisitions'), orderBy('createdAt', 'desc')) : null);
+  const { data: retainerRequests } = useCollection(db && activeTab === 'Approvals' ? query(collection(db, 'retainerRequests'), orderBy('createdAt', 'desc')) : null);
+  const { data: inquiries } = useCollection(db && activeTab === 'Projects' ? query(collection(db, 'projectInquiries'), where('status', '==', 'new')) : null);
 
   // Modal States
   const [isNewUserOpen, setIsNewUserOpen] = useState(false);

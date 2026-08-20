@@ -84,13 +84,15 @@ export default function WebManagerPortal() {
     }
   }, [user, userLoading, isSuperAdmin, profileLoading, hasWebAccess, router, toast]);
 
-  // CMS Data Queries
+  // CMS Data Queries — news/services/team/testimonials feed Overview's
+  // stat cards so they stay always-on; banners and siteConfig are only
+  // used on their own tabs and load lazily.
   const { data: news } = useCollection(db ? query(collection(db, 'news'), orderBy('createdAt', 'desc')) : null);
   const { data: services } = useCollection(db ? query(collection(db, 'services'), orderBy('createdAt', 'asc')) : null);
   const { data: team } = useCollection(db ? query(collection(db, 'team'), orderBy('createdAt', 'asc')) : null);
-  const { data: banners } = useCollection(db ? query(collection(db, 'banners'), orderBy('createdAt', 'asc')) : null);
+  const { data: banners } = useCollection(db && activeTab === 'Banners' ? query(collection(db, 'banners'), orderBy('createdAt', 'asc')) : null);
   const { data: testimonials } = useCollection(db ? query(collection(db, 'testimonials'), orderBy('createdAt', 'desc')) : null);
-  const configRef = useMemo(() => (db ? doc(db, 'siteConfig', 'main') : null), [db]);
+  const configRef = useMemo(() => (db && activeTab === 'Global Config' ? doc(db, 'siteConfig', 'main') : null), [db, activeTab]);
   const { data: siteConfig } = useDoc(configRef);
   const [configSaving, setConfigSaving] = useState(false);
 

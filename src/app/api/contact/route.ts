@@ -54,6 +54,15 @@ async function sendViaSmtp(mail: { to: string; replyTo: string; subject: string;
       user: process.env.SMTP_USER || "no-reply@hitech.systems",
       pass: process.env.SMTP_PASS || "",
     },
+    // Nodemailer's defaults here are brutal for a broken/unset SMTP_PASS —
+    // connectionTimeout defaults to 2 minutes and greetingTimeout to 30
+    // seconds, so every email-triggering tap (contact form, campaigns,
+    // checkout, onboarding) would hang that long before failing. Fail
+    // fast instead; Resend (checked first, see getEmailSettings above)
+    // is the real path once it's configured.
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 8000,
   });
 
   await transporter.sendMail({

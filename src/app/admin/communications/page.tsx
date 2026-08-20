@@ -90,15 +90,19 @@ export default function CommunicationsPortal() {
     }
   }, [user, userLoading, isSuperAdmin, profileLoading, hasCommsAccess, router, toast]);
 
-  // Data
+  // Data — quoteRequests/contactMessages/subscribers are needed on
+  // Overview (stats + Recent Contacts) and by the Messages composer's
+  // audience picker, so they stay always-on. Everything else here is only
+  // relevant to its own tab and is fetched lazily, so this page doesn't
+  // open 8 concurrent Firestore listeners on every visit.
   const { data: quoteRequests } = useCollection(db ? query(collection(db, 'projectInquiries'), orderBy('createdAt', 'desc')) : null);
   const { data: contactMessages } = useCollection(db ? query(collection(db, 'contactMessages'), orderBy('createdAt', 'desc')) : null);
   const { data: subscribers } = useCollection(db ? query(collection(db, 'subscribers'), orderBy('createdAt', 'desc')) : null);
-  const { data: campaigns } = useCollection(db ? query(collection(db, 'campaigns'), orderBy('createdAt', 'desc')) : null);
-  const { data: quotations } = useCollection(db ? query(collection(db, 'quotations'), orderBy('createdAt', 'desc')) : null);
-  const { data: staffDirectory } = useCollection(db ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
-  const { data: files } = useCollection(db ? query(collection(db, 'files'), orderBy('createdAt', 'desc')) : null);
-  const emailSettingsRef = useMemo(() => (db ? doc(db, 'settings', 'email') : null), [db]);
+  const { data: campaigns } = useCollection(db && activeTab === 'Messages' ? query(collection(db, 'campaigns'), orderBy('createdAt', 'desc')) : null);
+  const { data: quotations } = useCollection(db && (activeTab === 'Quotations' || activeTab === 'Clients') ? query(collection(db, 'quotations'), orderBy('createdAt', 'desc')) : null);
+  const { data: staffDirectory } = useCollection(db && activeTab === 'Internal Contacts' ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
+  const { data: files } = useCollection(db && activeTab === 'Files' ? query(collection(db, 'files'), orderBy('createdAt', 'desc')) : null);
+  const emailSettingsRef = useMemo(() => (db && activeTab === 'Email Settings' ? doc(db, 'settings', 'email') : null), [db, activeTab]);
   const { data: emailSettings } = useDoc(emailSettingsRef);
   const [emailSettingsSaving, setEmailSettingsSaving] = useState(false);
 

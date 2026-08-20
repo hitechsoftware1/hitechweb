@@ -127,12 +127,14 @@ export default function MyAccountPage() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
 
-  // Real-time Data
-  const { data: attendanceLogs } = useCollection(db && user ? query(collection(db, 'attendance'), where('userId', '==', user.uid), orderBy('date', 'desc')) : null);
+  // Real-time Data — attendanceLogs and myRetainerRequests aren't shown on
+  // Overview, only their own tabs, so those two load lazily; the rest feed
+  // Overview's stat cards and stay always-on.
+  const { data: attendanceLogs } = useCollection(db && user && activeTab === 'Attendance' ? query(collection(db, 'attendance'), where('userId', '==', user.uid), orderBy('date', 'desc')) : null);
   const { data: myTasks } = useCollection(db && user ? query(collection(db, 'tasks'), where('assignedTo', '==', user.uid), orderBy('createdAt', 'desc')) : null);
   const { data: allProjects } = useCollection(db ? query(collection(db, 'projects'), orderBy('startDate', 'desc')) : null);
   const { data: myRequisitions } = useCollection(db && user ? query(collection(db, 'requisitions'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null);
-  const { data: myRetainerRequests } = useCollection(db && user ? query(collection(db, 'retainerRequests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null);
+  const { data: myRetainerRequests } = useCollection(db && user && activeTab === 'Advance Retainer' ? query(collection(db, 'retainerRequests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null);
   const { data: activeCodes } = useCollection(db ? query(collection(db, 'officeCodes'), where('date', '==', new Date().toISOString().split('T')[0])) : null);
 
   useEffect(() => {

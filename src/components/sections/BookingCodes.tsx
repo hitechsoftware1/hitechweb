@@ -26,7 +26,7 @@ export function BookingCodes() {
   };
 
   return (
-    <section id="booking-codes" className="py-12 lg:py-32 relative bg-background overflow-hidden border-y border-foreground/5">
+    <section id="booking-codes" className="py-12 lg:py-20 relative bg-background overflow-hidden border-y border-foreground/5">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mb-12 lg:mb-20 text-center md:text-left">
           <motion.div

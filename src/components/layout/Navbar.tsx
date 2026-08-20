@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Zap, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck, Users, Sparkles, ShoppingBag } from 'lucide-react';
+import { Menu, X, ChevronRight, Sun, Moon, LayoutDashboard, Terminal, Briefcase, Lightbulb, BarChart3, ChevronDown, Info, MessageSquare, Star, Newspaper, ShieldCheck, Users, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
 import { useCart } from '@/hooks/use-cart';
+import { MonogramZJ } from '@/components/icons/MonogramZJ';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,14 +55,14 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Solutions', href: '/services', icon: Zap },
+    { name: 'Solutions', href: '/services', icon: Lightbulb },
     { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
     { name: 'Portfolio', href: '/portfolio', icon: BarChart3 },
     { name: 'Status', href: '/status', icon: Terminal },
   ];
 
   const resourceLinks = [
-    { name: 'AI Studio', href: '/ai-studio', icon: Sparkles },
+    { name: 'AI Studio', href: '/ai-studio', icon: MonogramZJ },
     { name: 'Engineering Team', href: '/team', icon: Users },
     { name: 'Testimonials', href: '/testimonials', icon: Star },
     { name: 'News & Blog', href: '/blog', icon: Newspaper },

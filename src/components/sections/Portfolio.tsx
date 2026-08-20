@@ -50,7 +50,7 @@ export function Portfolio() {
   }, [api]);
 
   return (
-    <section id="portfolio" className="py-12 lg:py-32 relative bg-background overflow-hidden">
+    <section id="portfolio" className="py-12 lg:py-20 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="mb-8 lg:mb-24 text-center md:text-left">
           <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-8 tracking-tight">Our Work.</h2>

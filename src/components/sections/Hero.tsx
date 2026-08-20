@@ -1,20 +1,33 @@
 
 "use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Globe } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Autoplay from 'embla-carousel-autoplay';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { TypingText } from '@/components/ui/typing-text';
 import { useSiteConfig } from '@/hooks/use-site-config';
 
 export function Hero() {
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-bg');
   const { config } = useSiteConfig();
+
+  const heroImages = useMemo(() => {
+    if (config?.heroImages) {
+      const list = config.heroImages.split(',').map((s) => s.trim()).filter(Boolean);
+      if (list.length > 0) return list;
+    }
+    if (config?.heroImage) return [config.heroImage];
+    const fallback = ['hero-bg', 'project-1', 'project-2']
+      .map((id) => PlaceHolderImages.find((img) => img.id === id)?.imageUrl)
+      .filter(Boolean) as string[];
+    return fallback.length > 0 ? fallback : ['https://picsum.photos/seed/apple-tech/1200/800'];
+  }, [config]);
 
   return (
     <section className="relative flex items-center pt-16 lg:pt-24 pb-2 lg:pb-4 overflow-hidden bg-background">
@@ -77,18 +90,43 @@ export function Hero() {
             transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="relative"
           >
-            <div className="apple-card p-0.5 lg:p-2 group">
-              <div className="aspect-[4/3] relative rounded-[0.8rem] lg:rounded-[2.5rem] overflow-hidden">
-                <Image
-                  src={config?.heroImage || heroImage?.imageUrl || "https://picsum.photos/seed/apple-tech/1200/800"}
-                  alt="Modern Interface"
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                  priority
-                  data-ai-hint="modern dashboard"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
-                
+            <div className="apple-glass rounded-[1rem] lg:rounded-[2.75rem] p-1.5 lg:p-3 group">
+              <div className="relative rounded-[0.6rem] lg:rounded-[2.25rem] overflow-hidden">
+                {heroImages.length > 1 ? (
+                  <Carousel
+                    opts={{ loop: true }}
+                    plugins={[Autoplay({ delay: 3200, stopOnInteraction: false })]}
+                  >
+                    <CarouselContent className="ml-0">
+                      {heroImages.map((src, idx) => (
+                        <CarouselItem key={src + idx} className="pl-0">
+                          <div className="aspect-[4/3] relative">
+                            <Image
+                              src={src}
+                              alt={`Modern Interface ${idx + 1}`}
+                              fill
+                              className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                              priority={idx === 0}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
+                ) : (
+                  <div className="aspect-[4/3] relative">
+                    <Image
+                      src={heroImages[0]}
+                      alt="Modern Interface"
+                      fill
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                      priority
+                      data-ai-hint="modern dashboard"
+                    />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-background/5 to-transparent pointer-events-none" />
+
                 <div className="absolute top-2 right-2 lg:top-8 lg:right-8 apple-glass p-2 lg:p-4 rounded-lg lg:rounded-2xl items-center gap-1 lg:gap-3 animate-float flex">
                   <Globe className="w-3 h-3 lg:w-5 lg:h-5 text-primary" />
                   <span className="text-[6px] lg:text-[10px] font-bold text-foreground/80 uppercase tracking-[0.3em]">Online</span>

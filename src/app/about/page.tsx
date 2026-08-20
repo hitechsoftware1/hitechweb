@@ -55,7 +55,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="container mx-auto px-6 mb-24 lg:mb-32">
+      <section className="container mx-auto px-6 mb-16 lg:mb-20">
         <div className="grid grid-cols-2 gap-4 lg:gap-12">
           <div className="apple-card p-6 lg:p-12 bg-primary/5 border-primary/10">
             <Target className="w-8 h-8 lg:w-12 lg:h-12 text-primary mb-4 lg:mb-6" />
@@ -77,7 +77,7 @@ export default function AboutPage() {
       <Stats />
 
       {/* Timeline Section */}
-      <section className="container mx-auto px-6 py-12 lg:py-24 border-y border-foreground/5 mb-24 lg:mb-32">
+      <section className="container mx-auto px-6 py-12 lg:py-24 border-y border-foreground/5 mb-16 lg:mb-20">
         <div className="text-center mb-12 lg:mb-20">
           <h2 className="text-2xl lg:text-3xl font-headline font-bold mb-4">The Journey.</h2>
           <p className="text-sm lg:text-base text-foreground/40 font-light">From a small studio to a global software firm.</p>
@@ -101,7 +101,7 @@ export default function AboutPage() {
       </section>
 
       {/* Founder Section */}
-      <section className="container mx-auto px-6 py-12 lg:py-24 mb-24 lg:mb-32">
+      <section className="container mx-auto px-6 py-12 lg:py-24 mb-16 lg:mb-20">
         <div className="apple-card p-6 lg:p-12 grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="md:col-span-4 flex justify-center">
             <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-[2rem] lg:rounded-[3rem] bg-muted flex items-center justify-center border-2 border-primary/20 overflow-hidden shadow-2xl relative">

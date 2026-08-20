@@ -334,6 +334,10 @@ export default function WebManagerPortal() {
                     <Label>Hero Image URL</Label>
                     <Input name="heroImage" defaultValue={siteConfig?.heroImage} placeholder="https://..." className="rounded-xl" />
                   </div>
+                  <div className="space-y-2">
+                    <Label>Hero Slideshow Images (comma separated, overrides single image above)</Label>
+                    <Textarea name="heroImages" defaultValue={siteConfig?.heroImages} className="rounded-xl h-20" placeholder="https://..., https://..., https://..." />
+                  </div>
                 </div>
 
                 <div className="apple-card p-6 space-y-4 rounded-2xl">
@@ -465,6 +469,10 @@ export default function WebManagerPortal() {
                 <div className="space-y-2">
                   <Label>Excerpt</Label>
                   <Textarea name="excerpt" defaultValue={currentItem?.excerpt} required className="rounded-xl h-24" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Full Article Content (shown in the read popup)</Label>
+                  <Textarea name="content" defaultValue={currentItem?.content} className="rounded-xl h-40" placeholder="Write the full article here..." />
                 </div>
                 <div className="space-y-2">
                   <Label>Featured Image URL</Label>

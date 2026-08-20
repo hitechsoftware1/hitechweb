@@ -21,6 +21,7 @@ export type MarketplaceProduct = {
   price: number;
   currency: string;
   image?: string;
+  images?: string[];
   tag?: string;
   stock?: number;
   active?: boolean;
@@ -82,6 +83,11 @@ export const DEFAULT_PRODUCTS: MarketplaceProduct[] = [
     price: 320000,
     currency: 'UGX',
     image: 'https://placehold.co/800x800/0F1414/0FD6ED?text=Headphones',
+    images: [
+      'https://placehold.co/800x800/0F1414/0FD6ED?text=Headphones',
+      'https://placehold.co/800x800/0F1414/68E1BC?text=Side+View',
+      'https://placehold.co/800x800/0F1414/0FD6ED?text=Case',
+    ],
     tag: 'Audio',
   },
   {
@@ -92,6 +98,10 @@ export const DEFAULT_PRODUCTS: MarketplaceProduct[] = [
     price: 210000,
     currency: 'UGX',
     image: 'https://placehold.co/800x800/0F1414/68E1BC?text=Speaker',
+    images: [
+      'https://placehold.co/800x800/0F1414/68E1BC?text=Speaker',
+      'https://placehold.co/800x800/0F1414/0FD6ED?text=Ports',
+    ],
     tag: 'Audio',
   },
 ];

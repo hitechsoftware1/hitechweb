@@ -121,3 +121,25 @@
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
+
+/* Footer showcase marquees: plain CSS transform animation (GPU-composited,
+   runs on its own after paint) instead of a JS/React-driven loop, since
+   this runs on every page for the site's lifetime — a JS animation loop
+   here was a real, constant cost across the whole app. */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-left linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right linear infinite;
+}

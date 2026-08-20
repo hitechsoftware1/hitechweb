@@ -2,13 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Mail, Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
+import { X, Mail, CheckCircle2, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const STORAGE_KEY = 'hitech-subscribe-prompt';
 const SNOOZE_DAYS = 14;
@@ -40,6 +42,7 @@ function remember(status: 'subscribed' | 'dismissed') {
 
 export function SubscribePopup() {
   const db = useFirestore();
+  const logo = PlaceHolderImages.find(img => img.id === 'logo');
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -116,8 +119,12 @@ export function SubscribePopup() {
                 </div>
               ) : (
                 <>
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
-                    <Sparkles className="text-primary w-6 h-6" />
+                  <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-6 overflow-hidden border border-black/5 shadow-sm">
+                    {logo ? (
+                      <Image src={logo.imageUrl} alt="HITECH Logo" width={56} height={56} className="object-cover w-full h-full" />
+                    ) : (
+                      <div className="w-full h-full bg-primary" />
+                    )}
                   </div>
                   <h3 className="text-2xl font-headline font-bold mb-2 text-foreground">Stay in the loop.</h3>
                   <p className="text-foreground/50 text-sm mb-8 leading-relaxed">

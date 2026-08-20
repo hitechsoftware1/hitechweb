@@ -6,6 +6,7 @@ import { Toaster } from '@/firebase/error-emitter'; // Note: The previous file h
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { CartProvider } from '@/hooks/use-cart';
+import { SiteConfigProvider } from '@/hooks/use-site-config';
 import { CartDrawer } from '@/components/marketplace/CartDrawer';
 import { SubscribePopup } from '@/components/SubscribePopup';
 import Script from 'next/script';
@@ -56,14 +57,16 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary/30 selection:text-primary-foreground pb-24 md:pb-0">
         <FirebaseClientProvider>
-          <CartProvider>
-            <FirebaseErrorListener />
-            {children}
-            <CartDrawer />
-            <SubscribePopup />
-            <MobileNav />
-            {/* Toaster is usually in components/ui but I will stick to layout standards */}
-          </CartProvider>
+          <SiteConfigProvider>
+            <CartProvider>
+              <FirebaseErrorListener />
+              {children}
+              <CartDrawer />
+              <SubscribePopup />
+              <MobileNav />
+              {/* Toaster is usually in components/ui but I will stick to layout standards */}
+            </CartProvider>
+          </SiteConfigProvider>
         </FirebaseClientProvider>
         
         {/* PWA Service Worker Registration */}

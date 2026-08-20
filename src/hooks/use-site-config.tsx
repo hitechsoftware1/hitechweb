@@ -1,13 +1,14 @@
 "use client";
 
+import React, { createContext, useContext, useMemo } from 'react';
 import { doc } from 'firebase/firestore';
-import { useMemo } from 'react';
 import { useFirestore, useDoc } from '@/firebase';
 
 export type SiteConfig = {
   heroHeadline?: string;
   heroSubtext?: string;
   heroImage?: string;
+  heroImages?: string;
   contactAddress?: string;
   contactEmail?: string;
   contactPhone?: string;
@@ -24,6 +25,25 @@ export type SiteConfig = {
   standardText?: string;
 };
 
+type SiteConfigContextType = { config: SiteConfig | null; loading: boolean };
+
+const SiteConfigContext = createContext<SiteConfigContextType>({ config: null, loading: true });
+
+/**
+ * Opens exactly one Firestore listener for siteConfig/main for the whole
+ * app (mounted once in layout.tsx). Every page used to call useSiteConfig()
+ * independently — Hero, Footer, Contact and FloatingWhatsApp alone opened
+ * four separate listeners to the identical document on every page load.
+ */
+export function SiteConfigProvider({ children }: { children: React.ReactNode }) {
+  const db = useFirestore();
+  const ref = useMemo(() => (db ? doc(db, 'siteConfig', 'main') : null), [db]);
+  const { data, loading } = useDoc(ref);
+  const value = useMemo(() => ({ config: (data || null) as SiteConfig | null, loading }), [data, loading]);
+
+  return <SiteConfigContext.Provider value={value}>{children}</SiteConfigContext.Provider>;
+}
+
 /**
  * Reads the single site-wide content doc (Firestore: siteConfig/main),
  * editable from admin Web Management > Global Config. Every caller applies
@@ -32,8 +52,5 @@ export type SiteConfig = {
  * field in — nothing here can blank out existing page content.
  */
 export function useSiteConfig() {
-  const db = useFirestore();
-  const ref = useMemo(() => (db ? doc(db, 'siteConfig', 'main') : null), [db]);
-  const { data, loading } = useDoc(ref);
-  return { config: (data || null) as SiteConfig | null, loading };
+  return useContext(SiteConfigContext);
 }

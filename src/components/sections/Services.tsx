@@ -36,7 +36,7 @@ export function Services() {
   const displayServices = managedServices && managedServices.length > 0 ? managedServices : DEFAULT_SERVICES;
 
   return (
-    <section id="services" className="pt-12 pb-24 lg:pt-16 lg:pb-32 relative bg-background overflow-hidden">
+    <section id="services" className="pt-12 pb-16 lg:pt-16 lg:pb-20 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="max-w-3xl mb-12 lg:mb-20 text-center mx-auto">
           <motion.div

@@ -12,6 +12,7 @@ import { useCart } from '@/hooks/use-cart';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { DEFAULT_PRODUCTS, type MarketplaceProduct } from '../page';
 
 function formatMoney(amount: number, currency: string) {
@@ -26,8 +27,13 @@ export default function ProductDetailPage() {
   const { data: fetched, loading } = useDoc(productRef);
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
   const product = (fetched || DEFAULT_PRODUCTS.find((p) => p.id === params.id)) as MarketplaceProduct | undefined;
+
+  const gallery = product
+    ? Array.from(new Set([product.image, ...(product.images || [])].filter(Boolean))) as string[]
+    : [];
 
   if (loading) {
     return (
@@ -80,11 +86,29 @@ export default function ProductDetailPage() {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 max-w-6xl mx-auto">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="aspect-square relative rounded-[2rem] overflow-hidden bg-foreground/5 apple-card">
-            {product.image ? (
-              <Image src={product.image} alt={product.name} fill className="object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-foreground/20"><ShoppingBag className="w-16 h-16" /></div>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+            <div className="aspect-square relative rounded-[2rem] overflow-hidden bg-foreground/5 apple-card">
+              {gallery.length > 0 ? (
+                <Image src={gallery[activeImage] || gallery[0]} alt={product.name} fill className="object-cover" priority />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-foreground/20"><ShoppingBag className="w-16 h-16" /></div>
+              )}
+            </div>
+            {gallery.length > 1 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+                {gallery.map((img, idx) => (
+                  <button
+                    key={img + idx}
+                    onClick={() => setActiveImage(idx)}
+                    className={cn(
+                      "relative w-16 h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all",
+                      activeImage === idx ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"
+                    )}
+                  >
+                    <Image src={img} alt={`${product.name} ${idx + 1}`} fill className="object-cover" />
+                  </button>
+                ))}
+              </div>
             )}
           </motion.div>
 

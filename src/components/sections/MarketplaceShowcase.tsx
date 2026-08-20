@@ -45,7 +45,7 @@ export function MarketplaceShowcase() {
   }, [api]);
 
   return (
-    <section id="marketplace" className="py-12 lg:py-32 relative bg-background overflow-hidden">
+    <section id="marketplace" className="py-12 lg:py-20 relative bg-background overflow-hidden">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 lg:mb-16">
           <div className="max-w-xl">

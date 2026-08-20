@@ -30,7 +30,7 @@ const premiumFeatures = [
 
 export function Excellence() {
   return (
-    <section className="py-12 lg:py-32 relative bg-background/50 neural-grid">
+    <section className="py-12 lg:py-20 relative bg-background/50 neural-grid">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center mb-10 lg:mb-24">
           <h2 className="text-3xl lg:text-5xl font-headline font-bold text-gradient-apple mb-4 lg:mb-6 tracking-tight text-gradient-apple">

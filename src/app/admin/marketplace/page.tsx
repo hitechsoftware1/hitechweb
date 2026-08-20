@@ -155,11 +155,14 @@ export default function MarketplaceAdminPortal() {
         data[key] = value ? Number(value) : null;
       } else if (key === 'active') {
         data[key] = value === 'on';
+      } else if (key === 'images') {
+        data[key] = (value as string).split(',').map((s) => s.trim()).filter(Boolean);
       } else {
         data[key] = value;
       }
     });
     if (!('active' in data)) data.active = true;
+    if (!('images' in data)) data.images = [];
 
     try {
       if (editingId) {
@@ -401,8 +404,12 @@ export default function MarketplaceAdminPortal() {
               <Textarea name="description" defaultValue={currentProduct?.description} required className="rounded-xl h-24" />
             </div>
             <div className="space-y-2">
-              <Label>Image URL</Label>
+              <Label>Primary Image URL</Label>
               <Input name="image" defaultValue={currentProduct?.image} className="rounded-xl" placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Additional Image URLs (comma separated)</Label>
+              <Textarea name="images" defaultValue={currentProduct?.images?.join(', ')} className="rounded-xl h-20" placeholder="https://..., https://..." />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

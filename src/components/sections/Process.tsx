@@ -34,7 +34,7 @@ const steps = [
 
 export function Process() {
   return (
-    <section className="py-12 lg:py-32 relative bg-background overflow-hidden border-y border-foreground/5">
+    <section className="py-12 lg:py-20 relative bg-background overflow-hidden border-y border-foreground/5">
       {/* Background Decor */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 neural-grid opacity-20" />

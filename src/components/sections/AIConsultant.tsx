@@ -83,7 +83,7 @@ export function AIConsultant() {
   };
 
   return (
-    <section id="ai-consultant" className="py-12 lg:py-32 relative overflow-hidden bg-background">
+    <section id="ai-consultant" className="py-12 lg:py-20 relative overflow-hidden bg-background">
       
       {/* Background Decor & Video */}
       <div className="absolute inset-0 z-0 overflow-hidden">

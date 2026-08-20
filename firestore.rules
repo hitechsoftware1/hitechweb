@@ -101,6 +101,14 @@ service cloud.firestore {
       allow write: if isSuperAdmin() || hasPortalAccess('web-management');
     }
 
+    // Private integration credentials (e.g. settings/email holds the
+    // Resend API key used by /api/contact). Super Admin only, unlike
+    // siteConfig above — this must never be publicly readable since it
+    // holds a live API key, not display copy.
+    match /settings/{id} {
+      allow read, write: if isSuperAdmin();
+    }
+
     // Client Ecosystem sales ledger
     match /quotations/{id} {
       allow read, write: if isSuperAdmin() || hasPortalAccess('clients');

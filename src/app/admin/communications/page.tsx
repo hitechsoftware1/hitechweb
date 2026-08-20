@@ -29,10 +29,13 @@ import {
   ExternalLink,
   ShieldCheck,
   User as UserIcon,
+  Settings,
+  KeyRound,
+  CheckCircle2,
 } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { collection, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -52,7 +55,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
-type CommTab = 'Overview' | 'Messages' | 'Quote Requests' | 'Contacts' | 'Subscribers' | 'Clients' | 'Quotations' | 'Internal Contacts' | 'Files';
+type CommTab = 'Overview' | 'Messages' | 'Quote Requests' | 'Contacts' | 'Subscribers' | 'Clients' | 'Quotations' | 'Internal Contacts' | 'Files' | 'Email Settings';
 type Audience = 'subscribers' | 'contacts' | 'both';
 
 const SUPER_ADMIN_EMAIL = 'hitechsoftware03@gmail.com';
@@ -95,6 +98,37 @@ export default function CommunicationsPortal() {
   const { data: quotations } = useCollection(db ? query(collection(db, 'quotations'), orderBy('createdAt', 'desc')) : null);
   const { data: staffDirectory } = useCollection(db ? query(collection(db, 'users'), orderBy('joinedAt', 'desc')) : null);
   const { data: files } = useCollection(db ? query(collection(db, 'files'), orderBy('createdAt', 'desc')) : null);
+  const emailSettingsRef = useMemo(() => (db ? doc(db, 'settings', 'email') : null), [db]);
+  const { data: emailSettings } = useDoc(emailSettingsRef);
+  const [emailSettingsSaving, setEmailSettingsSaving] = useState(false);
+
+  const handleSaveEmailSettings = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!db) return;
+    setEmailSettingsSaving(true);
+
+    const formData = new FormData(e.currentTarget);
+    const apiKey = (formData.get('resendApiKey') as string).trim();
+    const data: any = {
+      resendFromEmail: (formData.get('resendFromEmail') as string).trim(),
+      resendFromName: (formData.get('resendFromName') as string).trim(),
+      updatedAt: serverTimestamp(),
+    };
+    // Only overwrite the stored key if a new one was actually typed — the
+    // field is left blank on reload (see below), so submitting the form
+    // to update the from-name shouldn't blank out an already-saved key.
+    if (apiKey) data.resendApiKey = apiKey;
+
+    try {
+      await setDoc(doc(db, 'settings', 'email'), data, { merge: true });
+      toast({ title: 'Email Settings Saved', description: 'Outbound mail now sends through Resend.' });
+      e.currentTarget.reset();
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Save Failed' });
+    } finally {
+      setEmailSettingsSaving(false);
+    }
+  };
 
   // Compose state
   const [composeSubject, setComposeSubject] = useState('');
@@ -276,6 +310,9 @@ export default function CommunicationsPortal() {
       title: 'OTHER',
       items: [
         { label: 'Files', icon: Files },
+        // Holds a live API key — restricted to the Super Admin, unlike the
+        // rest of this portal which any Communications-portal staff can see.
+        ...(isSuperAdmin ? [{ label: 'Email Settings' as const, icon: Settings }] : []),
       ]
     }
   ];
@@ -714,6 +751,52 @@ export default function CommunicationsPortal() {
     </motion.div>
   );
 
+  const renderEmailSettings = () => (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 max-w-2xl">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Email Settings</h1>
+        <p className="text-sm text-zinc-400">Configure Resend so outbound mail (contact form, onboarding, marketplace orders, campaigns) actually sends.</p>
+      </div>
+
+      <div className="flex items-center gap-3 bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+        {emailSettings?.resendApiKey ? (
+          <>
+            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+            <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Resend is configured. Outbound mail sends through Resend.</p>
+          </>
+        ) : (
+          <>
+            <KeyRound className="w-5 h-5 text-amber-500 shrink-0" />
+            <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300">No Resend key saved yet — mail is falling back to SMTP (likely not working).</p>
+          </>
+        )}
+      </div>
+
+      <form onSubmit={handleSaveEmailSettings} className="apple-card p-6 space-y-5 rounded-2xl">
+        <div className="space-y-2">
+          <Label>Resend API Key</Label>
+          <Input name="resendApiKey" type="password" placeholder={emailSettings?.resendApiKey ? "••••••••••••••••  (leave blank to keep current key)" : "re_..."} className="rounded-xl" autoComplete="off" />
+          <p className="text-[10px] text-zinc-400">From resend.com &rarr; API Keys. Stored in Firestore, never shown again once saved &mdash; leave blank to keep the existing key when just changing the fields below.</p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>From Name</Label>
+            <Input name="resendFromName" defaultValue={emailSettings?.resendFromName} placeholder="HITECH Systems" className="rounded-xl" />
+          </div>
+          <div className="space-y-2">
+            <Label>From Email</Label>
+            <Input name="resendFromEmail" defaultValue={emailSettings?.resendFromEmail} placeholder="no-reply@hitech.systems" className="rounded-xl" />
+          </div>
+        </div>
+        <p className="text-[10px] text-zinc-400">The From Email's domain must be verified in your Resend account, or sends will fail. Use Resend's default onboarding@resend.dev while testing if you haven't verified a domain yet.</p>
+        <Button type="submit" disabled={emailSettingsSaving} className="w-full rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]">
+          {emailSettingsSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <KeyRound className="w-4 h-4 mr-2" />}
+          Save Email Settings
+        </Button>
+      </form>
+    </motion.div>
+  );
+
   if (userLoading || (user && !isSuperAdmin && (profileLoading || !hasCommsAccess))) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
@@ -787,6 +870,7 @@ export default function CommunicationsPortal() {
           {activeTab === 'Quotations' && renderQuotations()}
           {activeTab === 'Internal Contacts' && renderInternalContacts()}
           {activeTab === 'Files' && renderFiles()}
+          {activeTab === 'Email Settings' && isSuperAdmin && renderEmailSettings()}
         </AnimatePresence>
       </main>
     </div>

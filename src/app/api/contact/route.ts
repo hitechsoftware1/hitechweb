@@ -1,20 +1,73 @@
 
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getFirebaseAdmin } from "@/lib/firebase-admin";
+
+type EmailSettings = {
+  resendApiKey?: string;
+  resendFromEmail?: string;
+  resendFromName?: string;
+};
+
+async function getEmailSettings(): Promise<EmailSettings | null> {
+  try {
+    const { firestore } = getFirebaseAdmin();
+    const snap = await firestore.collection("settings").doc("email").get();
+    return snap.exists ? (snap.data() as EmailSettings) : null;
+  } catch {
+    // Admin SDK not configured, or Firestore unreachable — fall back to SMTP.
+    return null;
+  }
+}
+
+async function sendViaResend(settings: EmailSettings, mail: { to: string; replyTo: string; subject: string; html: string }) {
+  const fromName = settings.resendFromName || "HITECH Systems";
+  const fromEmail = settings.resendFromEmail || "no-reply@hitech.systems";
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${settings.resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: `${fromName} <${fromEmail}>`,
+      to: [mail.to],
+      reply_to: mail.replyTo,
+      subject: mail.subject,
+      html: mail.html,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Resend request failed (${res.status}): ${body}`);
+  }
+}
+
+async function sendViaSmtp(mail: { to: string; replyTo: string; subject: string; html: string }) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.hostinger.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.SMTP_USER || "no-reply@hitech.systems",
+      pass: process.env.SMTP_PASS || "",
+    },
+  });
+
+  await transporter.sendMail({
+    from: '"HITECH Systems" <no-reply@hitech.systems>',
+    to: mail.to,
+    replyTo: mail.replyTo,
+    subject: mail.subject,
+    html: mail.html,
+  });
+}
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.hostinger.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER || "no-reply@hitech.systems",
-        pass: process.env.SMTP_PASS || "",
-      },
-    });
 
     // Determine the recipient (fallback to master admin)
     const recipient = data.to || "hitechsoftware03@gmail.com";
@@ -45,7 +98,7 @@ export async function POST(req: Request) {
         <h2 style="color: #00A3FF; margin-bottom: 8px; font-size: 24px;">Welcome to the Team.</h2>
         <p style="font-size: 11px; color: #6b7280; margin-top: 0; text-transform: uppercase; letter-spacing: 0.2em;">Institutional Onboarding Protocol</p>
         <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
-        
+
         <p style="font-size: 16px; line-height: 1.6; color: #374151;">
           Hello ${data.fullName},<br /><br />
           You have been successfully onboarded as a <b>${data.role}</b> in the HITECH Intelligent Software Systems platform. Your identity has been provisioned with the following access credentials:
@@ -73,7 +126,7 @@ export async function POST(req: Request) {
         <h2 style="color: #00A3FF; margin-bottom: 4px; font-size: 20px;">HITECH Neural Core</h2>
         <p style="font-size: 11px; color: #6b7280; margin-top: 0; text-transform: uppercase; letter-spacing: 0.1em;">Automated System Transmission</p>
         <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
-        
+
         <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #f3f4f6;">
           <p style="margin-bottom: 16px; font-weight: bold; color: #374151;">Submission Details:</p>
           ${Object.entries(data)
@@ -91,13 +144,23 @@ export async function POST(req: Request) {
       </div>
     `;
 
-    await transporter.sendMail({
-      from: '"HITECH Systems" <no-reply@hitech.systems>',
+    const mail = {
       to: recipient,
       replyTo: data.email || "hitechsoftware03@gmail.com",
-      subject: subject,
+      subject,
       html: htmlContent,
-    });
+    };
+
+    // Prefer Resend (configured via admin Communications > Email Settings,
+    // stored in Firestore — no redeploy needed to change providers or
+    // rotate the key). Falls back to the original SMTP/Nodemailer path if
+    // Resend isn't configured, so nothing breaks for anyone still on SMTP.
+    const emailSettings = await getEmailSettings();
+    if (emailSettings?.resendApiKey) {
+      await sendViaResend(emailSettings, mail);
+    } else {
+      await sendViaSmtp(mail);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
